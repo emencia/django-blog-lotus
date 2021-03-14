@@ -1,0 +1,14 @@
+include MANIFEST.in
+include LICENCE.txt
+include README.rst
+
+exclude sphinx_reload.py
+
+recursive-include lotus/templates *
+recursive-include lotus/static *
+recursive-include lotus/locale *
+
+recursive-exclude tests *
+recursive-exclude sandbox *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]

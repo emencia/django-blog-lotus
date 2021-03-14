@@ -1,0 +1,9 @@
+{% spaceless %}{% if paginator %}
+    <div class="pagination">
+    {% for page_num in paginator.page_range %}
+        <a href="?page={{ page_num }}"
+           {% if page_num == page_obj.number %} class="active"{% endif %}
+        >{{ page_num }}</a>
+    {% endfor %}
+    </div>
+{% endif %}{% endspaceless %}

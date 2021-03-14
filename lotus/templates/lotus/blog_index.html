@@ -1,0 +1,21 @@
+{% extends "lotus/base.html" %}
+{% load i18n %}
+
+
+{% block app_content %}{% spaceless %}
+<div class="blog-index">
+    <h2>{% trans "Blogs" %}</h2>
+
+    <ul class="blog-list">
+    {% for blog in object_list %}
+        <li>
+            <a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a>
+        </li>
+    {% empty %}
+        <li>{% trans "No blogs yet." %}</li>
+    {% endfor %}
+    </ul>
+
+    {% include "lotus/pagination.html" %}
+</div>
+{% endspaceless %}{% endblock app_content %}
