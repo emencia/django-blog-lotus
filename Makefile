@@ -36,7 +36,8 @@ help:
 	@echo "  livedocs            -- to run livereload server to rebuild documentation on source changes"
 	@echo ""
 	@echo "  flake               -- to launch Flake8 checking"
-	@echo "  tests               -- to launch base test suite using Pytest"
+	@echo "  test                -- to launch base test suite using Pytest"
+	@echo "  test-initial        -- to launch tests with pytest and re-initialized database (for after new application or model changes)"
 	@echo "  quality             -- to launch Flake8 checking and every tests suites"
 	@echo ""
 	@echo "  release             -- to release package for latest version on PyPi (once release has been pushed to repository)"
@@ -117,12 +118,17 @@ flake:
 	$(FLAKE) --show-source tests
 .PHONY: flake
 
-tests:
-	$(PYTEST) -vv tests/
+test:
+	$(PYTEST) -vv --reuse-db tests/
 	rm -Rf var/media-tests/
-.PHONY: tests
+.PHONY: test
 
-quality: tests flake
+test-initial:
+	$(PYTEST) -vv --reuse-db --create-db tests/
+	rm -Rf var/media-tests/
+.PHONY: test-initial
+
+quality: test-initial flake
 .PHONY: quality
 
 release:

@@ -8,6 +8,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
+from ..managers import CategoryManager
+
 from .translated import Translated
 
 
@@ -63,6 +65,8 @@ class Category(Translated):
     Optional cover image file.
     """
 
+    objects = CategoryManager()
+
     class Meta:
         ordering = ['title']
         verbose_name = _('Category')
@@ -70,21 +74,15 @@ class Category(Translated):
         constraints = [
             models.UniqueConstraint(
                 fields=[
-                    "title", "language"
-                ],
-                name='unique_category_title_for_lang'
-            ),
-            models.UniqueConstraint(
-                fields=[
                     "slug", "language"
                 ],
-                name='unique_category_slug_for_lang'
+                name='lotus_unique_cat_slug_lang'
             ),
             models.UniqueConstraint(
                 fields=[
                     "original", "language"
                 ],
-                name='unique_category_original_for_lang'
+                name='lotus_unique_cat_original_lang'
             ),
         ]
 

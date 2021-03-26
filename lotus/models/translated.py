@@ -16,6 +16,7 @@ class Translated(models.Model):
     language = models.CharField(
         _("language"),
         blank=False,
+        db_index=True,
         max_length=8,
         default=settings.LANGUAGE_CODE,
     )

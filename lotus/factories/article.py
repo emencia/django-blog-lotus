@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
+from django.utils import timezone
 
 import factory
 
 from .category import CategoryFactory
 from ..models import Article
+from ..choices import STATUS_DRAFT
 
 
 class ArticleFactory(factory.django.DjangoModelFactory):
@@ -13,11 +15,24 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     """
     language = settings.LANGUAGE_CODE
     original = None
+    status = STATUS_DRAFT
     title = factory.Sequence(lambda n: "Article {0}".format(n))
     slug = factory.Sequence(lambda n: "article-{0}".format(n))
+    publish_start = factory.LazyFunction(timezone.now)
+    publish_end = None
 
     class Meta:
         model = Article
+
+    @factory.lazy_attribute
+    def last_update(self):
+        """
+        Fill last update date from publication date.
+
+        Returns:
+            django.timezone: Datetime timezone enabled.
+        """
+        return self.publish_start
 
     @factory.post_generation
     # pylint: disable=unused-argument
@@ -37,9 +52,9 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         # Take given category objects
         if extracted:
             categories = extracted
-        # Create a new random category
+        # Create a new random category adopting the article language
         else:
-            categories = [CategoryFactory()]
+            categories = [CategoryFactory(language=self.language)]
 
         # Add categories
         for category in categories:

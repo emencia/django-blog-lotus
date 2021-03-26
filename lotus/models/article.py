@@ -7,6 +7,10 @@ Article
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from django.utils import timezone
+
+from ..choices import STATUS_DRAFT, STATUS_PUBLISHED, STATUS_CHOICES
+from ..managers import ArticleManager
 
 from .translated import Translated
 
@@ -29,6 +33,44 @@ class Article(Translated):
     Optional original category when object is a translation.
     """
 
+    status = models.SmallIntegerField(
+        _("status"),
+        db_index=True,
+        choices=STATUS_CHOICES,
+        default=STATUS_DRAFT,
+    )
+    """
+    Required article status.
+    """
+
+    publish_start = models.DateTimeField(
+        "publication start",
+        db_index=True,
+        default=timezone.now,
+    )
+    """
+    Required publication start date.
+    """
+
+    publish_end = models.DateTimeField(
+        "publication end",
+        db_index=True,
+        default=None,
+        null=True,
+        blank=True,
+    )
+    """
+    Optional publication end date.
+    """
+
+    last_update = models.DateTimeField(
+        _('last update'),
+        default=timezone.now,
+    )
+    """
+    Last edition date
+    """
+
     title = models.CharField(
         _("title"),
         blank=False,
@@ -40,7 +82,7 @@ class Article(Translated):
     """
 
     slug = models.SlugField(
-        _('slug'),
+        _("slug"),
         max_length=255,
     )
     """
@@ -66,28 +108,40 @@ class Article(Translated):
     Related Categories.
     """
 
+    objects = ArticleManager()
+
     class Meta:
-        ordering = ['title']
+        ordering = ["title"]
         verbose_name = _("Article")
         verbose_name_plural = _("Articles")
+        """
+        TODO:
+            * publish_slug integrity not tested mixed with other constraints
+            * update test to ensure constraints are correct
+            * report changes on category
+
+        publish_start  + slug  +  language
+                                  language  +  original
+        """
         constraints = [
             models.UniqueConstraint(
                 fields=[
-                    "title", "language"
+                    "publish_start", "slug", "language"
                 ],
-                name='unique_article_title_for_lang'
+                name="lotus_unique_art_pub_slug_lang"
             ),
-            models.UniqueConstraint(
-                fields=[
-                    "slug", "language"
-                ],
-                name='unique_article_slug_for_lang'
-            ),
+            #models.UniqueConstraint(
+                #fields=[
+                    #"slug", "language"
+                #],
+                #name="lotus_unique_art_slug_lang"
+            #),
+            # Enforce no multiple translations for the same language
             models.UniqueConstraint(
                 fields=[
                     "original", "language"
                 ],
-                name='unique_article_original_for_lang'
+                name="lotus_unique_art_original_lang"
             ),
         ]
 
@@ -104,3 +158,9 @@ class Article(Translated):
         return reverse("lotus:article-detail", args=[
             str(self.id),
         ])
+
+    def save(self, *args, **kwargs):
+        # Auto update last_update on each save
+        self.last_update = timezone.now()
+
+        super().save(*args, **kwargs)

@@ -5,6 +5,9 @@ Default application settings
 These are the default settings you can override in your own project settings
 right after the line which load the default app settings.
 
+TODO:
+    * Prepend setting names with "LOTUS_"
+
 """
 BLOG_PAGINATION = 5
 """
@@ -20,5 +23,5 @@ pagination.
 
 TRANSLATE_CONTENT = True
 """
-Determine if your install enable content translation or not.
+Determine if your project enable content translation or not.
 """

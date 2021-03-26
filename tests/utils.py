@@ -64,3 +64,25 @@ def html_pyquery(content):
         decode_response_or_string(content),
         parser='html'
     )
+
+
+def queryset_values(queryset, names=["title", "language"],
+                    orders=["title", "language"]):
+    """
+    An helper to just return a list of dict values ordered from given queryset.
+
+    Arguments:
+        queryset (Queryset): A queryset to turn to values.
+
+    Keyword Arguments:
+        names (list): A list of field names to return as values for each object.
+            Default return "title" and "language" values only.
+        orders (list): A list of field names to order results.
+            Default order first on "title" then "language".
+
+    Returns:
+        list: A list of dict items for all result objects.
+    """
+    return list(
+        queryset.values(*names).order_by(*orders)
+    )

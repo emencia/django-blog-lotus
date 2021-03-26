@@ -8,6 +8,8 @@ from django.urls import reverse
 from lotus.factories import CategoryFactory, multilingual_category
 from lotus.models import Category
 
+from tests.utils import queryset_values
+
 
 def test_basic(settings, db):
     """
@@ -53,24 +55,66 @@ def test_creation(db):
     assert category.title == "foo"
 
 
-def test_uniqueness_with_lang(db):
+def test_category_constraints(db):
     """
-    Category can't have the same title, slug or original on the same language.
+    Category contraints should be respected.
     """
-    original = CategoryFactory(title="foo", slug="bar")
-    CategoryFactory(title="fiou", slug="le bar", original=original)
+    # Base original objects
+    bar = CategoryFactory(
+        slug="bar",
+    )
+    pong = CategoryFactory(
+        slug="pong",
+    )
 
+    # We can have an identical slug for a different language.
+    # Note than original is just a marker to define an object as a translation
+    # of "original" relation object.
+    CategoryFactory(
+        slug="bar",
+        language="fr",
+        original=bar,
+    )
+
+    # But not an identical slug on the same language
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
-            CategoryFactory(title="foo")
+            CategoryFactory(
+                slug="bar",
+                language="en",
+            )
+        assert str(excinfo.value) == (
+            "UNIQUE constraint failed: "
+            "lotus_category.slug, lotus_category.language"
+        )
 
+    # And only an unique language for the same original object is allowed since
+    # there can't be two translations for the same language.
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
-            CategoryFactory(title="Plop", slug="bar")
+            CategoryFactory(
+                slug="zap",
+                language="fr",
+                original=bar,
+            )
+        assert str(excinfo.value) == (
+            "UNIQUE constraint failed: "
+            "lotus_category.original_id, lotus_category.language"
+        )
 
+    # Combination of constraints (slug+lang & original+lang)
     with transaction.atomic():
         with pytest.raises(IntegrityError) as excinfo:
-            CategoryFactory(title="fiou", slug="le bar", original=original)
+            CategoryFactory(
+                slug="bar",
+                language="fr",
+                original=bar,
+            )
+        # This is the original+language constraint which raise first
+        assert str(excinfo.value) == (
+            "UNIQUE constraint failed: "
+            "lotus_category.original_id, lotus_category.language"
+        )
 
 
 def test_multilingual_category(db):
@@ -82,17 +126,17 @@ def test_multilingual_category(db):
     # Deutsch translations twice, but "multilingual_category" is safe on unique
     # language.
     created = multilingual_category(
-        title="Cheese",
+        title="Recipe",
         langs=["fr", "de", "de"],
         contents={
             "fr": {
-                "title": "Fromage",
+                "title": "Recette",
             }
         },
     )
 
     # Original title is correct
-    assert created["original"].title == "Cheese"
+    assert created["original"].title == "Recipe"
 
     # There is two related translations
     assert (len(created["translations"]) == 2) is True
@@ -102,45 +146,41 @@ def test_multilingual_category(db):
     assert ("de" in created["translations"]) is True
 
     # French translation have its own title
-    assert created["translations"]["fr"].title == "Fromage"
+    assert created["translations"]["fr"].title == "Recette"
     # Deutsch translation inherit from original title
-    assert created["translations"]["de"].title == "Cheese"
+    assert created["translations"]["de"].title == "Recipe"
 
 
 def test_category_get_by_lang(db):
     """
-    Demonstrate how we can get categories for original language or translations.
+    Demonstrate how we can get categories for original language and
+    translations.
     """
     created_foobar = CategoryFactory(title="Foo bar", slug="foo-bar")
 
     created_omelette = multilingual_category(
-        title="Omelette",
+        title="Food",
         langs=["fr"],
     )
 
     created_cheese = multilingual_category(
-        title="Cheese",
+        title="Recipe",
         langs=["fr", "de"],
         contents={
             "fr": {
-                "title": "Fromage",
+                "title": "Recette",
             }
         },
     )
 
     # Get full total all languages mixed and without any filtering
-    results = list(
-        Category.objects.all().values(
-            "title", "language"
-        ).order_by("title", "language")
-    )
-    assert results == [
-        {"title": "Cheese", "language": "de"},
-        {"title": "Cheese", "language": "en"},
+    assert queryset_values(Category.objects.all()) == [
         {"title": "Foo bar", "language": "en"},
-        {"title": "Fromage", "language": "fr"},
-        {"title": "Omelette", "language": "en"},
-        {"title": "Omelette", "language": "fr"}
+        {"title": "Food", "language": "en"},
+        {"title": "Food", "language": "fr"},
+        {"title": "Recette", "language": "fr"},
+        {"title": "Recipe", "language": "de"},
+        {"title": "Recipe", "language": "en"},
     ]
 
     # Get available categories for a required language
@@ -149,27 +189,19 @@ def test_category_get_by_lang(db):
     assert Category.objects.filter(language="de").count() == 1
 
     # Get only originals
-    results = list(
-        Category.objects.filter(
-            original__isnull=True
-        ).values("title", "language").order_by("title", "language")
-    )
-    assert results == [
-        {"title": "Cheese", "language": "en"},
+    results = Category.objects.filter(original__isnull=True)
+    assert queryset_values(results) == [
         {"title": "Foo bar", "language": "en"},
-        {"title": "Omelette", "language": "en"},
+        {"title": "Food", "language": "en"},
+        {"title": "Recipe", "language": "en"},
     ]
 
     # Get only translations
-    results = list(
-        Category.objects.filter(
-            original__isnull=False
-        ).values("title", "language").order_by("title", "language")
-    )
-    assert results == [
-        {"title": "Cheese", "language": "de"},
-        {"title": "Fromage", "language": "fr"},
-        {"title": "Omelette", "language": "fr"}
+    results = Category.objects.filter(original__isnull=False)
+    assert queryset_values(results) == [
+        {"title": "Food", "language": "fr"},
+        {"title": "Recette", "language": "fr"},
+        {"title": "Recipe", "language": "de"},
     ]
 
     # Get translations from original
@@ -177,3 +209,61 @@ def test_category_get_by_lang(db):
     assert created_omelette["original"].category_set.all().count() == 1
     assert created_cheese["original"].category_set.all().count() == 2
 
+
+def test_category_managers(db):
+    """
+    Category manager should be able to correctly filter on language.
+    """
+    # Simple category on default language without translations
+    created_foobar = CategoryFactory(title="Foo bar")
+
+    # Original category on different language than 'settings.LANGUAGE_CODE' and
+    # with a translation for 'settings.LANGUAGE_CODE' lang.
+    created_baguette = multilingual_category(
+        title="Musique",
+        language="fr",
+        langs=["en"],
+        contents={
+            "en": {
+                "title": "Music",
+            }
+        },
+    )
+
+    # A category with a french translation inheriting original title
+    created_omelette = multilingual_category(
+        title="Omelette",
+        langs=["fr"],
+    )
+
+    # A category with french translation with its own title and deutsch
+    # translation inheriting original title
+    created_cheese = multilingual_category(
+        title="Recipe",
+        langs=["fr", "de"],
+        contents={
+            "fr": {
+                "title": "Recette",
+            }
+        },
+    )
+
+    # Use default language as configured in settings
+    assert queryset_values(Category.objects.get_for_lang()) == [
+        {"title": "Foo bar", "language": "en"},
+        {"title": "Music", "language": "en"},
+        {"title": "Omelette", "language": "en"},
+        {"title": "Recipe", "language": "en"},
+    ]
+
+    # For french language
+    assert queryset_values(Category.objects.get_for_lang("fr")) == [
+        {"title": "Musique", "language": "fr"},
+        {"title": "Omelette", "language": "fr"},
+        {"title": "Recette", "language": "fr"},
+    ]
+
+    # For deutsch language
+    assert queryset_values(Category.objects.get_for_lang("de")) == [
+        {"title": "Recipe", "language": "de"},
+    ]
