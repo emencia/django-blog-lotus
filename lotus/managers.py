@@ -10,26 +10,30 @@ class BasePublishedQuerySet(models.QuerySet):
     """
     Base queryset for publication methods.
     """
-    def published_for(self, target_date):
+    def get_published(self, target_date=None):
+        target_date = target_date or timezone.now()
+
         return self.filter(
             models.Q(publish_start__lte=target_date),
             models.Q(publish_end__gt=target_date) | models.Q(publish_end=None),
-            is_published=True,
         )
 
-    def unpublished_for(self, target_date):
+    def get_unpublished(self, target_date=None):
+        target_date = target_date or timezone.now()
+
         return self.exclude(
             models.Q(publish_start__lte=target_date),
             models.Q(publish_end__gt=target_date) | models.Q(publish_end=None),
-            is_published=True,
         )
 
 
 class BaseTranslatedQuerySet(models.QuerySet):
     """
-    Base queryset for translation methods.
+    Base queryset for translation methods only.
     """
-    def get_for_lang(self, language):
+    def get_for_lang(self, language=None):
+        language = language or settings.LANGUAGE_CODE
+
         return self.filter(language=language)
 
 
@@ -48,12 +52,6 @@ class CategoryManager(models.Manager):
         return BaseTranslatedQuerySet(self.model, using=self._db)
 
     def get_for_lang(self, language=None):
-        """
-        Return object related to either current lang (if lang arg is
-        None) or given lang code.
-        """
-        language = language or settings.LANGUAGE_CODE
-
         return self.get_queryset().get_for_lang(language)
 
 
@@ -64,27 +62,11 @@ class ArticleManager(models.Manager):
     def get_queryset(self):
         return ArticleQuerySet(self.model, using=self._db)
 
-    def get_published(self):
-        """
-        Only return the published objects.
-        """
-        now = timezone.now()
+    def get_published(self, target_date=None):
+        return self.get_queryset().get_published(target_date)
 
-        return self.get_queryset().published_for(now)
-
-    def get_unpublished(self):
-        """
-        Only return the non published objects.
-        """
-        now = timezone.now()
-
-        return self.get_queryset().unpublished_for(now)
+    def get_unpublished(self, target_date=None):
+        return self.get_queryset().get_unpublished(target_date)
 
     def get_for_lang(self, language=None):
-        """
-        Return object related to either current lang (if lang arg is
-        None) or given lang code.
-        """
-        language = language or settings.LANGUAGE_CODE
-
         return self.get_queryset().get_for_lang(language)

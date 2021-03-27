@@ -66,8 +66,8 @@ def html_pyquery(content):
     )
 
 
-def queryset_values(queryset, names=["title", "language"],
-                    orders=["title", "language"]):
+def queryset_values(queryset, names=["slug", "language"],
+                    orders=["slug", "language"]):
     """
     An helper to just return a list of dict values ordered from given queryset.
 
@@ -76,9 +76,9 @@ def queryset_values(queryset, names=["title", "language"],
 
     Keyword Arguments:
         names (list): A list of field names to return as values for each object.
-            Default return "title" and "language" values only.
+            Default return "slug" and "language" values only.
         orders (list): A list of field names to order results.
-            Default order first on "title" then "language".
+            Default order first on "slug" then "language".
 
     Returns:
         list: A list of dict items for all result objects.

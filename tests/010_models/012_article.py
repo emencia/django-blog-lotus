@@ -57,14 +57,14 @@ def test_creation(db):
     """
     Factory should correctly create a new object without any errors
     """
-    ping = CategoryFactory(title="Ping", slug="ping")
-    pong = CategoryFactory(title="Pong", slug="pong")
+    ping = CategoryFactory(slug="ping")
+    pong = CategoryFactory(slug="pong")
 
     article = ArticleFactory(
-        title="foo",
+        slug="foo",
         fill_categories=[ping, pong],
     )
-    assert article.title == "foo"
+    assert article.slug == "foo"
 
     # Check related categories
     results = queryset_values(
@@ -72,8 +72,8 @@ def test_creation(db):
     )
 
     assert results == [
-        {"title": "Ping", "language": "en"},
-        {"title": "Pong", "language": "en"},
+        {"slug": "ping", "language": "en"},
+        {"slug": "pong", "language": "en"},
     ]
 
 
@@ -168,26 +168,26 @@ def test_multilingual_article(db):
     Factory helper should create an original article with its required
     translations.
     """
-    ping = CategoryFactory(title="Ping", slug="ping")
-    pong = CategoryFactory(title="Pong", slug="pong")
+    ping = CategoryFactory(slug="ping")
+    pong = CategoryFactory(slug="pong")
 
     # Create an article with a FR and DE translations. Also try to create
     # Deutsch translations twice, but "multilingual_article" is safe on unique
     # language.
     created = multilingual_article(
-        title="Cheese",
+        slug="cheese",
         langs=["fr", "de", "de"],
         fill_categories=[ping, pong],
         contents={
             "fr": {
-                "title": "Fromage",
+                "slug": "fromage",
                 "fill_categories": [ping],
             }
         },
     )
 
-    # Original title is correct
-    assert created["original"].title == "Cheese"
+    # Original slug is correct
+    assert created["original"].slug == "cheese"
 
     # There is two related translations
     assert (len(created["translations"]) == 2) is True
@@ -196,10 +196,10 @@ def test_multilingual_article(db):
     assert ("fr" in created["translations"]) is True
     assert ("de" in created["translations"]) is True
 
-    # French translation have its own title
-    assert created["translations"]["fr"].title == "Fromage"
-    # Deutsch translation inherit from original title
-    assert created["translations"]["de"].title == "Cheese"
+    # French translation have its own slug
+    assert created["translations"]["fr"].slug == "fromage"
+    # deutsch translation inherit from original slug
+    assert created["translations"]["de"].slug == "cheese"
 
     # Check original categories
     original_categories = queryset_values(
@@ -207,8 +207,8 @@ def test_multilingual_article(db):
     )
 
     assert original_categories == [
-        {"title": "Ping", "language": "en"},
-        {"title": "Pong", "language": "en"},
+        {"slug": "ping", "language": "en"},
+        {"slug": "pong", "language": "en"},
     ]
 
     # Check french translation categories
@@ -217,86 +217,123 @@ def test_multilingual_article(db):
     )
 
     assert fr_categories == [
-        {"title": "Ping", "language": "en"},
+        {"slug": "ping", "language": "en"},
     ]
 
 
-#def test_category_managers(db):
-    #"""
-    #Article manager should be able to correctly filter on language and
-    #publication.
-    #
-    # TODO
-    #"""
-    #category_baguette = multilingual_category(
-        #title="Baguette",
-        #language="fr",
-        #langs=["en", "de"],
-        #contents={
-            #"en": {
-                #"title": "French stick",
-            #},
-            #"de": {
-                #"title": "Stangenbrot",
-            #},
-        #},
-    #)
-    #category_omelette = multilingual_category(
-        #title="Omelette",
-        #langs=["fr", "de"],
-    #)
-    #category_foobar = multilingual_category(
-        #title="Foo bar",
-        #langs=["fr", "de"],
-    #)
+def test_article_managers(db):
+    """
+    Article manager should be able to correctly filter on language and
+    publication.
+    """
+    now = timezone.now()
+    yesterday = now - datetime.timedelta(days=1)
+    tomorrow = now + datetime.timedelta(days=1)
+    # Today 5min sooner to avoid shifting with pytest and factory delays
+    today = now - datetime.timedelta(minutes=5)
 
-    ## Simple category on default language without translations
-    #created_foobar = CategoryFactory(title="Foo bar")
+    # Single language only
+    ArticleFactory(slug="english", language="en", publish_start=today)
+    ArticleFactory(slug="french", language="fr", publish_start=today)
+    ArticleFactory(slug="deutsch", language="de", publish_start=today)
 
-    ## Original category on different language than 'settings.LANGUAGE_CODE' and
-    ## with a translation for 'settings.LANGUAGE_CODE' lang.
-    #created_baguette = multilingual_article(
-        #title="Baguette",
-        #language="fr",
-        #langs=["en"],
-        #contents={
-            #"en": {
-                #"title": "French stick",
-            #}
-        #},
-    #)
+    # English and French
+    art_banana = multilingual_article(
+        slug="banana",
+        langs=["fr"],
+        publish_start=today,
+    )
 
-    ## A category with a french translation inheriting original title
-    #created_omelette = multilingual_article(
-        #title="Omelette",
-        #langs=["fr"],
-    #)
+    # English and Deutsch translation
+    art_burger = multilingual_article(
+        slug="burger",
+        langs=["de"],
+        publish_start=today,
+    )
 
-    ## A category with french translation with its own title and deutsch
-    ## translation inheriting original title
-    #created_cheese = multilingual_article(
-        #title="Cheese",
-        #langs=["fr", "de"],
-        #contents={
-            #"fr": {
-                #"title": "Fromage",
-            #}
-        #},
-    #)
+    # Original Deutsch and French translation
+    art_wurst = multilingual_article(
+        slug="wurst",
+        language="de",
+        langs=["fr"],
+        publish_start=today,
+    )
 
-    #assert queryset_values(Category.objects.get_for_lang()) == [
-        #{"title": "Cheese", "language": "en"},
-        #{"title": "Foo bar", "language": "en"},
-        #{"title": "French stick", "language": "en"},
-        #{"title": "Omelette", "language": "en"}
-    #]
+    # All languages and available for publication
+    art_omelette = multilingual_article(
+        slug="cheese",
+        langs=["fr", "de"],
+        publish_start=today,
+    )
+    art_yesterday = multilingual_article(
+        slug="yesterday",
+        langs=["fr", "de"],
+        publish_start=yesterday,
+    )
+    # All lang and publish ends tomorrow, still available for publication
+    art_today_shortlife = multilingual_article(
+        slug="shortlife-today",
+        langs=["fr", "de"],
+        publish_start=today,
+        publish_end=tomorrow,
+    )
+    # All lang but not available for publication
+    art_tomorrow = multilingual_article(
+        slug="tomorrow",
+        langs=["fr", "de"],
+        publish_start=tomorrow,
+    )
+    art_invalid_yesterday = multilingual_article(
+        slug="invalid-yesterday",
+        langs=["fr", "de"],
+        publish_start=today,
+        publish_end=yesterday,
+    )
 
-    #assert queryset_values(Category.objects.get_for_lang("fr")) == [
-        #{"title": "Baguette", "language": "fr"},
-        #{"title": "Fromage", "language": "fr"},
-        #{"title": "Omelette", "language": "fr"}
-    #]
+    # Check all english articles
+    assert Article.objects.get_for_lang().count() == 8
 
-    #assert queryset_values(Category.objects.get_for_lang("de")) == [
-        #{"title": "Cheese", "language": "de"}
-    #]
+    # Check all french articles
+    assert Article.objects.get_for_lang("fr").count() == 8
+
+    # Check all french articles
+    assert Article.objects.get_for_lang("de").count() == 8
+
+    # Check all published
+    assert Article.objects.get_published().count() == 18
+
+    # Check all unpublished
+    assert Article.objects.get_unpublished().count() == 6
+
+    # Check all english published
+    q_en_published = Article.objects.get_for_lang().get_published()
+    assert queryset_values(q_en_published) == [
+        {"slug": "banana", "language": "en"},
+        {"slug": "burger", "language": "en"},
+        {"slug": "cheese", "language": "en"},
+        {"slug": "english", "language": "en"},
+        {"slug": "shortlife-today", "language": "en"},
+        {"slug": "yesterday", "language": "en"},
+    ]
+
+    # Check all french published
+    q_fr_published = Article.objects.get_for_lang("fr").get_published()
+    assert queryset_values(q_fr_published) == [
+        {"slug": "banana", "language": "fr"},
+        {"slug": "cheese", "language": "fr"},
+        {"slug": "french", "language": "fr"},
+        {"slug": "shortlife-today", "language": "fr"},
+        {"slug": "wurst", "language": "fr"},
+        {"slug": "yesterday", "language": "fr"},
+    ]
+
+    # Check all deutsch published
+    q_de_published = Article.objects.get_for_lang("de").get_published()
+    assert queryset_values(q_de_published) == [
+        {"slug": "burger", "language": "de"},
+        {"slug": "cheese", "language": "de"},
+        {"slug": "deutsch", "language": "de"},
+        {"slug": "shortlife-today", "language": "de"},
+        {"slug": "wurst", "language": "de"},
+        {"slug": "yesterday", "language": "de"},
+    ]
