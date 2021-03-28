@@ -58,14 +58,14 @@ def multilingual_category(**kwargs):
     original = CategoryFactory(**kwargs)
     kwargs["original"] = original
 
-    for l in langs:
+    for lang in langs:
         context = kwargs.copy()
-        context["language"] = l
+        context["language"] = lang
 
-        if l in contents:
-            context.update(contents[l])
+        if lang in contents:
+            context.update(contents[lang])
 
-        translations[l] = CategoryFactory(
+        translations[lang] = CategoryFactory(
             **context
         )
 

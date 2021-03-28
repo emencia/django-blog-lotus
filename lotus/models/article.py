@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils import timezone
 
-from ..choices import STATUS_DRAFT, STATUS_PUBLISHED, STATUS_CHOICES
+from ..choices import STATUS_DRAFT, STATUS_CHOICES
 from ..managers import ArticleManager
 
 from .translated import Translated

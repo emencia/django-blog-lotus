@@ -118,14 +118,14 @@ def multilingual_article(**kwargs):
 
     # Create translations adopting original kwargs or possible language
     # specific kwargs if any
-    for l in langs:
+    for lang in langs:
         context = kwargs.copy()
-        context["language"] = l
+        context["language"] = lang
 
-        if l in contents:
-            context.update(contents[l])
+        if lang in contents:
+            context.update(contents[lang])
 
-        translations[l] = ArticleFactory(
+        translations[lang] = ArticleFactory(
             **context
         )
 

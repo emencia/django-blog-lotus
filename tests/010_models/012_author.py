@@ -4,7 +4,6 @@ import pytest
 
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from django.urls import reverse
 
 from lotus.factories import ArticleFactory, AuthorFactory
 from lotus.models import Author
@@ -23,13 +22,8 @@ def test_author_basic(settings, db):
     author.full_clean()
     author.save()
 
-    #url = reverse("lotus:author-detail", args=[
-        #str(author.id)
-    #])
-
     assert 1 == Author.objects.filter(username="foobar").count()
     assert "foobar" == author.username
-    #assert url == author.get_absolute_url()
 
 
 def test_author_required_fields(db):
@@ -62,7 +56,6 @@ def test_author_manager(db):
     articles for an Author object.
     """
     now = timezone.now()
-    yesterday = now - datetime.timedelta(days=1)
     tomorrow = now + datetime.timedelta(days=1)
     # Today 5min sooner to avoid shifting with pytest and factory delays
     today = now - datetime.timedelta(minutes=5)

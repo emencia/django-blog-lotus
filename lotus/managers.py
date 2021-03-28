@@ -123,11 +123,3 @@ class AuthorManager(models.Manager):
         Return authors which have unpublished articles.
         """
         return self.get_queryset().get_unpublished(target_date, prefix="articles__")
-
-    #def get_for_lang(self, language=None):
-        #"""
-        #Return authors which have articles in required language.
-
-        #TODO
-        #"""
-        #return self.get_queryset().get_for_lang(language)

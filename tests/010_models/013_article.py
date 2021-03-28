@@ -9,8 +9,7 @@ from django.urls import reverse
 import pytest
 
 from lotus.factories import (
-    ArticleFactory, CategoryFactory,
-    multilingual_article, multilingual_category,
+    ArticleFactory, CategoryFactory, multilingual_article,
 )
 from lotus.models import Article
 
@@ -89,7 +88,7 @@ def test_article_constraints(db):
         slug="bar",
         publish_start=now,
     )
-    pong = ArticleFactory(
+    ArticleFactory(
         slug="pong",
         publish_start=now,
     )
@@ -238,21 +237,21 @@ def test_article_managers(db):
     ArticleFactory(slug="deutsch", language="de", publish_start=today)
 
     # English and French
-    art_banana = multilingual_article(
+    multilingual_article(
         slug="banana",
         langs=["fr"],
         publish_start=today,
     )
 
     # English and Deutsch translation
-    art_burger = multilingual_article(
+    multilingual_article(
         slug="burger",
         langs=["de"],
         publish_start=today,
     )
 
     # Original Deutsch and French translation
-    art_wurst = multilingual_article(
+    multilingual_article(
         slug="wurst",
         language="de",
         langs=["fr"],
@@ -260,30 +259,30 @@ def test_article_managers(db):
     )
 
     # All languages and available for publication
-    art_omelette = multilingual_article(
+    multilingual_article(
         slug="cheese",
         langs=["fr", "de"],
         publish_start=today,
     )
-    art_yesterday = multilingual_article(
+    multilingual_article(
         slug="yesterday",
         langs=["fr", "de"],
         publish_start=yesterday,
     )
     # All lang and publish ends tomorrow, still available for publication
-    art_today_shortlife = multilingual_article(
+    multilingual_article(
         slug="shortlife-today",
         langs=["fr", "de"],
         publish_start=today,
         publish_end=tomorrow,
     )
     # All lang but not available for publication
-    art_tomorrow = multilingual_article(
+    multilingual_article(
         slug="tomorrow",
         langs=["fr", "de"],
         publish_start=tomorrow,
     )
-    art_invalid_yesterday = multilingual_article(
+    multilingual_article(
         slug="invalid-yesterday",
         langs=["fr", "de"],
         publish_start=today,

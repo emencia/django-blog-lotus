@@ -10,4 +10,3 @@ STATUS_CHOICES = (
     (STATUS_DRAFT, _('draft')),
     (STATUS_PUBLISHED, _('available'))
 )
-

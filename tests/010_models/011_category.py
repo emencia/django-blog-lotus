@@ -63,7 +63,7 @@ def test_category_constraints(db):
     bar = CategoryFactory(
         slug="bar",
     )
-    pong = CategoryFactory(
+    CategoryFactory(
         slug="pong",
     )
 

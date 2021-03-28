@@ -7,7 +7,6 @@ Author
 from django.apps import apps
 from django.conf import settings
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..managers import AuthorManager
