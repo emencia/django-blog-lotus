@@ -100,12 +100,22 @@ class Article(Translated):
 
     categories = models.ManyToManyField(
         "lotus.Category",
-        verbose_name="catégories",
+        verbose_name=_("categories"),
         related_name="articles",
         blank=True,
     )
     """
     Related Categories.
+    """
+
+    authors = models.ManyToManyField(
+        'lotus.Author',
+        verbose_name=_('authors'),
+        related_name='articles',
+        blank=True,
+    )
+    """
+    Related Authors.
     """
 
     objects = ArticleManager()
@@ -114,28 +124,17 @@ class Article(Translated):
         ordering = ["title"]
         verbose_name = _("Article")
         verbose_name_plural = _("Articles")
-        """
-        TODO:
-            * publish_slug integrity not tested mixed with other constraints
-            * update test to ensure constraints are correct
-            * report changes on category
-
-        publish_start  + slug  +  language
-                                  language  +  original
-        """
         constraints = [
+            # Enforce unique couple date + slug + lang
+            # NOTE: Not sure it's enough, since we plan to have urls without lang
+            # when disabled multilang and so there could be same slug+date
+            # resolving which lead to a multiple objects error for detail.
             models.UniqueConstraint(
                 fields=[
                     "publish_start", "slug", "language"
                 ],
                 name="lotus_unique_art_pub_slug_lang"
             ),
-            #models.UniqueConstraint(
-                #fields=[
-                    #"slug", "language"
-                #],
-                #name="lotus_unique_art_slug_lang"
-            #),
             # Enforce no multiple translations for the same language
             models.UniqueConstraint(
                 fields=[

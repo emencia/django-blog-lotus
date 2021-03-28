@@ -10,20 +10,50 @@ class BasePublishedQuerySet(models.QuerySet):
     """
     Base queryset for publication methods.
     """
-    def get_published(self, target_date=None):
+    def get_published(self, target_date=None, prefix=None):
+        """
+        Return a queryset with published entries selected.
+
+        Keyword Arguments:
+            target_date (datetime.datetime): Datetime timezone aware for
+                publication target, default to the current datetime.
+            prefix (string): Prefix to append on each lookup expression on
+                publication dates fields (start/end). Commonly used to filter
+                from a relation like ``author__``. Default is empty.
+
+        Returns:
+            queryset: Queryset to filter published entries.
+        """
+        prefix = prefix or ""
         target_date = target_date or timezone.now()
 
         return self.filter(
-            models.Q(publish_start__lte=target_date),
-            models.Q(publish_end__gt=target_date) | models.Q(publish_end=None),
+            models.Q(**{prefix + "publish_start__lte": target_date}),
+            models.Q(**{prefix + "publish_end__gt": target_date}) |
+            models.Q(**{prefix + "publish_end": None}),
         )
 
-    def get_unpublished(self, target_date=None):
+    def get_unpublished(self, target_date=None, prefix=None):
+        """
+        Return a queryset with unpublished entries selected.
+
+        Keyword Arguments:
+            target_date (datetime.datetime): Datetime timezone aware for
+                publication target, default to the current datetime.
+            prefix (string): Prefix to append on each lookup expression on
+                publication dates fields (start/end). Commonly used to filter
+                from a relation. Default is empty.
+
+        Returns:
+            queryset: Queryset to filter published entries.
+        """
+        prefix = prefix or ""
         target_date = target_date or timezone.now()
 
         return self.exclude(
-            models.Q(publish_start__lte=target_date),
-            models.Q(publish_end__gt=target_date) | models.Q(publish_end=None),
+            models.Q(**{prefix + "publish_start__lte": target_date}),
+            models.Q(**{prefix + "publish_end__gt": target_date}) |
+            models.Q(**{prefix + "publish_end": None}),
         )
 
 
@@ -70,3 +100,34 @@ class ArticleManager(models.Manager):
 
     def get_for_lang(self, language=None):
         return self.get_queryset().get_for_lang(language)
+
+
+class AuthorManager(models.Manager):
+    """
+    Author objects manager.
+    """
+    def get_queryset(self):
+        return ArticleQuerySet(self.model, using=self._db)
+
+    def get_published(self, target_date=None):
+        """
+        Return authors which have published articles.
+        """
+        return self.get_queryset().get_published(
+            target_date,
+            prefix="articles__"
+        ).distinct()
+
+    def get_unpublished(self, target_date=None):
+        """
+        Return authors which have unpublished articles.
+        """
+        return self.get_queryset().get_unpublished(target_date, prefix="articles__")
+
+    #def get_for_lang(self, language=None):
+        #"""
+        #Return authors which have articles in required language.
+
+        #TODO
+        #"""
+        #return self.get_queryset().get_for_lang(language)

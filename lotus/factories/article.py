@@ -4,6 +4,7 @@ from django.utils import timezone
 
 import factory
 
+from .author import AuthorFactory
 from .category import CategoryFactory
 from ..models import Article
 from ..choices import STATUS_DRAFT
@@ -59,6 +60,32 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         # Add categories
         for category in categories:
             self.categories.add(category)
+
+    @factory.post_generation
+    # pylint: disable=unused-argument
+    def fill_authors(self, create, extracted, **kwargs):
+        """
+        Add authors.
+
+        Arguments:
+            create (bool): True for create strategy, False for build strategy.
+            extracted (object): If empty, will create a new random author object.
+                Else, expect a list of Author objects to add.
+        """
+        # Do nothing for build strategy
+        if not create:
+            return
+
+        # Take given author objects
+        if extracted:
+            authors = extracted
+        # Create a new random author
+        else:
+            authors = [AuthorFactory()]
+
+        # Add authors
+        for author in authors:
+            self.authors.add(author)
 
 
 def multilingual_article(**kwargs):

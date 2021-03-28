@@ -11,7 +11,7 @@ from lotus.models import Category
 from tests.utils import queryset_values
 
 
-def test_basic(settings, db):
+def test_category_basic(settings, db):
     """
     Basic model validation with required fields should not fail.
     """
@@ -31,7 +31,7 @@ def test_basic(settings, db):
     assert url == category.get_absolute_url()
 
 
-def test_required_fields(db):
+def test_category_required_fields(db):
     """
     Basic model validation with missing required fields should fail.
     """
@@ -47,7 +47,7 @@ def test_required_fields(db):
     }
 
 
-def test_creation(db):
+def test_category_creation(db):
     """
     Factory should correctly create a new object without any errors.
     """

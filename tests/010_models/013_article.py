@@ -17,7 +17,7 @@ from lotus.models import Article
 from tests.utils import queryset_values
 
 
-def test_basic(db):
+def test_article_basic(db):
     """
     Basic model saving with required fields should not fail
     """
@@ -37,7 +37,7 @@ def test_basic(db):
     assert url == article.get_absolute_url()
 
 
-def test_required_fields(db):
+def test_article_required_fields(db):
     """
     Basic model validation with missing required files should fail
     """
@@ -53,7 +53,7 @@ def test_required_fields(db):
     }
 
 
-def test_creation(db):
+def test_article_creation(db):
     """
     Factory should correctly create a new object without any errors
     """
