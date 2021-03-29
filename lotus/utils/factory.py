@@ -1,4 +1,9 @@
-# -*- coding: utf-8 -*-
+"""
+=================
+Factory utilities
+=================
+
+"""
 import random
 
 import faker

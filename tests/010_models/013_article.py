@@ -1,4 +1,7 @@
+import os
 import datetime
+
+import pytest
 
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
@@ -6,14 +9,12 @@ from django.db import transaction
 from django.utils import timezone
 from django.urls import reverse
 
-import pytest
-
 from lotus.factories import (
     ArticleFactory, CategoryFactory, multilingual_article,
 )
 from lotus.models import Article
-
-from tests.utils import queryset_values
+from lotus.utils.imaging import create_image_file
+from lotus.utils.tests import queryset_values
 
 
 def test_article_basic(db):
@@ -54,7 +55,7 @@ def test_article_required_fields(db):
 
 def test_article_creation(db):
     """
-    Factory should correctly create a new object without any errors
+    Factory should correctly create a new object without any errors.
     """
     ping = CategoryFactory(slug="ping")
     pong = CategoryFactory(slug="pong")
@@ -75,6 +76,30 @@ def test_article_creation(db):
         {"slug": "pong", "language": "en"},
     ]
 
+    # Ensure no random categories are created when specifically required
+    article = ArticleFactory(slug="bar", fill_categories=False)
+    assert article.categories.count() == 0
+
+
+def test_article_last_update(db):
+    """
+    TODO: Model should auto update "last_update" value on each save.
+    """
+    article = ArticleFactory(
+        slug="foo",
+        fill_authors=False,
+        fill_categories=False,
+    )
+    assert article.last_update is not None
+
+    # Save date for usage after change
+    last_update = article.last_update
+
+    # Trigger save for auto update
+    article.save()
+
+    assert article.last_update > last_update
+
 
 def test_article_constraints(db):
     """
@@ -87,10 +112,14 @@ def test_article_constraints(db):
     bar = ArticleFactory(
         slug="bar",
         publish_start=now,
+        fill_authors=False,
+        fill_categories=False,
     )
     ArticleFactory(
         slug="pong",
         publish_start=now,
+        fill_authors=False,
+        fill_categories=False,
     )
 
     # We can have an identical slug on the same date for a different
@@ -102,6 +131,8 @@ def test_article_constraints(db):
         language="fr",
         original=bar,
         publish_start=now,
+        fill_authors=False,
+        fill_categories=False,
     )
 
     # But only an unique language for the same original object is allowed since
@@ -113,6 +144,8 @@ def test_article_constraints(db):
                 language="fr",
                 original=bar,
                 publish_start=now,
+                fill_authors=False,
+                fill_categories=False,
             )
         assert str(excinfo.value) == (
             "UNIQUE constraint failed: "
@@ -125,6 +158,8 @@ def test_article_constraints(db):
             ArticleFactory(
                 slug="bar",
                 publish_start=now,
+                fill_authors=False,
+                fill_categories=False,
             )
         assert str(excinfo.value) == (
             "UNIQUE constraint failed: "
@@ -136,6 +171,8 @@ def test_article_constraints(db):
     ArticleFactory(
         slug="bar",
         publish_start=later,
+        fill_authors=False,
+        fill_categories=False,
     )
 
     # Or identical slug+date+original on different language
@@ -144,6 +181,8 @@ def test_article_constraints(db):
         language="de",
         original=bar,
         publish_start=now,
+        fill_authors=False,
+        fill_categories=False,
     )
 
     # Combination of constraints (date+slug+lang & original+lang)
@@ -154,6 +193,8 @@ def test_article_constraints(db):
                 language="fr",
                 original=bar,
                 publish_start=now,
+                fill_authors=False,
+                fill_categories=False,
             )
         # This is the original+language constraint which raise first
         assert str(excinfo.value) == (
@@ -232,15 +273,22 @@ def test_article_managers(db):
     today = now - datetime.timedelta(minutes=5)
 
     # Single language only
-    ArticleFactory(slug="english", language="en", publish_start=today)
-    ArticleFactory(slug="french", language="fr", publish_start=today)
-    ArticleFactory(slug="deutsch", language="de", publish_start=today)
+    common_kwargs = {
+        "publish_start": today,
+        "fill_authors": False,
+        "fill_categories": False,
+    }
+    ArticleFactory(slug="english", language="en", **common_kwargs)
+    ArticleFactory(slug="french", language="fr", **common_kwargs)
+    ArticleFactory(slug="deutsch", language="de", **common_kwargs)
 
     # English and French
     multilingual_article(
         slug="banana",
         langs=["fr"],
         publish_start=today,
+        fill_authors=False,
+        fill_categories=False,
     )
 
     # English and Deutsch translation
@@ -248,6 +296,8 @@ def test_article_managers(db):
         slug="burger",
         langs=["de"],
         publish_start=today,
+        fill_authors=False,
+        fill_categories=False,
     )
 
     # Original Deutsch and French translation
@@ -256,6 +306,8 @@ def test_article_managers(db):
         language="de",
         langs=["fr"],
         publish_start=today,
+        fill_authors=False,
+        fill_categories=False,
     )
 
     # All languages and available for publication
@@ -263,11 +315,15 @@ def test_article_managers(db):
         slug="cheese",
         langs=["fr", "de"],
         publish_start=today,
+        fill_authors=False,
+        fill_categories=False,
     )
     multilingual_article(
         slug="yesterday",
         langs=["fr", "de"],
         publish_start=yesterday,
+        fill_authors=False,
+        fill_categories=False,
     )
     # All lang and publish ends tomorrow, still available for publication
     multilingual_article(
@@ -275,18 +331,24 @@ def test_article_managers(db):
         langs=["fr", "de"],
         publish_start=today,
         publish_end=tomorrow,
+        fill_authors=False,
+        fill_categories=False,
     )
     # All lang but not available for publication
     multilingual_article(
         slug="tomorrow",
         langs=["fr", "de"],
         publish_start=tomorrow,
+        fill_authors=False,
+        fill_categories=False,
     )
     multilingual_article(
         slug="invalid-yesterday",
         langs=["fr", "de"],
         publish_start=today,
         publish_end=yesterday,
+        fill_authors=False,
+        fill_categories=False,
     )
 
     # Check all english articles
@@ -336,3 +398,52 @@ def test_article_managers(db):
         {"slug": "wurst", "language": "de"},
         {"slug": "yesterday", "language": "de"},
     ]
+
+
+def test_article_model_file_management(db):
+    """
+    Article 'cover' and 'image' field file management should follow correct
+    behaviors:
+
+    * When object is deleted, its files should be delete from filesystem too;
+    * When changing file from an object, its previous files (if any) should be
+      deleted;
+    """
+    ping = ArticleFactory(
+        cover=create_image_file(filename="machin.png"),
+        image=create_image_file(filename="ping_image.png"),
+        fill_categories=False,
+    )
+    pong = ArticleFactory(
+        cover=create_image_file(filename="machin.png"),
+        image=create_image_file(filename="pong_image.png"),
+        fill_categories=False,
+    )
+
+    # Memorize some data to use after deletion
+    ping_cover_path = ping.cover.path
+    ping_image_path = ping.image.path
+    pong_cover_path = pong.cover.path
+    pong_image_path = pong.image.path
+
+    # Delete object
+    ping.delete()
+
+    # Files are deleted along their object
+    assert os.path.exists(ping_cover_path) is False
+    assert os.path.exists(ping_image_path) is False
+    # Paranoiac mode: other existing similar filename (as uploaded) is conserved
+    # (since Django rename file with a unique hash if filename alread exist)
+    assert os.path.exists(pong_cover_path) is True
+
+    # Change object file to a new one
+    pong.cover = create_image_file(filename="new_cover.png")
+    pong.image = create_image_file(filename="new_image.png")
+    pong.save()
+
+    # During pre save signal, old file is removed from FS and new one is left
+    # untouched
+    assert os.path.exists(pong_cover_path) is False
+    assert os.path.exists(pong_image_path) is False
+    assert os.path.exists(pong.cover.path) is True
+    assert os.path.exists(pong.image.path) is True

@@ -1,4 +1,9 @@
-# -*- coding: utf-8 -*-
+"""
+==================
+Category factories
+==================
+
+"""
 from django.conf import settings
 
 import factory

@@ -1,8 +1,7 @@
 import pytest
 
-from tests.utils import html_pyquery
-
 from lotus.factories import ArticleFactory
+from lotus.utils.tests import html_pyquery
 
 
 @pytest.mark.skip(reason="on hold until models are finished")

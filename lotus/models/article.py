@@ -1,16 +1,20 @@
 """
-=======
-Article
-=======
+==============
+Article models
+==============
 
 """
 from django.db import models
+from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils import timezone
 
 from ..choices import STATUS_DRAFT, STATUS_CHOICES
 from ..managers import ArticleManager
+from ..signals import (
+    auto_purge_media_files_on_delete, auto_purge_media_files_on_change,
+)
 
 from .translated import Translated
 
@@ -18,9 +22,6 @@ from .translated import Translated
 class Article(Translated):
     """
     Article model.
-
-    TODO:
-        A lot of needed/useful content fields are missing.
     """
     original = models.ForeignKey(
         "self",
@@ -68,7 +69,7 @@ class Article(Translated):
         default=timezone.now,
     )
     """
-    Last edition date
+    Last edition date.
     """
 
     title = models.CharField(
@@ -89,6 +90,22 @@ class Article(Translated):
     Required unique slug string.
     """
 
+    lead = models.TextField(
+        _("lead"),
+        blank=True,
+    )
+    """
+    Optionnal text lead.
+    """
+
+    introduction = models.TextField(
+        _('introduction'),
+        blank=True,
+    )
+    """
+    Optionnal text introduction.
+    """
+
     content = models.TextField(
         _("content"),
         blank=True,
@@ -96,6 +113,28 @@ class Article(Translated):
     )
     """
     Optionnal text content.
+    """
+
+    cover = models.ImageField(
+        verbose_name=_("cover image"),
+        upload_to="lotus/article/cover/%y/%m",
+        max_length=255,
+        blank=True,
+        default="",
+    )
+    """
+    Optionnal cover image.
+    """
+
+    image = models.ImageField(
+        verbose_name=_("main image"),
+        upload_to="lotus/article/image/%y/%m",
+        max_length=255,
+        blank=True,
+        default="",
+    )
+    """
+    Optionnal cover image.
     """
 
     categories = models.ManyToManyField(
@@ -126,9 +165,6 @@ class Article(Translated):
         verbose_name_plural = _("Articles")
         constraints = [
             # Enforce unique couple date + slug + lang
-            # NOTE: Not sure it's enough, since we plan to have urls without lang
-            # when disabled multilang and so there could be same slug+date
-            # resolving which lead to a multiple objects error for detail.
             models.UniqueConstraint(
                 fields=[
                     "publish_start", "slug", "language"
@@ -163,3 +199,16 @@ class Article(Translated):
         self.last_update = timezone.now()
 
         super().save(*args, **kwargs)
+
+
+# Connect some signals
+post_delete.connect(
+    auto_purge_media_files_on_delete,
+    dispatch_uid="article_medias_on_delete",
+    sender=Article,
+)
+pre_save.connect(
+    auto_purge_media_files_on_change,
+    dispatch_uid="article_medias_on_change",
+    sender=Article,
+)

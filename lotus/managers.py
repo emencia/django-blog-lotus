@@ -1,5 +1,8 @@
 """
-Model querysets and managers.
+============================
+Model querysets and managers
+============================
+
 """
 from django.conf import settings
 from django.db import models

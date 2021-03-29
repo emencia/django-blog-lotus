@@ -1,4 +1,9 @@
-# -*- coding: utf-8 -*-
+"""
+=================
+Imaging utilities
+=================
+
+"""
 import io
 
 from PIL import Image as PILimage

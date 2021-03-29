@@ -1,14 +1,18 @@
 """
-========
-Category
-========
+===============
+Category models
+===============
 
 """
 from django.db import models
+from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..managers import CategoryManager
+from ..signals import (
+    auto_purge_cover_file_on_delete, auto_purge_cover_file_on_change,
+)
 
 from .translated import Translated
 
@@ -55,8 +59,8 @@ class Category(Translated):
     """
 
     cover = models.ImageField(
-        verbose_name="image de couverture",
-        upload_to="lotus/cover/%y/%m",
+        verbose_name=_("cover image"),
+        upload_to="lotus/category/cover/%y/%m",
         max_length=255,
         blank=True,
         default="",
@@ -99,3 +103,16 @@ class Category(Translated):
         return reverse("lotus:category-detail", args=[
             str(self.id),
         ])
+
+
+# Connect some signals
+post_delete.connect(
+    auto_purge_cover_file_on_delete,
+    dispatch_uid="category_cover_on_delete",
+    sender=Category,
+)
+pre_save.connect(
+    auto_purge_cover_file_on_change,
+    dispatch_uid="category_cover_on_change",
+    sender=Category,
+)

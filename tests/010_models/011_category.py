@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from django.core.exceptions import ValidationError
@@ -7,8 +9,8 @@ from django.urls import reverse
 
 from lotus.factories import CategoryFactory, multilingual_category
 from lotus.models import Category
-
-from tests.utils import queryset_values
+from lotus.utils.imaging import create_image_file
+from lotus.utils.tests import queryset_values
 
 
 def test_category_basic(settings, db):
@@ -267,3 +269,41 @@ def test_category_managers(db):
     assert queryset_values(Category.objects.get_for_lang("de")) == [
         {"slug": "recipe", "language": "de"},
     ]
+
+
+def test_category_model_file_management(db):
+    """
+    Category 'cover' field file management should follow correct behaviors:
+
+    * When object is deleted, its files should be delete from filesystem too;
+    * When changing file from an object, its previous files (if any) should be
+      deleted;
+    """
+    ping = CategoryFactory(
+        cover=create_image_file(filename="machin.png")
+    )
+    pong = CategoryFactory(
+        cover=create_image_file(filename="machin.png")
+    )
+
+    # Memorize some data to use after deletion
+    ping_path = ping.cover.path
+    pong_path = pong.cover.path
+
+    # Delete object
+    ping.delete()
+
+    # File is deleted along its object
+    assert os.path.exists(ping_path) is False
+    # Paranoiac mode: other existing similar filename (as uploaded) is conserved
+    # (since Django rename file with a unique hash if filename alread exist)
+    assert os.path.exists(pong_path) is True
+
+    # Change object file to a new one
+    pong.cover = create_image_file(filename="new.png")
+    pong.save()
+
+    # During pre save signal, old file is removed from FS and new one is left
+    # untouched
+    assert os.path.exists(pong_path) is False
+    assert os.path.exists(pong.cover.path) is True

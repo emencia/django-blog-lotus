@@ -1,7 +1,7 @@
 """
-==========
-Translated
-==========
+=================
+Translated models
+=================
 
 """
 from django.conf import settings
@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 class Translated(models.Model):
     """
-    Abstract model for common content translation fields
+    Abstract model for common content translation fields.
     """
     language = models.CharField(
         _("language"),

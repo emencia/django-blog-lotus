@@ -1,7 +1,7 @@
 """
-======
-Author
-======
+=============
+Author models
+=============
 
 """
 from django.apps import apps

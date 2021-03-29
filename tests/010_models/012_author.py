@@ -7,8 +7,7 @@ from django.utils import timezone
 
 from lotus.factories import ArticleFactory, AuthorFactory
 from lotus.models import Author
-
-from tests.utils import queryset_values
+from lotus.utils.tests import queryset_values
 
 
 def test_author_basic(settings, db):

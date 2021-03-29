@@ -1,13 +1,21 @@
-# -*- coding: utf-8 -*-
+"""
+=================
+Article factories
+=================
+
+"""
 from django.conf import settings
 from django.utils import timezone
 
 import factory
 
-from .author import AuthorFactory
-from .category import CategoryFactory
 from ..models import Article
 from ..choices import STATUS_DRAFT
+from ..utils.factory import fake_html_paragraphs
+from ..utils.imaging import create_image_file
+
+from .author import AuthorFactory
+from .category import CategoryFactory
 
 
 class ArticleFactory(factory.django.DjangoModelFactory):
@@ -35,6 +43,53 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         """
         return self.publish_start
 
+    @factory.lazy_attribute
+    def cover(self):
+        """
+        Fill file field with generated image.
+
+        Returns:
+            django.core.files.File: File object.
+        """
+        return create_image_file()
+
+    @factory.lazy_attribute
+    def lead(self):
+        """
+        Fill lead field with short plain text.
+
+        Returns:
+            string: Plain text.
+        """
+        return fake_html_paragraphs(
+            is_html=False,
+            max_nb_chars=55,
+            nb_paragraphs=1,
+        )
+
+    @factory.lazy_attribute
+    def introduction(self):
+        """
+        Fill introduction field with HTML.
+
+        Returns:
+            string: HTML content.
+        """
+        return fake_html_paragraphs(
+            max_nb_chars=100,
+            nb_paragraphs=2,
+        )
+
+    @factory.lazy_attribute
+    def content(self):
+        """
+        Fill content field with HTML.
+
+        Returns:
+            string: HTML content.
+        """
+        return fake_html_paragraphs()
+
     @factory.post_generation
     # pylint: disable=unused-argument
     def fill_categories(self, create, extracted, **kwargs):
@@ -44,10 +99,11 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         Arguments:
             create (bool): True for create strategy, False for build strategy.
             extracted (object): If empty, will create a new random category object.
-                Else, expect a list of Category objects to add.
+                Else, expect a list of Category objects to add. Give a ``False``
+                value to avoid creating random categories.
         """
         # Do nothing for build strategy
-        if not create:
+        if not create or extracted is False:
             return
 
         # Take given category objects
@@ -70,10 +126,11 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         Arguments:
             create (bool): True for create strategy, False for build strategy.
             extracted (object): If empty, will create a new random author object.
-                Else, expect a list of Author objects to add.
+                Else, expect a list of Author objects to add. Give a ``False``
+                value to avoid creating random categories.
         """
         # Do nothing for build strategy
-        if not create:
+        if not create or extracted is False:
             return
 
         # Take given author objects
