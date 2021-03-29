@@ -8,6 +8,8 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from .choices import STATUS_PUBLISHED
+
 
 class BasePublishedQuerySet(models.QuerySet):
     """
@@ -16,6 +18,8 @@ class BasePublishedQuerySet(models.QuerySet):
     def get_published(self, target_date=None, prefix=None):
         """
         Return a queryset with published entries selected.
+
+        TODO: It needs to include checking also about "status" value.
 
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
@@ -31,6 +35,7 @@ class BasePublishedQuerySet(models.QuerySet):
         target_date = target_date or timezone.now()
 
         return self.filter(
+            models.Q(**{prefix + "status": STATUS_PUBLISHED}),
             models.Q(**{prefix + "publish_start__lte": target_date}),
             models.Q(**{prefix + "publish_end__gt": target_date}) |
             models.Q(**{prefix + "publish_end": None}),
@@ -54,6 +59,7 @@ class BasePublishedQuerySet(models.QuerySet):
         target_date = target_date or timezone.now()
 
         return self.exclude(
+            models.Q(**{prefix + "status": STATUS_PUBLISHED}),
             models.Q(**{prefix + "publish_start__lte": target_date}),
             models.Q(**{prefix + "publish_end__gt": target_date}) |
             models.Q(**{prefix + "publish_end": None}),

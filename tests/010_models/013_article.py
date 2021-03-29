@@ -15,6 +15,7 @@ from lotus.factories import (
 from lotus.models import Article
 from lotus.utils.imaging import create_image_file
 from lotus.utils.tests import queryset_values
+from lotus.choices import STATUS_DRAFT
 
 
 def test_article_basic(db):
@@ -83,7 +84,7 @@ def test_article_creation(db):
 
 def test_article_last_update(db):
     """
-    TODO: Model should auto update "last_update" value on each save.
+    Model should auto update "last_update" value on each save.
     """
     article = ArticleFactory(
         slug="foo",
@@ -107,6 +108,8 @@ def test_article_constraints(db):
     """
     now = timezone.now()
     later = now + datetime.timedelta(hours=1)
+    # print("now:", now)
+    # print("later:", later)
 
     # Base original objects
     bar = ArticleFactory(
@@ -121,6 +124,23 @@ def test_article_constraints(db):
         fill_authors=False,
         fill_categories=False,
     )
+
+    # Use build strategy to avoid automatic creation so we can test full_clean
+    direct = ArticleFactory.build(
+        slug="bar",
+        publish_start=now,
+        fill_authors=False,
+        fill_categories=False,
+    )
+    with pytest.raises(ValidationError) as excinfo:
+        direct.full_clean()
+
+    assert excinfo.value.message_dict == {
+        "__all__": [
+            "Article with this Publication start, Slug and Language already "
+            "exists."
+        ],
+    }
 
     # We can have an identical slug on the same date for a different
     # language.
@@ -282,6 +302,9 @@ def test_article_managers(db):
     ArticleFactory(slug="french", language="fr", **common_kwargs)
     ArticleFactory(slug="deutsch", language="de", **common_kwargs)
 
+    # Explicitely non published
+    ArticleFactory(slug="niet", status=STATUS_DRAFT, **common_kwargs)
+
     # English and French
     multilingual_article(
         slug="banana",
@@ -352,7 +375,7 @@ def test_article_managers(db):
     )
 
     # Check all english articles
-    assert Article.objects.get_for_lang().count() == 8
+    assert Article.objects.get_for_lang().count() == 9
 
     # Check all french articles
     assert Article.objects.get_for_lang("fr").count() == 8
@@ -364,7 +387,7 @@ def test_article_managers(db):
     assert Article.objects.get_published().count() == 18
 
     # Check all unpublished
-    assert Article.objects.get_unpublished().count() == 6
+    assert Article.objects.get_unpublished().count() == 7
 
     # Check all english published
     q_en_published = Article.objects.get_for_lang().get_published()

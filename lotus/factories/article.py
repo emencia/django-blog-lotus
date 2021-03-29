@@ -10,7 +10,7 @@ from django.utils import timezone
 import factory
 
 from ..models import Article
-from ..choices import STATUS_DRAFT
+from ..choices import STATUS_PUBLISHED
 from ..utils.factory import fake_html_paragraphs
 from ..utils.imaging import create_image_file
 
@@ -24,7 +24,7 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     """
     language = settings.LANGUAGE_CODE
     original = None
-    status = STATUS_DRAFT
+    status = STATUS_PUBLISHED
     title = factory.Sequence(lambda n: "Article {0}".format(n))
     slug = factory.Sequence(lambda n: "article-{0}".format(n))
     publish_start = factory.LazyFunction(timezone.now)
