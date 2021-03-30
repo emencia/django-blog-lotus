@@ -102,45 +102,35 @@ def test_article_last_update(db):
     assert article.last_update > last_update
 
 
-def test_article_constraints(db):
+def test_article_constraints_db(db):
     """
-    Article contraints should be respected.
+    Article contraints should be respected at database level.
     """
     now = timezone.now()
-    later = now + datetime.timedelta(hours=1)
-    # print("now:", now)
-    # print("later:", later)
+    tomorrow = now + datetime.timedelta(days=1)
+
+    # Get a same date from "now" but shifted from an hour,
+    # default to +1 hour but if it leads to a different date (like when
+    # executing tests at 23:00, date will be the next day), shift to -1 hour
+    shifted_time = now + datetime.timedelta(hours=1)
+    if shifted_time.date() > now.date():
+        shifted_time = now - datetime.timedelta(hours=1)
 
     # Base original objects
     bar = ArticleFactory(
         slug="bar",
-        publish_start=now,
+        publish_date=now.date(),
+        publish_time=now.time(),
         fill_authors=False,
         fill_categories=False,
     )
     ArticleFactory(
         slug="pong",
-        publish_start=now,
+        publish_date=now.date(),
+        publish_time=now.time(),
         fill_authors=False,
         fill_categories=False,
     )
-
-    # Use build strategy to avoid automatic creation so we can test full_clean
-    direct = ArticleFactory.build(
-        slug="bar",
-        publish_start=now,
-        fill_authors=False,
-        fill_categories=False,
-    )
-    with pytest.raises(ValidationError) as excinfo:
-        direct.full_clean()
-
-    assert excinfo.value.message_dict == {
-        "__all__": [
-            "Article with this Publication start, Slug and Language already "
-            "exists."
-        ],
-    }
 
     # We can have an identical slug on the same date for a different
     # language.
@@ -150,7 +140,8 @@ def test_article_constraints(db):
         slug="bar",
         language="fr",
         original=bar,
-        publish_start=now,
+        publish_date=now.date(),
+        publish_time=now.time(),
         fill_authors=False,
         fill_categories=False,
     )
@@ -163,7 +154,8 @@ def test_article_constraints(db):
                 slug="zap",
                 language="fr",
                 original=bar,
-                publish_start=now,
+                publish_date=now.date(),
+                publish_time=now.time(),
                 fill_authors=False,
                 fill_categories=False,
             )
@@ -177,20 +169,22 @@ def test_article_constraints(db):
         with pytest.raises(IntegrityError) as excinfo:
             ArticleFactory(
                 slug="bar",
-                publish_start=now,
+                publish_date=now.date(),
+                publish_time=now.time(),
                 fill_authors=False,
                 fill_categories=False,
             )
         assert str(excinfo.value) == (
             "UNIQUE constraint failed: "
-            "lotus_article.publish_start, lotus_article.slug, "
+            "lotus_article.publish_date, lotus_article.slug, "
             "lotus_article.language"
         )
 
     # But we can have an identical slug and language on different date
     ArticleFactory(
         slug="bar",
-        publish_start=later,
+        publish_date=tomorrow.date(),
+        publish_time=tomorrow.time(),
         fill_authors=False,
         fill_categories=False,
     )
@@ -200,7 +194,8 @@ def test_article_constraints(db):
         slug="bar",
         language="de",
         original=bar,
-        publish_start=now,
+        publish_date=now.date(),
+        publish_time=now.time(),
         fill_authors=False,
         fill_categories=False,
     )
@@ -212,15 +207,110 @@ def test_article_constraints(db):
                 slug="bar",
                 language="fr",
                 original=bar,
-                publish_start=now,
+                publish_date=now.date(),
+                publish_time=now.time(),
                 fill_authors=False,
                 fill_categories=False,
             )
-        # This is the original+language constraint which raise first
+        # Only the original+language constraint is returned since it raises
+        # first and stop other db validation
         assert str(excinfo.value) == (
             "UNIQUE constraint failed: "
             "lotus_article.original_id, lotus_article.language"
         )
+
+
+def test_article_constraints_model(db):
+    """
+    Article contraints should be respected at model validation level.
+
+    We use factory build strategy to avoid automatic creation so we can test
+    "full_clean" raise a validation error (to ensure constraint is not only
+    enforced at DB level)
+    """
+    now = timezone.now()
+
+    # Get a same date from "now" but shifted from an hour,
+    # default to +1 hour but if it leads to a different date (like when
+    # executing tests at 23:00, date will be the next day), shift to -1 hour
+    shifted_time = now + datetime.timedelta(hours=1)
+    if shifted_time.date() > now.date():
+        shifted_time = now - datetime.timedelta(hours=1)
+
+    # Base original objects
+    bar = ArticleFactory(
+        slug="bar",
+        publish_date=now.date(),
+        publish_time=now.time(),
+        fill_authors=False,
+        fill_categories=False,
+    )
+    # A translation
+    ArticleFactory(
+        slug="bar",
+        language="fr",
+        original=bar,
+        fill_authors=False,
+        fill_categories=False,
+    )
+
+    # Constraint unique combo date+slug+lang
+    builded = ArticleFactory.build(
+        slug="bar",
+        publish_date=now.date(),
+        publish_time=now.time(),
+        fill_authors=False,
+        fill_categories=False,
+    )
+    with pytest.raises(ValidationError) as excinfo:
+        builded.full_clean()
+
+    assert excinfo.value.message_dict == {
+        "__all__": [
+            "Article with this Publication date, Slug and Language already "
+            "exists."
+        ],
+    }
+
+    # Constraint unique combo original+lang
+    builded = ArticleFactory.build(
+        slug="zap",
+        language="fr",
+        original=bar,
+        publish_date=now.date(),
+        publish_time=now.time(),
+        fill_authors=False,
+        fill_categories=False,
+    )
+    with pytest.raises(ValidationError) as excinfo:
+        builded.full_clean()
+
+    assert excinfo.value.message_dict == {
+        "__all__": [
+            "Article with this Original and Language already exists."
+        ],
+    }
+
+    # Combination of all constraints
+    builded = ArticleFactory.build(
+        slug="bar",
+        language="fr",
+        original=bar,
+        publish_date=now.date(),
+        publish_time=now.time(),
+        fill_authors=False,
+        fill_categories=False,
+    )
+    with pytest.raises(ValidationError) as excinfo:
+        builded.full_clean()
+
+    assert excinfo.value.message_dict == {
+        "__all__": [
+            "Article with this Publication date, Slug and Language already "
+            "exists.",
+            "Article with this Original and Language already exists.",
+        ],
+    }
 
 
 def test_multilingual_article(db):
@@ -294,7 +384,8 @@ def test_article_managers(db):
 
     # Single language only
     common_kwargs = {
-        "publish_start": today,
+        "publish_date": today.date(),
+        "publish_time": today.time(),
         "fill_authors": False,
         "fill_categories": False,
     }
@@ -309,7 +400,8 @@ def test_article_managers(db):
     multilingual_article(
         slug="banana",
         langs=["fr"],
-        publish_start=today,
+        publish_date=today.date(),
+        publish_time=today.time(),
         fill_authors=False,
         fill_categories=False,
     )
@@ -318,7 +410,8 @@ def test_article_managers(db):
     multilingual_article(
         slug="burger",
         langs=["de"],
-        publish_start=today,
+        publish_date=today.date(),
+        publish_time=today.time(),
         fill_authors=False,
         fill_categories=False,
     )
@@ -328,7 +421,8 @@ def test_article_managers(db):
         slug="wurst",
         language="de",
         langs=["fr"],
-        publish_start=today,
+        publish_date=today.date(),
+        publish_time=today.time(),
         fill_authors=False,
         fill_categories=False,
     )
@@ -337,14 +431,16 @@ def test_article_managers(db):
     multilingual_article(
         slug="cheese",
         langs=["fr", "de"],
-        publish_start=today,
+        publish_date=today.date(),
+        publish_time=today.time(),
         fill_authors=False,
         fill_categories=False,
     )
     multilingual_article(
         slug="yesterday",
         langs=["fr", "de"],
-        publish_start=yesterday,
+        publish_date=yesterday.date(),
+        publish_time=yesterday.time(),
         fill_authors=False,
         fill_categories=False,
     )
@@ -352,7 +448,8 @@ def test_article_managers(db):
     multilingual_article(
         slug="shortlife-today",
         langs=["fr", "de"],
-        publish_start=today,
+        publish_date=today.date(),
+        publish_time=today.time(),
         publish_end=tomorrow,
         fill_authors=False,
         fill_categories=False,
@@ -361,14 +458,16 @@ def test_article_managers(db):
     multilingual_article(
         slug="tomorrow",
         langs=["fr", "de"],
-        publish_start=tomorrow,
+        publish_date=tomorrow.date(),
+        publish_time=tomorrow.time(),
         fill_authors=False,
         fill_categories=False,
     )
     multilingual_article(
         slug="invalid-yesterday",
         langs=["fr", "de"],
-        publish_start=today,
+        publish_date=today.date(),
+        publish_time=today.time(),
         publish_end=yesterday,
         fill_authors=False,
         fill_categories=False,

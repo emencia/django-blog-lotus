@@ -4,6 +4,8 @@ Article factories
 =================
 
 """
+import datetime
+
 from django.conf import settings
 from django.utils import timezone
 
@@ -27,11 +29,31 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     status = STATUS_PUBLISHED
     title = factory.Sequence(lambda n: "Article {0}".format(n))
     slug = factory.Sequence(lambda n: "article-{0}".format(n))
-    publish_start = factory.LazyFunction(timezone.now)
     publish_end = None
 
     class Meta:
         model = Article
+
+    @factory.lazy_attribute
+    def publish_date(self):
+        """
+        Return current date.
+
+        Returns:
+            datetime.date: Current time.
+        """
+        return timezone.now().date()
+
+    @factory.lazy_attribute
+    def publish_time(self):
+        """
+        Return current time without timezone since it's not supported by all DB
+        backends.
+
+        Returns:
+            datetime.time: Current time (timezone not aware).
+        """
+        return timezone.now().time()
 
     @factory.lazy_attribute
     def last_update(self):
@@ -41,7 +63,9 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         Returns:
             django.timezone: Datetime timezone enabled.
         """
-        return self.publish_start
+        return datetime.datetime.combine(
+            self.publish_date, self.publish_time
+        ).replace(tzinfo=timezone.utc)
 
     @factory.lazy_attribute
     def cover(self):
@@ -95,6 +119,11 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     def fill_categories(self, create, extracted, **kwargs):
         """
         Add categories.
+
+        TODO: Should be instead explicitely called with extracted=True to make
+        random objects to avoid creating too much objects in test on default
+        behavior and avoid using extracted=False each time. This is the same for
+        "fill_authors".
 
         Arguments:
             create (bool): True for create strategy, False for build strategy.

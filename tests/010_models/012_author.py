@@ -67,19 +67,22 @@ def test_author_manager(db):
     # Some articles
     ArticleFactory(
         slug="Klondike",
-        publish_start=today,
+        publish_date=today.date(),
+        publish_time=today.time(),
         fill_authors=[picsou],
     )
 
     ArticleFactory(
         slug="DuckCity",
-        publish_start=today,
+        publish_date=today.date(),
+        publish_time=today.time(),
         fill_authors=[picsou, donald],
     )
 
     ArticleFactory(
         slug="Tomorrow",
-        publish_start=tomorrow,
+        publish_date=tomorrow.date(),
+        publish_time=tomorrow.time(),
         fill_authors=[donald],
     )
 

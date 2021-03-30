@@ -44,13 +44,21 @@ class Article(Translated):
     Required article status.
     """
 
-    publish_start = models.DateTimeField(
-        "publication start",
+    publish_date = models.DateField(
+        "publication date",
         db_index=True,
         default=timezone.now,
     )
     """
-    Required publication start date.
+    Required publication date.
+    """
+
+    publish_time = models.TimeField(
+        "publication time",
+        default=timezone.now,
+    )
+    """
+    Required publication date.
     """
 
     publish_end = models.DateTimeField(
@@ -167,7 +175,7 @@ class Article(Translated):
             # Enforce unique couple date + slug + lang
             models.UniqueConstraint(
                 fields=[
-                    "publish_start", "slug", "language"
+                    "publish_date", "slug", "language"
                 ],
                 name="lotus_unique_art_pub_slug_lang"
             ),
