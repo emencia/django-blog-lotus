@@ -50,6 +50,14 @@ class Category(Translated):
     Required unique slug string.
     """
 
+    lead = models.TextField(
+        _("lead"),
+        blank=True,
+    )
+    """
+    Optionnal text lead.
+    """
+
     description = models.TextField(
         _('description'),
         blank=True,

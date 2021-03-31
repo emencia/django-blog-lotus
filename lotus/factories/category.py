@@ -9,6 +9,7 @@ from django.conf import settings
 import factory
 
 from ..models import Category
+from ..utils.factory import fake_html_paragraphs
 from ..utils.imaging import create_image_file
 
 
@@ -24,6 +25,20 @@ class CategoryFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Category
+
+    @factory.lazy_attribute
+    def lead(self):
+        """
+        Fill lead field with short plain text.
+
+        Returns:
+            string: Plain text.
+        """
+        return fake_html_paragraphs(
+            is_html=False,
+            max_nb_chars=55,
+            nb_paragraphs=1,
+        )
 
     @factory.lazy_attribute
     def cover(self):

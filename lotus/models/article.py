@@ -195,6 +195,9 @@ class Article(Translated):
         """
         Return absolute URL to the article detail view.
 
+        TODO:
+            Make the real url with slug+lang and conditional language.
+
         Returns:
             string: An URL.
         """
