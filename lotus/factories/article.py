@@ -29,6 +29,8 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     status = STATUS_PUBLISHED
     title = factory.Sequence(lambda n: "Article {0}".format(n))
     slug = factory.Sequence(lambda n: "article-{0}".format(n))
+    featured = False
+    pinned = False
     publish_end = None
 
     class Meta:
@@ -120,16 +122,11 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         """
         Add categories.
 
-        TODO: Should be instead explicitely called with extracted=True to make
-        random objects to avoid creating too much objects in test on default
-        behavior and avoid using extracted=False each time. This is the same for
-        "fill_authors".
-
         Arguments:
             create (bool): True for create strategy, False for build strategy.
-            extracted (object): If empty, will create a new random category object.
-                Else, expect a list of Category objects to add. Give a ``False``
-                value to avoid creating random categories.
+            extracted (object): If ``True``, will create a new random category
+                object. If a list assume it's a list of Category objects to add.
+                Else if empty don't do anything.
         """
         # Do nothing for build strategy
         if not create or not extracted:
@@ -154,9 +151,9 @@ class ArticleFactory(factory.django.DjangoModelFactory):
 
         Arguments:
             create (bool): True for create strategy, False for build strategy.
-            extracted (object): If empty, will create a new random author object.
-                Else, expect a list of Author objects to add. Give a ``False``
-                value to avoid creating random categories.
+            extracted (object): If ``True``, will create a new random author
+                object. If a list assume it's a list of Author objects to add.
+                Else if empty don't do anything.
         """
         # Do nothing for build strategy
         if not create or not extracted:
@@ -172,6 +169,24 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         # Add authors
         for author in authors:
             self.authors.add(author)
+
+    @factory.post_generation
+    # pylint: disable=unused-argument
+    def fill_related(self, create, extracted, **kwargs):
+        """
+        Add related articles.
+
+        Arguments:
+            create (bool): True for create strategy, False for build strategy.
+            extracted (object): Expect a list of Article objects to add. Else
+            don't do anything.
+        """
+        # Do nothing for build strategy
+        if not create or not extracted:
+            return
+
+        for item in extracted:
+            self.related.add(item)
 
 
 def multilingual_article(**kwargs):

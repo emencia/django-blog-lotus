@@ -27,6 +27,9 @@ class Category(Translated):
         null=True,
         default=None,
         on_delete=models.CASCADE,
+        help_text=_(
+            "Mark this article as a translation of original article."
+        ),
     )
     """
     Optional original category when object is a translation.
@@ -53,9 +56,12 @@ class Category(Translated):
     lead = models.TextField(
         _("lead"),
         blank=True,
+        help_text=_(
+            "Lead paragraph, mostly used for SEO purposes."
+        ),
     )
     """
-    Optionnal text lead.
+    Optional text lead.
     """
 
     description = models.TextField(

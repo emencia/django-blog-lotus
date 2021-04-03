@@ -212,68 +212,9 @@ def test_category_get_by_lang(db):
     assert created_cheese["original"].category_set.all().count() == 2
 
 
-def test_category_managers(db):
+def test_category_model_file_purge(db):
     """
-    Category manager should be able to correctly filter on language.
-    """
-    # Simple category on default language without translations
-    CategoryFactory(slug="foobar")
-
-    # Original category on different language than 'settings.LANGUAGE_CODE' and
-    # with a translation for 'settings.LANGUAGE_CODE' lang.
-    multilingual_category(
-        slug="musique",
-        language="fr",
-        langs=["en"],
-        contents={
-            "en": {
-                "slug": "music",
-            }
-        },
-    )
-
-    # A category with a french translation inheriting original slug
-    multilingual_category(
-        slug="food",
-        langs=["fr"],
-    )
-
-    # A category with french translation with its own slug and deutsch
-    # translation inheriting original slug
-    multilingual_category(
-        slug="recipe",
-        langs=["fr", "de"],
-        contents={
-            "fr": {
-                "slug": "recette",
-            }
-        },
-    )
-
-    # Use default language as configured in settings
-    assert queryset_values(Category.objects.get_for_lang()) == [
-        {"slug": "foobar", "language": "en"},
-        {"slug": "food", "language": "en"},
-        {"slug": "music", "language": "en"},
-        {"slug": "recipe", "language": "en"},
-    ]
-
-    # For french language
-    assert queryset_values(Category.objects.get_for_lang("fr")) == [
-        {"slug": "food", "language": "fr"},
-        {"slug": "musique", "language": "fr"},
-        {"slug": "recette", "language": "fr"},
-    ]
-
-    # For deutsch language
-    assert queryset_values(Category.objects.get_for_lang("de")) == [
-        {"slug": "recipe", "language": "de"},
-    ]
-
-
-def test_category_model_file_management(db):
-    """
-    Category 'cover' field file management should follow correct behaviors:
+    Category 'cover' field file should follow correct behaviors:
 
     * When object is deleted, its files should be delete from filesystem too;
     * When changing file from an object, its previous files (if any) should be
@@ -295,8 +236,9 @@ def test_category_model_file_management(db):
 
     # File is deleted along its object
     assert os.path.exists(ping_path) is False
-    # Paranoiac mode: other existing similar filename (as uploaded) is conserved
-    # (since Django rename file with a unique hash if filename alread exist)
+    # Paranoiac mode: other existing similar filename (as uploaded) are conserved
+    # since Django rename file with a unique hash if filename alread exist, they
+    # should not be mistaken
     assert os.path.exists(pong_path) is True
 
     # Change object file to a new one

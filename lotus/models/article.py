@@ -25,10 +25,14 @@ class Article(Translated):
     """
     original = models.ForeignKey(
         "self",
+        verbose_name=_("original article"),
         blank=True,
         null=True,
         default=None,
         on_delete=models.CASCADE,
+        help_text=_(
+            "Mark this article as a translation of original article."
+        ),
     )
     """
     Optional original category when object is a translation.
@@ -39,41 +43,77 @@ class Article(Translated):
         db_index=True,
         choices=STATUS_CHOICES,
         default=STATUS_DRAFT,
+        help_text=_(
+            "Publication status."
+        ),
     )
     """
     Required article status.
     """
 
+    featured = models.BooleanField(
+        verbose_name=_("featured"),
+        default=False,
+        blank=True,
+        help_text=_(
+            "Mark this article as featured."
+        ),
+    )
+    """
+    Optional article featured mark.
+    """
+
+    pinned = models.BooleanField(
+        verbose_name=_("pinned"),
+        default=False,
+        blank=True,
+        help_text=_(
+            "A pinned article is enforced at top of order results."
+        ),
+    )
+    """
+    Optional article pinned mark.
+    """
+
     publish_date = models.DateField(
-        "publication date",
+        _("publication date"),
         db_index=True,
         default=timezone.now,
+        help_text=_(
+            "Start date of publication."
+        ),
     )
     """
     Required publication date.
     """
 
     publish_time = models.TimeField(
-        "publication time",
+        _("publication time"),
         default=timezone.now,
+        help_text=_(
+            "Start time of publication."
+        ),
     )
     """
     Required publication date.
     """
 
     publish_end = models.DateTimeField(
-        "publication end",
+        _("publication end"),
         db_index=True,
         default=None,
         null=True,
         blank=True,
+        help_text=_(
+            "End date of publication."
+        ),
     )
     """
     Optional publication end date.
     """
 
     last_update = models.DateTimeField(
-        _('last update'),
+        _("last update"),
         default=timezone.now,
     )
     """
@@ -93,6 +133,9 @@ class Article(Translated):
     slug = models.SlugField(
         _("slug"),
         max_length=255,
+        help_text=_(
+            "Used to build the entry's URL."
+        ),
     )
     """
     Required unique slug string.
@@ -101,17 +144,20 @@ class Article(Translated):
     lead = models.TextField(
         _("lead"),
         blank=True,
+        help_text=_(
+            "Lead paragraph, mostly used for SEO purposes."
+        ),
     )
     """
-    Optionnal text lead.
+    Optional text lead.
     """
 
     introduction = models.TextField(
-        _('introduction'),
+        _("introduction"),
         blank=True,
     )
     """
-    Optionnal text introduction.
+    Optional text introduction.
     """
 
     content = models.TextField(
@@ -120,7 +166,7 @@ class Article(Translated):
         default="",
     )
     """
-    Optionnal text content.
+    Optional text content.
     """
 
     cover = models.ImageField(
@@ -129,9 +175,12 @@ class Article(Translated):
         max_length=255,
         blank=True,
         default="",
+        help_text=_(
+            "Article cover image."
+        ),
     )
     """
-    Optionnal cover image.
+    Optional cover image.
     """
 
     image = models.ImageField(
@@ -140,9 +189,12 @@ class Article(Translated):
         max_length=255,
         blank=True,
         default="",
+        help_text=_(
+            "Article large image."
+        ),
     )
     """
-    Optionnal cover image.
+    Optional cover image.
     """
 
     categories = models.ManyToManyField(
@@ -152,23 +204,39 @@ class Article(Translated):
         blank=True,
     )
     """
-    Related Categories.
+    Optional related Categories.
     """
 
     authors = models.ManyToManyField(
-        'lotus.Author',
-        verbose_name=_('authors'),
-        related_name='articles',
+        "lotus.Author",
+        verbose_name=_("authors"),
+        related_name="articles",
         blank=True,
     )
     """
-    Related Authors.
+    Optional related Authors.
+    """
+
+    related = models.ManyToManyField(
+        "self",
+        verbose_name=_("related articles"),
+        related_name="relations",
+        symmetrical=False,
+        blank=True,
+    )
+    """
+    Optional related article.
     """
 
     objects = ArticleManager()
 
     class Meta:
         ordering = ["title"]
+        ordering = [
+            "-publish_date",
+            "-publish_time",
+            "-title",
+        ]
         verbose_name = _("Article")
         verbose_name_plural = _("Articles")
         constraints = [
@@ -196,7 +264,7 @@ class Article(Translated):
         Return absolute URL to the article detail view.
 
         TODO:
-            Make the real url with slug+lang and conditional language.
+            Make the real url with slug+date+time and conditional language.
 
         Returns:
             string: An URL.
@@ -206,13 +274,13 @@ class Article(Translated):
         ])
 
     def save(self, *args, **kwargs):
-        # Auto update last_update on each save
+        # Auto update ``last_update`` value on each save
         self.last_update = timezone.now()
 
         super().save(*args, **kwargs)
 
 
-# Connect some signals
+# Connect signals for automatic media purge
 post_delete.connect(
     auto_purge_media_files_on_delete,
     dispatch_uid="article_medias_on_delete",
