@@ -77,8 +77,10 @@ def test_article_creation(db):
         {"slug": "pong", "language": "en"},
     ]
 
-    # Ensure no random categories are created when specifically required
-    article = ArticleFactory(slug="bar", fill_categories=False)
+    # Ensure no random categories or authors are created when not specifically
+    # required
+    article = ArticleFactory(slug="bar")
+    assert article.authors.count() == 0
     assert article.categories.count() == 0
 
 
@@ -88,8 +90,6 @@ def test_article_last_update(db):
     """
     article = ArticleFactory(
         slug="foo",
-        fill_authors=False,
-        fill_categories=False,
     )
     assert article.last_update is not None
 
@@ -121,15 +121,11 @@ def test_article_constraints_db(db):
         slug="bar",
         publish_date=now.date(),
         publish_time=now.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
     ArticleFactory(
         slug="pong",
         publish_date=now.date(),
         publish_time=now.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
 
     # We can have an identical slug on the same date for a different
@@ -142,8 +138,6 @@ def test_article_constraints_db(db):
         original=bar,
         publish_date=now.date(),
         publish_time=now.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
 
     # But only an unique language for the same original object is allowed since
@@ -156,8 +150,6 @@ def test_article_constraints_db(db):
                 original=bar,
                 publish_date=now.date(),
                 publish_time=now.time(),
-                fill_authors=False,
-                fill_categories=False,
             )
         assert str(excinfo.value) == (
             "UNIQUE constraint failed: "
@@ -171,8 +163,6 @@ def test_article_constraints_db(db):
                 slug="bar",
                 publish_date=now.date(),
                 publish_time=now.time(),
-                fill_authors=False,
-                fill_categories=False,
             )
         assert str(excinfo.value) == (
             "UNIQUE constraint failed: "
@@ -185,8 +175,6 @@ def test_article_constraints_db(db):
         slug="bar",
         publish_date=tomorrow.date(),
         publish_time=tomorrow.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
 
     # Or identical slug+date+original on different language
@@ -196,8 +184,6 @@ def test_article_constraints_db(db):
         original=bar,
         publish_date=now.date(),
         publish_time=now.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
 
     # Combination of constraints (date+slug+lang & original+lang)
@@ -209,8 +195,6 @@ def test_article_constraints_db(db):
                 original=bar,
                 publish_date=now.date(),
                 publish_time=now.time(),
-                fill_authors=False,
-                fill_categories=False,
             )
         # Only the original+language constraint is returned since it raises
         # first and stop other db validation
@@ -242,16 +226,12 @@ def test_article_constraints_model(db):
         slug="bar",
         publish_date=now.date(),
         publish_time=now.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
     # A translation
     ArticleFactory(
         slug="bar",
         language="fr",
         original=bar,
-        fill_authors=False,
-        fill_categories=False,
     )
 
     # Constraint unique combo date+slug+lang
@@ -259,8 +239,6 @@ def test_article_constraints_model(db):
         slug="bar",
         publish_date=now.date(),
         publish_time=now.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
     with pytest.raises(ValidationError) as excinfo:
         builded.full_clean()
@@ -279,8 +257,6 @@ def test_article_constraints_model(db):
         original=bar,
         publish_date=now.date(),
         publish_time=now.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
     with pytest.raises(ValidationError) as excinfo:
         builded.full_clean()
@@ -298,8 +274,6 @@ def test_article_constraints_model(db):
         original=bar,
         publish_date=now.date(),
         publish_time=now.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
     with pytest.raises(ValidationError) as excinfo:
         builded.full_clean()
@@ -386,8 +360,6 @@ def test_article_managers(db):
     common_kwargs = {
         "publish_date": today.date(),
         "publish_time": today.time(),
-        "fill_authors": False,
-        "fill_categories": False,
     }
     ArticleFactory(slug="english", language="en", **common_kwargs)
     ArticleFactory(slug="french", language="fr", **common_kwargs)
@@ -402,8 +374,6 @@ def test_article_managers(db):
         langs=["fr"],
         publish_date=today.date(),
         publish_time=today.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
 
     # English and Deutsch translation
@@ -412,8 +382,6 @@ def test_article_managers(db):
         langs=["de"],
         publish_date=today.date(),
         publish_time=today.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
 
     # Original Deutsch and French translation
@@ -423,8 +391,6 @@ def test_article_managers(db):
         langs=["fr"],
         publish_date=today.date(),
         publish_time=today.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
 
     # All languages and available for publication
@@ -433,16 +399,12 @@ def test_article_managers(db):
         langs=["fr", "de"],
         publish_date=today.date(),
         publish_time=today.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
     multilingual_article(
         slug="yesterday",
         langs=["fr", "de"],
         publish_date=yesterday.date(),
         publish_time=yesterday.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
     # All lang and publish ends tomorrow, still available for publication
     multilingual_article(
@@ -451,8 +413,6 @@ def test_article_managers(db):
         publish_date=today.date(),
         publish_time=today.time(),
         publish_end=tomorrow,
-        fill_authors=False,
-        fill_categories=False,
     )
     # All lang but not available for publication
     multilingual_article(
@@ -460,8 +420,6 @@ def test_article_managers(db):
         langs=["fr", "de"],
         publish_date=tomorrow.date(),
         publish_time=tomorrow.time(),
-        fill_authors=False,
-        fill_categories=False,
     )
     multilingual_article(
         slug="invalid-yesterday",
@@ -469,8 +427,6 @@ def test_article_managers(db):
         publish_date=today.date(),
         publish_time=today.time(),
         publish_end=yesterday,
-        fill_authors=False,
-        fill_categories=False,
     )
 
     # Check all english articles
@@ -534,12 +490,10 @@ def test_article_model_file_management(db):
     ping = ArticleFactory(
         cover=create_image_file(filename="machin.png"),
         image=create_image_file(filename="ping_image.png"),
-        fill_categories=False,
     )
     pong = ArticleFactory(
         cover=create_image_file(filename="machin.png"),
         image=create_image_file(filename="pong_image.png"),
-        fill_categories=False,
     )
 
     # Memorize some data to use after deletion

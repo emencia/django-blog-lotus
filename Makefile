@@ -3,7 +3,6 @@ VENV_PATH=.venv
 
 PYTHON_BIN=$(VENV_PATH)/bin/python
 PIP=$(VENV_PATH)/bin/pip
-TWINE=$(VENV_PATH)/bin/twine
 BOUSSOLE=$(VENV_PATH)/bin/boussole
 DJANGO_MANAGE=$(VENV_PATH)/bin/python sandbox/manage.py
 FLAKE=$(VENV_PATH)/bin/flake8

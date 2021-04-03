@@ -132,15 +132,15 @@ class ArticleFactory(factory.django.DjangoModelFactory):
                 value to avoid creating random categories.
         """
         # Do nothing for build strategy
-        if not create or extracted is False:
+        if not create or not extracted:
             return
 
-        # Take given category objects
-        if extracted:
-            categories = extracted
         # Create a new random category adopting the article language
-        else:
+        if extracted is True:
             categories = [CategoryFactory(language=self.language)]
+        # Take given category objects
+        else:
+            categories = extracted
 
         # Add categories
         for category in categories:
@@ -159,15 +159,15 @@ class ArticleFactory(factory.django.DjangoModelFactory):
                 value to avoid creating random categories.
         """
         # Do nothing for build strategy
-        if not create or extracted is False:
+        if not create or not extracted:
             return
 
-        # Take given author objects
-        if extracted:
-            authors = extracted
         # Create a new random author
-        else:
+        if extracted is True:
             authors = [AuthorFactory()]
+        # Take given author objects
+        else:
+            authors = extracted
 
         # Add authors
         for author in authors:
