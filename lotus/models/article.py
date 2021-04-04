@@ -75,6 +75,18 @@ class Article(Translated):
     Optional article pinned mark.
     """
 
+    private = models.BooleanField(
+        verbose_name=_("private"),
+        default=False,
+        blank=True,
+        help_text=_(
+            "Private article is only available for authenticated users."
+        ),
+    )
+    """
+    Optional privacy.
+    """
+
     publish_date = models.DateField(
         _("publication date"),
         db_index=True,

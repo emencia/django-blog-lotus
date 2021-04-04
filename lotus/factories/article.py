@@ -31,6 +31,7 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     slug = factory.Sequence(lambda n: "article-{0}".format(n))
     featured = False
     pinned = False
+    private = False
     publish_end = None
 
     class Meta:
