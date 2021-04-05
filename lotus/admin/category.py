@@ -4,11 +4,12 @@ Category admin interface
 """
 from django.contrib import admin
 
+from ..forms import CategoryAdminForm
 from ..models import Category
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    form = CategoryAdminForm
 
 
 # Registering interface to model

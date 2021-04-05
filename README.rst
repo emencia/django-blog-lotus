@@ -1,5 +1,6 @@
 .. _Python: https://www.python.org/
 .. _Django: https://www.djangoproject.com/
+.. _django-ckeditor: https://github.com/django-ckeditor/django-ckeditor
 
 =================
 Django Blog Lotus
@@ -14,6 +15,7 @@ Dependancies
 
 * `Python`_>=3.6;
 * `Django`_>=3.1;
+* `django-ckeditor`_>=6.0.0;
 
 Links
 *****
@@ -49,6 +51,9 @@ Additional features:
 * Article pinning;
 * Lead text for Category;
 
-Planned features:
+On hold features:
 
-* Rest API;
+* Move CKEditor usage in a contrib package (and let possibilities to use another
+  editor like Summernote);
+* Django-CMS plugin in a contrib package;
+* A way to implement again Article modularity;

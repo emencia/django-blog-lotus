@@ -158,6 +158,47 @@ LOGOUT_REDIRECT_URL = "/"
 
 
 """
+CKEditor part
+"""
+INSTALLED_APPS[0:0] = [
+    "ckeditor",
+    "ckeditor_uploader",
+]
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+CKEDITOR_CONFIGS = {
+    "lotus": {
+        "width": "100%",
+        "height": 400,
+        "language": "{{ language }}",
+        "skin": "moono-lisa",
+        # Enabled showblocks as default behavior
+        "startupOutlineBlocks": True,
+        # Disable element filter to enable full HTML5, also this will let
+        # append any code, even bad syntax and malicious code, so be careful
+        "removePlugins": "stylesheetparser",
+        "allowedContent": True,
+        "toolbar": "Default",
+        "toolbar_Default": [
+            ["Undo", "Redo"],
+            ["ShowBlocks"],
+            ["Format", "Styles"],
+            ["RemoveFormat"],
+            "/",
+            ["Bold", "Italic", "Underline", "-", "Subscript", "Superscript"],
+            ["JustifyLeft", "JustifyCenter", "JustifyRight"],
+            ["TextColor"],
+            ["Link", "Unlink"],
+            ["Image", "-", "NumberedList", "BulletedList",
+                "-", "Table", "-", "CreateDiv", "HorizontalRule"],
+            ["Source"],
+        ],
+    },
+}
+
+
+"""
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW
 """
 from lotus.settings import *

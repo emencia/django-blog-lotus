@@ -19,6 +19,9 @@ class BasePublishedQuerySet(models.QuerySet):
         """
         Return a queryset with published entries selected.
 
+        TODO:
+            "publish_time" is not used in query.
+
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
                 publication target, default to the current datetime.
