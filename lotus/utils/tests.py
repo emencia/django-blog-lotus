@@ -16,6 +16,15 @@ from pyquery import PyQuery as pq
 VALID_PASSWORD_SAMPLE = "Azerty12345678"
 
 
+# A dummy blank GIF file in byte value to simulate an uploaded file like with
+# 'django.core.files.uploadedfile.SimpleUploadedFile'
+DUMMY_GIF_BYTES = (
+    b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x00\x00\x00\x21\xf9\x04'
+    b'\x01\x0a\x00\x01\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02'
+    b'\x02\x4c\x01\x00\x3b'
+)
+
+
 def get_website_url(site_settings):
     """
     A shortand to retrieve the full website URL according to Site ID and HTTP
@@ -191,3 +200,25 @@ def queryset_values(queryset, names=["slug", "language"],
     return list(
         queryset.values(*names).order_by(*orders)
     )
+
+
+def compact_form_errors(form):
+    """
+    Build a compact dict of field errors without messages.
+
+    This is a helper for errors, keeping it more easy to test since messages
+    may be too long and can be translated which is more difficult to test.
+
+    Arguments:
+        form (django.forms.Form): A bounded form.
+
+    Returns:
+        dict: A dict of invalid fields, each item is indexed by field name and
+        value is a list of error codes.
+    """
+    errors = {}
+
+    for name, validationerror in form.errors.as_data().items():
+        errors[name] = [item.code for item in validationerror]
+
+    return errors
