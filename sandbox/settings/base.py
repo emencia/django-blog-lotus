@@ -156,6 +156,9 @@ INSTALLED_APPS = [
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
+# Ensure we can override applications widgets templates from project template
+# directory, require also 'django.forms' in INSTALLED_APPS
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 """
 CKEditor part
