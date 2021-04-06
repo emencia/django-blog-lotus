@@ -65,7 +65,6 @@ def test_article_admin_change_form(db, admin_client):
         f.name for f in Article._meta.get_fields()
         if f.name not in ignored_fields
     ]
-    print(fields)
     for name in fields:
         value = getattr(obj, name)
         # M2M are special ones since form expect only a list of IDs

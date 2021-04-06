@@ -4,9 +4,10 @@ Translated models
 =================
 
 """
-from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
+from ..choices import get_language_choices, get_language_default
 
 
 class Translated(models.Model):
@@ -18,7 +19,8 @@ class Translated(models.Model):
         blank=False,
         db_index=True,
         max_length=8,
-        default=settings.LANGUAGE_CODE,
+        choices=get_language_choices(),
+        default=get_language_default(),
     )
     """
     Required language code.

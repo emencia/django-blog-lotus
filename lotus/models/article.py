@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils import timezone
 
-from ..choices import STATUS_DRAFT, STATUS_CHOICES
+from ..choices import get_status_choices, get_status_default
 from ..managers import ArticleManager
 from ..signals import (
     auto_purge_media_files_on_delete, auto_purge_media_files_on_change,
@@ -41,8 +41,8 @@ class Article(Translated):
     status = models.SmallIntegerField(
         _("status"),
         db_index=True,
-        choices=STATUS_CHOICES,
-        default=STATUS_DRAFT,
+        choices=get_status_choices(),
+        default=get_status_default(),
         help_text=_(
             "Publication status."
         ),
