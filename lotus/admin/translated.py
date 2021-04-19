@@ -1,8 +1,7 @@
-from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from ..choices import get_language_choices, get_language_default
+from ..choices import get_language_choices
 
 
 class LanguageListFilter(admin.SimpleListFilter):

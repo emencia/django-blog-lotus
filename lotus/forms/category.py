@@ -1,5 +1,7 @@
 from django import forms
 from django.conf import settings
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from ..models import Category
 
@@ -21,7 +23,67 @@ if CONFIG_NAME not in CKEDITOR_CONFIG:
 class CategoryAdminForm(forms.ModelForm):
     """
     Category form for admin.
+
+    TODO:
+        Insert language code on each select option alike "My category [fr-fr]".
+        May need to use a custom widget for original.
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Apply choice limit on 'original' field queryset to avoid selecting
+        # itself or object with the same language
+        if self.instance.pk:
+            self.fields["original"].queryset = Category.objects.exclude(
+                models.Q(id=self.instance.id) |
+                models.Q(language=self.instance.language)
+            )
+
+    def clean(self):
+        """
+        Add custom global input cleaner validations.
+        """
+        cleaned_data = super().clean()
+        original = cleaned_data.get("original")
+        language = cleaned_data.get("language")
+
+        if original and original.language == language:
+            self.add_error(
+                "language",
+                forms.ValidationError(
+                    _(
+                        "You can't have a language identical to the original "
+                        "relation."
+                    ),
+                    code="invalid",
+                ),
+            )
+            self.add_error(
+                "original",
+                forms.ValidationError(
+                    _(
+                        "You can't have an original relation in the same language."
+                    ),
+                    code="invalid",
+                ),
+            )
+
+        if (
+            self.instance.pk and
+            self.instance.articles.exclude(language=language).count() > 0
+        ):
+            self.add_error(
+                "language",
+                forms.ValidationError(
+                    _(
+                        "Some article in different language relate to this "
+                        "category, you can't change language until those article "
+                        "are not related anymore."
+                    ),
+                    code="invalid-language",
+                ),
+            )
+
     class Meta:
         model = Category
         widgets = {

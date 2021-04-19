@@ -4,6 +4,8 @@ Article models
 ==============
 
 """
+import datetime
+
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
@@ -284,6 +286,17 @@ class Article(Translated):
         return reverse("lotus:article-detail", args=[
             str(self.id),
         ])
+
+    def publish_datetime(self):
+        """
+        Return a datetime from joined publish date and time.
+
+        Returns:
+            datetime.datetime: Publish datetime.
+        """
+        return datetime.datetime.combine(
+            self.publish_date, self.publish_time
+        ).replace(tzinfo=timezone.utc)
 
     def save(self, *args, **kwargs):
         # Auto update ``last_update`` value on each save

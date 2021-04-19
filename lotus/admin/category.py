@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Category admin interface
 """
@@ -8,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from ..forms import CategoryAdminForm
 from ..models import Category
+
 from .translated import LanguageListFilter
 
 
@@ -21,9 +21,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "language_name",
-        "is_translation",
         "article_count",
-        "cover",
     )
     list_filter = (
         LanguageListFilter,
@@ -65,11 +63,6 @@ class CategoryAdmin(admin.ModelAdmin):
             }
         ),
     )
-
-    def is_translation(self, obj):
-        return not(obj.original is None)
-    is_translation.short_description = _("translation")
-    is_translation.boolean = True
 
     def language_name(self, obj):
         return LANGUAGE_NAMES[obj.language]

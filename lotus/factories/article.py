@@ -73,7 +73,17 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     @factory.lazy_attribute
     def cover(self):
         """
-        Fill file field with generated image.
+        Fill cover field with generated image.
+
+        Returns:
+            django.core.files.File: File object.
+        """
+        return create_image_file()
+
+    @factory.lazy_attribute
+    def image(self):
+        """
+        Fill image field with generated image.
 
         Returns:
             django.core.files.File: File object.

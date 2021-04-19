@@ -222,3 +222,35 @@ def compact_form_errors(form):
         errors[name] = [item.code for item in validationerror]
 
     return errors
+
+
+def build_post_data_from_object(model, obj, ignore=["id"]):
+    """
+    Build a payload suitable to a POST request from given object data.
+
+    Arguments:
+        model (django.db.models.Model): A model object used to find object
+            attributes to extract values.
+        obj (object): A instance of given model or a dict (like the one returned
+            by a factory ``build()`` method.
+        ignore (list): List of field name to ignore for value
+            extraction. Default to "id" but will not be enough for any field
+            with foreign keys, automatic primary keys, etc..
+
+    Returns:
+        dict: Payload data to use in POST request.
+    """
+    data = {}
+
+    fields = [
+        f.name for f in model._meta.get_fields()
+        if f.name not in ignore
+    ]
+
+    for name in fields:
+        if obj is dict:
+            data[name] = obj.get(name)
+        else:
+            data[name] = getattr(obj, name)
+
+    return data
