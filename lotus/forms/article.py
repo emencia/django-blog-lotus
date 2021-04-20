@@ -2,8 +2,13 @@ from django import forms
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 from ..models import Article, Category
+
+from .translated import (
+    TranslatedModelChoiceField, TranslatedModelMultipleChoiceField
+)
 
 
 # Use the right field depending 'ckeditor_uploader' app is enabled or not
@@ -23,10 +28,6 @@ if CONFIG_NAME not in CKEDITOR_CONFIG:
 class ArticleAdminForm(forms.ModelForm):
     """
     Article form for admin.
-
-    TODO:
-        Insert language code on each select option alike "My category [fr-fr]".
-        May need to use a custom widget for original, categories, related.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -34,19 +35,32 @@ class ArticleAdminForm(forms.ModelForm):
         # Apply choice limit on fields querysets
         if self.instance.pk:
             # Avoid selecting itself or object with the same language
-            self.fields["original"].queryset = Article.objects.exclude(
-                models.Q(id=self.instance.pk) |
-                models.Q(language=self.instance.language)
+            self.fields["original"] = TranslatedModelChoiceField(
+                queryset=Article.objects.exclude(
+                    models.Q(id=self.instance.pk) |
+                    models.Q(language=self.instance.language)
+                ),
+                required=False,
+                blank=True,
             )
-            # Avoid selecting itself or object with a different language
-            self.fields["related"].queryset = Article.objects.filter(
-                language=self.instance.language
-            ).exclude(
-                id=self.instance.pk
+            self.fields["related"] = TranslatedModelMultipleChoiceField(
+                queryset=Article.objects.filter(
+                    language=self.instance.language
+                ).exclude(
+                    id=self.instance.pk
+                ),
+                widget=FilteredSelectMultiple("articles", is_stacked=False),
+                required=False,
+                blank=True,
             )
             # Avoid selecting object with a different language
-            self.fields["categories"].queryset = Category.objects.filter(
-                language=self.instance.language
+            self.fields["categories"] = TranslatedModelMultipleChoiceField(
+                queryset=Category.objects.filter(
+                    language=self.instance.language
+                ),
+                widget=FilteredSelectMultiple("categories", is_stacked=False),
+                required=False,
+                blank=True,
             )
 
     def clean(self):
@@ -82,10 +96,8 @@ class ArticleAdminForm(forms.ModelForm):
             )
 
         # Ensure related articles languages are the same than the current article
-        # language, this is only for create form since there is choice validation
-        # in change form which is enough.
+        # language
         if (
-            not self.instance.pk and
             related and
             related.exclude(language=language).count() > 0
         ):
@@ -100,10 +112,8 @@ class ArticleAdminForm(forms.ModelForm):
             )
 
         # Ensure categories languages are the same than the current article
-        # language, this is only for create form since there is choice validation
-        # in change form which is enough.
+        # language
         if (
-            not self.instance.pk and
             categories and
             categories.exclude(language=language).count() > 0
         ):

@@ -333,6 +333,22 @@ def test_article_admin_related_change_validation(db, admin_client):
         "related": ["invalid_choice"],
     }
 
+    # 4) Restore working related object in same language
+    data["related"] = [obj_fr_bis.id]
+    f = ArticleAdminForm(data, instance=obj_fr)
+    obj_fr = f.save()
+
+    # 5) Try to change language with remaining related object in a different
+    # language, raise an error
+    data["language"] = "en"
+
+    f = ArticleAdminForm(data, instance=obj_fr)
+
+    assert f.is_valid() is False
+    assert compact_form_errors(f) == {
+        "related": ["invalid-related"],
+    }
+
 
 def test_article_admin_category_create_validation(db, admin_client):
     """
@@ -416,4 +432,20 @@ def test_article_admin_category_change_validation(db, admin_client):
     assert f.is_valid() is False
     assert compact_form_errors(f) == {
         "categories": ["invalid_choice"],
+    }
+
+    # 4) Restore working category object in same language
+    data["categories"] = [cat_fr.id]
+    f = ArticleAdminForm(data, instance=obj_fr)
+    obj_fr = f.save()
+
+    # 5) Try to change language with remaining category object in a different
+    # language, raise an error
+    data["language"] = "en"
+
+    f = ArticleAdminForm(data, instance=obj_fr)
+
+    assert f.is_valid() is False
+    assert compact_form_errors(f) == {
+        "categories": ["invalid-categories"],
     }

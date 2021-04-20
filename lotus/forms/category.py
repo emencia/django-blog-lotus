@@ -23,10 +23,6 @@ if CONFIG_NAME not in CKEDITOR_CONFIG:
 class CategoryAdminForm(forms.ModelForm):
     """
     Category form for admin.
-
-    TODO:
-        Insert language code on each select option alike "My category [fr-fr]".
-        May need to use a custom widget for original.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

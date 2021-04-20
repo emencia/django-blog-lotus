@@ -18,6 +18,10 @@ LANGUAGE_NAMES = dict(settings.LANGUAGES)
 
 
 class ArticleAdmin(admin.ModelAdmin):
+    """
+    TODO:
+        A new 'list_filter' to filter on a category.
+    """
     form = ArticleAdminForm
     list_display = (
         "title",
