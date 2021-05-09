@@ -177,3 +177,45 @@ def test_category_admin_article_relations_validation(db, admin_client):
     assert compact_form_errors(f) == {
         "language": ["invalid-language"],
     }
+
+
+def test_category_admin_modelchoice_create_labels(db, admin_client):
+    """
+    Admin create form should have language names in model choices fields.
+    """
+    # Create new objects
+    obj_en = CategoryFactory(title="egg", language="en")
+    obj_fr = CategoryFactory(title="baguette", language="fr")
+
+    # Build form and get its simple HTML representation to parse it
+    f = CategoryAdminForm()
+    content = f.as_p()
+    dom = html_pyquery(content)
+
+    originals = dom.find("#id_original option")
+    assert [item.text for item in originals] == [
+        f.fields["original"].empty_label,
+        "baguette [Français]",
+        "egg [English]",
+    ]
+
+
+def test_category_admin_modelchoice_change_labels(db, admin_client):
+    """
+    Admin change form should have language names in model choices fields.
+    """
+    # Create new objects
+    obj_en = CategoryFactory(title="egg", language="en")
+    obj_fr = CategoryFactory(title="baguette", language="fr")
+    obj_fr_bis = CategoryFactory(title="omelette", language="fr")
+
+    # Build form and get its simple HTML representation to parse it
+    f = CategoryAdminForm({}, instance=obj_fr)
+    content = f.as_p()
+    dom = html_pyquery(content)
+
+    originals = dom.find("#id_original option")
+    assert [item.text for item in originals] == [
+        f.fields["original"].empty_label,
+        "egg [English]",
+    ]

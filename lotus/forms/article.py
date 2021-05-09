@@ -32,36 +32,48 @@ class ArticleAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Apply choice limit on fields querysets
-        if self.instance.pk:
+        # Model choices querysets for create form get all objects since there is no
+        # data yet to constraint
+        if not self.instance.pk:
+            original_queryset = Article.objects.all()
+            related_queryset = Article.objects.all()
+            category_queryset = Category.objects.all()
+        # Model choices querysets for change form filter objects against constraints
+        else:
             # Avoid selecting itself or object with the same language
-            self.fields["original"] = TranslatedModelChoiceField(
-                queryset=Article.objects.exclude(
-                    models.Q(id=self.instance.pk) |
-                    models.Q(language=self.instance.language)
-                ),
-                required=False,
-                blank=True,
+            original_queryset = Article.objects.exclude(
+                models.Q(id=self.instance.pk) |
+                models.Q(language=self.instance.language)
             )
-            self.fields["related"] = TranslatedModelMultipleChoiceField(
-                queryset=Article.objects.filter(
-                    language=self.instance.language
-                ).exclude(
-                    id=self.instance.pk
-                ),
-                widget=FilteredSelectMultiple("articles", is_stacked=False),
-                required=False,
-                blank=True,
+            # Avoid selecting itself or object with the same language
+            related_queryset = Article.objects.filter(
+                language=self.instance.language
+            ).exclude(
+                id=self.instance.pk
             )
             # Avoid selecting object with a different language
-            self.fields["categories"] = TranslatedModelMultipleChoiceField(
-                queryset=Category.objects.filter(
-                    language=self.instance.language
-                ),
-                widget=FilteredSelectMultiple("categories", is_stacked=False),
-                required=False,
-                blank=True,
+            category_queryset = Category.objects.filter(
+                language=self.instance.language
             )
+
+        # Use the right model choices fields for translated relations
+        self.fields["original"] = TranslatedModelChoiceField(
+            queryset=original_queryset,
+            required=False,
+            blank=True,
+        )
+        self.fields["related"] = TranslatedModelMultipleChoiceField(
+            queryset=related_queryset,
+            widget=FilteredSelectMultiple("articles", is_stacked=False),
+            required=False,
+            blank=True,
+        )
+        self.fields["categories"] = TranslatedModelMultipleChoiceField(
+            queryset=category_queryset,
+            widget=FilteredSelectMultiple("categories", is_stacked=False),
+            required=False,
+            blank=True,
+        )
 
     def clean(self):
         """

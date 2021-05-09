@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 from ..models import Category
 
+from .translated import TranslatedModelChoiceField
+
 
 # Use the right field depending 'ckeditor_uploader' app is enabled or not
 if "ckeditor_uploader" in settings.INSTALLED_APPS:
@@ -27,13 +29,25 @@ class CategoryAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Apply choice limit on 'original' field queryset to avoid selecting
-        # itself or object with the same language
-        if self.instance.pk:
-            self.fields["original"].queryset = Category.objects.exclude(
+        # Model choices querysets for create form get all objects since there is no
+        # data yet to constraint
+        if not self.instance.pk:
+            original_queryset = Category.objects.all()
+        # Model choices querysets for change form filter objects against constraints
+        else:
+            # Avoid selecting itself or object with the same language
+            original_queryset = Category.objects.exclude(
                 models.Q(id=self.instance.id) |
                 models.Q(language=self.instance.language)
             )
+
+        # Apply choice limit on 'original' field queryset to avoid selecting
+        # itself or object with the same language
+        self.fields["original"] = TranslatedModelChoiceField(
+            queryset=original_queryset,
+            required=False,
+            blank=True,
+        )
 
     def clean(self):
         """
