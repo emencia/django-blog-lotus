@@ -1,0 +1,45 @@
+{% extends "lotus/base.html" %}
+{% load i18n %}
+
+{% block head_title %}{{ article_object.title }} - {{ block.super }}{% endblock head_title %}
+
+{% block lotus_content %}{% spaceless %}
+<div class="article-detail{% if article_object.featured %} featured{% endif %}{% if article_object.pinned %} pinned{% endif %}{% if article_object.status < 10 %} draft{% endif %}">
+    <h2>{{ article_object.title }}</h2>
+
+    <p>Categories</p>
+    <ul>
+        {% for category in article_object.get_categories %}
+        <li>{{ category.title }}</li>
+        {% endfor %}
+    </ul>
+
+    <p>Authors</p>
+    <ul>
+        {% for author in article_object.get_authors %}
+        <li>{{ author.get_full_name }}</li>
+        {% endfor %}
+    </ul>
+
+    <p class="publish">{{ article_object.publish_datetime }}</p>
+
+    <p class="cover">{% if article_object.cover %}
+        <img src="{{ article_object.cover.url }}" alt="">
+    {% endif %}</p>
+
+    <div class="introduction">{{ article_object.introduction|safe }}</div>
+
+    <p class="image">{% if article_object.image %}
+        <img src="{{ article_object.image.url }}" alt="">
+    {% endif %}</p>
+
+    <div class="content">{{ article_object.content|safe }}</div>
+
+    <p>Related articles</p>
+    <ul>
+        {% for related in article_object.get_related %}
+        <li>{{ related.title }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endspaceless %}{% endblock lotus_content %}

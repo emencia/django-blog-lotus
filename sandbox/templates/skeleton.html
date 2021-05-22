@@ -2,11 +2,31 @@
 <head>{% spaceless %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block head_title %}Sandbox{% endblock head_title %}</title>
+    <title>{% block head_title %}Lotus{% endblock head_title %}</title>
+    {% block head_styles %}{% comment %}Dummy styles for visual develop debug{% endcomment %}<style type="text/css">
+        #lotus-content .item.pinned h3::after,
+        #lotus-content .article-detail.pinned h2::after {
+            content: " (pinned)";
+        }
+        #lotus-content .item.draft h3::after,
+        #lotus-content .article-detail.draft h2::before {
+            content: " [draft]";
+        }
+        #lotus-content .item.featured h3::after,
+        #lotus-content .article-detail.featured h2::after {
+            content: " (featured)";
+        }
+        #lotus-content .item.pinned.featured h3::after,
+        #lotus-content .article-detail.pinned.featured h2::after {
+            content: " (pinned,featured)";
+        }
+    </style>{% endblock head_styles %}
 {% endspaceless %}
 </head>
 
 <body>{% spaceless %}
-{% block content %}Sandbox skeleton{% endblock %}
+    <h1>Django Blog Lotus</h1>
+
+    {% block content %}Sandbox skeleton{% endblock %}
 {% endspaceless %}</body>
 </html>

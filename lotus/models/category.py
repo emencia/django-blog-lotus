@@ -3,6 +3,8 @@
 Category models
 ===============
 
+TODO:
+    Not really implemented yet.
 """
 from django.db import models
 from django.db.models.signals import post_delete, pre_save

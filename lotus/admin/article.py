@@ -123,6 +123,11 @@ class ArticleAdmin(admin.ModelAdmin):
     is_published.short_description = _("published ?")
     is_published.boolean = True
 
+    def view_on_site(self, obj):
+        """
+        Add request argument to bypass publication criteria on view queryset.
+        """
+        return obj.get_absolute_url() + "?admin=1"
 
 # Registering interface to model
 admin.site.register(Article, ArticleAdmin)

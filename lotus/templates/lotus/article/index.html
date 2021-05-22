@@ -1,0 +1,36 @@
+{% extends "lotus/base.html" %}
+{% load i18n %}
+
+{% block head_title %}Index - {{ block.super }}{% endblock head_title %}
+
+{% block lotus_content %}{% spaceless %}
+<div class="article-list-container">
+    <h2 class="title">{% blocktrans %}Article list{% endblocktrans %}</h2>
+
+    <div class="list">
+        {% for article in article_list %}
+        <div class="item{% if article.pinned %} pinned{% endif %}{% if article.featured %} featured{% endif %}{% if article.status < 10 %} draft{% endif %}">
+            <h3>
+                <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+            </h3>
+
+            <ul>
+                {% for category in article.get_categories %}
+                <li>{{ category.title }}</li>
+                {% endfor %}
+            </ul>
+
+            <p class="publish">{{ article.publish_datetime }}</p>
+
+            <p class="cover">{% if article.cover %}
+                <img src="{{ article.cover.url }}" alt="">
+            {% endif %}</p>
+
+            <div class="introduction">{{ article.introduction|safe }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% include "lotus/pagination.html" %}
+</div>
+{% endspaceless %}{% endblock lotus_content %}

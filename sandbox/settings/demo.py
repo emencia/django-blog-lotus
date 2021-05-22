@@ -7,9 +7,17 @@ from sandbox.settings.base import *
 
 DEBUG = True
 
+TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": join(VAR_PATH, "db", "db.sqlite3"),  # noqa
     }
 }
+
+# Import local settings if any
+try:
+    from .local import *
+except ImportError:
+    pass

@@ -3,12 +3,17 @@
 Article models
 ==============
 
+TODO:
+    Make a base view class to include in context some possible Lotus global
+    context. For now this will be only the "admin mode", so the links can be
+    augmented to include it everywhere to maintain mode during navigation.
 """
 import datetime
 
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import activate
 from django.urls import reverse
 from django.utils import timezone
 
@@ -277,15 +282,49 @@ class Article(Translated):
         """
         Return absolute URL to the article detail view.
 
-        TODO:
-            Make the real url with slug+date+time and conditional language.
-
         Returns:
             string: An URL.
         """
-        return reverse("lotus:article-detail", args=[
-            str(self.id),
-        ])
+        # Force the article language to get the right url independently of the current
+        # browser language
+        activate(self.language)
+
+        return reverse("lotus:article-detail", kwargs={
+            "year": self.publish_date.year,
+            "month": self.publish_date.month,
+            "day": self.publish_date.day,
+            "slug": self.slug,
+        })
+
+    def get_authors(self):
+        """
+        Return article authors.
+
+        Returns:
+            queryset: List of article authors.
+        """
+        return self.authors.all().order_by("first_name", "last_name")
+
+    def get_categories(self):
+        """
+        Return article categories, results are enforced on article language.
+
+        Returns:
+            queryset: List of article categories.
+        """
+        return self.categories.get_for_lang(self.language).all().order_by("title")
+
+    def get_related(self):
+        """
+        Return article related articles, results are enforced on article language.
+
+        TODO:
+            Order is dumb, must set the right ones.
+
+        Returns:
+            queryset: List of related articles.
+        """
+        return self.related.get_for_lang(self.language).all().order_by("title")
 
     def publish_datetime(self):
         """

@@ -22,7 +22,7 @@ def safe_get_user_model():
 
 class AuthorManagerEnabled(models.Model):
     """
-    Proxy model manager to avoid overriding of the default User's manager:
+    Proxy model manager to avoid overriding default User's manager:
 
     https://docs.djangoproject.com/en/dev/topics/db/models/#proxy-model-managers
     """
