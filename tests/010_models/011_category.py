@@ -5,7 +5,6 @@ import pytest
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
-from django.urls import reverse
 
 from lotus.factories import CategoryFactory, multilingual_category
 from lotus.models import Category
@@ -24,13 +23,8 @@ def test_category_basic(settings, db):
     category.full_clean()
     category.save()
 
-    url = reverse("lotus:category-detail", args=[
-        str(category.id)
-    ])
-
     assert 1 == Category.objects.filter(title="Foo").count()
     assert "Foo" == category.title
-    assert url == category.get_absolute_url()
 
 
 def test_category_required_fields(db):

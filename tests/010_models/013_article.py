@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils import timezone
-from django.urls import reverse
 
 from lotus.factories import (
     ArticleFactory, CategoryFactory, multilingual_article,
@@ -28,13 +27,8 @@ def test_article_basic(db):
     article.full_clean()
     article.save()
 
-    url = reverse("lotus:article-detail", args=[
-        str(article.id)
-    ])
-
     assert 1 == Article.objects.filter(title="Bar").count()
     assert "Bar" == article.title
-    assert url == article.get_absolute_url()
 
 
 def test_article_required_fields(db):

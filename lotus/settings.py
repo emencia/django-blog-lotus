@@ -12,7 +12,7 @@ Category per page limit for pagination, set it to ``None`` to disable
 pagination.
 """
 
-LOTUS_ARTICLE_PAGINATION = 6
+LOTUS_ARTICLE_PAGINATION = 10
 """
 Article entry per page limit for pagination, set it to ``None`` to disable
 pagination.
