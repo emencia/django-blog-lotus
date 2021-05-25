@@ -16,7 +16,6 @@ class CategoryIndexView(ListView):
     context_object_name = "category_list"
 
 
-
 class CategoryDetailView(SingleObjectMixin, ListView):
     """
     Category detail and its related article list

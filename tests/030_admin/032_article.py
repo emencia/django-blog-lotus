@@ -456,11 +456,11 @@ def test_article_admin_modelchoice_create_labels(db, admin_client):
     Admin create form should have language names in model choices fields.
     """
     # Create new objects
-    cat_en = CategoryFactory(title="garlic", language="en")
-    cat_fr = CategoryFactory(title="ail", language="fr")
+    CategoryFactory(title="garlic", language="en")
+    CategoryFactory(title="ail", language="fr")
 
-    obj_en = ArticleFactory(title="egg", language="en")
-    obj_fr = ArticleFactory(title="baguette", language="fr")
+    ArticleFactory(title="egg", language="en")
+    ArticleFactory(title="baguette", language="fr")
 
     # Build form and get its simple HTML representation to parse it
     f = ArticleAdminForm()
@@ -492,12 +492,12 @@ def test_article_admin_modelchoice_change_labels(db, admin_client):
     Admin change form should have language names in model choices fields.
     """
     # Create new objects
-    cat_en = CategoryFactory(title="garlic", language="en")
-    cat_fr = CategoryFactory(title="ail", language="fr")
+    CategoryFactory(title="garlic", language="en")
+    CategoryFactory(title="ail", language="fr")
 
-    obj_en = ArticleFactory(title="egg", language="en")
+    ArticleFactory(title="egg", language="en")
     obj_fr = ArticleFactory(title="baguette", language="fr")
-    obj_fr_bis = ArticleFactory(title="omelette", language="fr")
+    ArticleFactory(title="omelette", language="fr")
 
     # Build form and get its simple HTML representation to parse it
     f = ArticleAdminForm({}, instance=obj_fr)

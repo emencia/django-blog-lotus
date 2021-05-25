@@ -1,14 +1,12 @@
 import datetime
-import os
 
 import pytest
 
 from django.urls import reverse
 from django.utils import timezone
 
-from lotus.models import Article
 from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
-from lotus.choices import STATUS_DRAFT, STATUS_PUBLISHED
+from lotus.choices import STATUS_DRAFT
 
 from lotus.utils.tests import html_pyquery
 
@@ -298,14 +296,13 @@ def test_article_view_detail_relation(db, admin_client, client):
     TODO
         Ensure correct relation are output in HTML
     """
-    now = timezone.now()
-    past_hour = now - datetime.timedelta(hours=1)
+    # now = timezone.now()
 
     cat_1 = CategoryFactory(title="cat_1")
-    cat_2 = CategoryFactory(title="cat_2")
-    cat_3 = CategoryFactory(title="cat_3")
+    CategoryFactory(title="cat_2")
+    CategoryFactory(title="cat_3")
 
-    article_1 = ArticleFactory()
+    ArticleFactory()
     article_2 = ArticleFactory()
     article_3 = ArticleFactory(
         fill_categories=[cat_1],

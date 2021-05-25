@@ -3,14 +3,13 @@ from django.http import Http404
 from django.views.generic import DetailView, ListView
 from django.utils.translation import gettext as _
 
-
-from ..choices import STATUS_PUBLISHED
 from ..models import Article
 
 """
 TODO:
     Finish basic implementation and TEST IT
 """
+
 
 class ArticleIndexView(ListView):
     """

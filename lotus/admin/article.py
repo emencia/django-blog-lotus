@@ -129,5 +129,6 @@ class ArticleAdmin(admin.ModelAdmin):
         """
         return obj.get_absolute_url() + "?admin=1"
 
+
 # Registering interface to model
 admin.site.register(Article, ArticleAdmin)
