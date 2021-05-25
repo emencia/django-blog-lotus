@@ -35,7 +35,7 @@ class ArticleIndexView(ListView):
         if not self.request.user.is_authenticated:
             q = q.filter(private=False)
 
-        return q.order_by("-pinned", "publish_date")
+        return q.order_by("-pinned", "-publish_date", "-publish_time", "title")
 
 
 class ArticleDetailView(DetailView):

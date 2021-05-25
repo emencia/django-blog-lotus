@@ -14,7 +14,7 @@
                 <a href="{{ article.get_absolute_url }}">{{ article.title }}</a>
             </h3>
 
-            <ul>
+            <ul class="categories">
                 {% for category in article.get_categories %}
                 <li>{{ category.title }}</li>
                 {% endfor %}

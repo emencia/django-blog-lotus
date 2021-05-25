@@ -8,14 +8,14 @@
     <h2>{{ article_object.title }}</h2>
 
     <p>Categories</p>
-    <ul>
+    <ul class="categories">
         {% for category in article_object.get_categories %}
         <li>{{ category.title }}</li>
         {% endfor %}
     </ul>
 
     <p>Authors</p>
-    <ul>
+    <ul class="authors">
         {% for author in article_object.get_authors %}
         <li>{{ author.get_full_name }}</li>
         {% endfor %}
@@ -36,7 +36,7 @@
     <div class="content">{{ article_object.content|safe }}</div>
 
     <p>Related articles</p>
-    <ul>
+    <ul class="relateds">
         {% for related in article_object.get_related %}
         <li>{{ related.title }}</li>
         {% endfor %}
