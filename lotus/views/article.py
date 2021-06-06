@@ -5,15 +5,10 @@ from django.utils.translation import gettext as _
 
 from ..models import Article
 
-"""
-TODO:
-    Finish basic implementation and TEST IT
-"""
-
 
 class ArticleIndexView(ListView):
     """
-    List of categories
+    Paginated list of articles
     """
     model = Article
     template_name = "lotus/article/index.html"
@@ -21,11 +16,6 @@ class ArticleIndexView(ListView):
     context_object_name = "article_list"
 
     def get_queryset(self):
-        """
-        TODO:
-            * Use the right ordering (through testing)
-
-        """
         q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
 
         if not self.request.GET.get("admin") or not self.request.user.is_staff:
@@ -34,7 +24,7 @@ class ArticleIndexView(ListView):
         if not self.request.user.is_authenticated:
             q = q.filter(private=False)
 
-        return q.order_by("-pinned", "-publish_date", "-publish_time", "title")
+        return q.order_by(*Article.COMMON_ORDER_BY)
 
 
 class ArticleDetailView(DetailView):

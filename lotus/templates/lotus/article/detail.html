@@ -4,13 +4,13 @@
 {% block head_title %}{{ article_object.title }} - {{ block.super }}{% endblock head_title %}
 
 {% block lotus_content %}{% spaceless %}
-<div class="article-detail{% if article_object.featured %} featured{% endif %}{% if article_object.pinned %} pinned{% endif %}{% if article_object.status < 10 %} draft{% endif %}">
+<div class="article-detail{% if article_object.featured %} featured{% endif %}{% if article_object.pinned %} pinned{% endif %}{% if article_object.status < 10 %} draft{% endif %}{% if article_object.private %} private{% endif %}">
     <h2>{{ article_object.title }}</h2>
 
     <p>Categories</p>
     <ul class="categories">
         {% for category in article_object.get_categories %}
-        <li>{{ category.title }}</li>
+        <li><a href="{{ category.get_absolute_url }}">{{ category.title }}</a></li>
         {% endfor %}
     </ul>
 
@@ -38,7 +38,7 @@
     <p>Related articles</p>
     <ul class="relateds">
         {% for related in article_object.get_related %}
-        <li>{{ related.title }}</li>
+        <li><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
         {% endfor %}
     </ul>
 </div>

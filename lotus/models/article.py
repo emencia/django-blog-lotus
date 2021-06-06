@@ -247,6 +247,11 @@ class Article(Translated):
     Optional related article.
     """
 
+    COMMON_ORDER_BY = ["-pinned", "-publish_date", "-publish_time", "title"]
+    """
+    List of field order commonly used in frontend view/api
+    """
+
     objects = ArticleManager()
 
     class Meta:
@@ -324,7 +329,9 @@ class Article(Translated):
         Returns:
             queryset: List of related articles.
         """
-        return self.related.get_for_lang(self.language).all().order_by("title")
+        return self.related.get_for_lang(self.language).all().order_by(
+            *self.COMMON_ORDER_BY
+        )
 
     def publish_datetime(self):
         """

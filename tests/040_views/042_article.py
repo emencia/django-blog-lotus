@@ -276,6 +276,9 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
     # Get all available items from HTML page
     urlname = "lotus:article-index"
     response = enabled_client.get(reverse(urlname), client_kwargs)
+    assert response.status_code == 200
+
+    # Parse HTML
     dom = html_pyquery(response)
     items = dom.find("#lotus-content .article-list-container .list .item")
 
@@ -290,26 +293,55 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
     assert content == expected
 
 
-@pytest.mark.skip(reason="Todo")
-def test_article_view_detail_relation(db, admin_client, client):
+def test_article_view_detail_content(db, admin_client):
     """
-    TODO
-        Ensure correct relation are output in HTML
+    Detail view should contain all expected content and relations.
+
+    Note we are requesting with admin mode to be able to see a draft
+    article to check for the "draft" CSS class.
+
+    Also, this does not care about textual content (title, lead, content, etc..).
     """
-    # now = timezone.now()
+    picsou = AuthorFactory(first_name="Picsou", last_name="McDuck")
+    AuthorFactory(first_name="Flairsou", last_name="Cresus")
 
     cat_1 = CategoryFactory(title="cat_1")
     CategoryFactory(title="cat_2")
     CategoryFactory(title="cat_3")
 
-    ArticleFactory()
-    article_2 = ArticleFactory()
+    ArticleFactory(title="Foo")
+    article_2 = ArticleFactory(title="Bar")
     article_3 = ArticleFactory(
+        title="Ping",
         fill_categories=[cat_1],
         fill_related=[article_2],
+        fill_authors=[picsou],
+        status=STATUS_DRAFT,
+        pinned=True,
+        featured=True,
+        private=True,
     )
 
-    response = client.get(article_3.get_absolute_url())
+    # Get detail HTML page
+    response = admin_client.get(article_3.get_absolute_url(), {'admin': 1})
     assert response.status_code == 200
 
-    assert "TODO" == "Nope"
+    # Parse HTML response to get content and relations
+    dom = html_pyquery(response)
+    container = dom.find("#lotus-content .article-detail")[0]
+    categories = [item.text for item in dom.find("#lotus-content .categories li a")]
+    authors = [item.text for item in dom.find("#lotus-content .authors li")]
+    relateds = [item.text for item in dom.find("#lotus-content .relateds li a")]
+    cover = dom.find("#lotus-content .cover img")[0].get("src")
+    large_img = dom.find("#lotus-content .image img")[0].get("src")
+    classes = sorted([
+        v for v in container.get("class").split()
+        if v != "article-detail"
+    ])
+
+    assert categories == ["cat_1"]
+    assert authors == ["Picsou McDuck"]
+    assert relateds == ["Bar"]
+    assert classes == ["draft", "featured", "pinned", "private"]
+    assert cover == article_3.cover.url
+    assert large_img == article_3.image.url
