@@ -255,7 +255,6 @@ class Article(Translated):
     objects = ArticleManager()
 
     class Meta:
-        ordering = ["title"]
         ordering = [
             "-publish_date",
             "-publish_time",
@@ -322,9 +321,6 @@ class Article(Translated):
     def get_related(self):
         """
         Return article related articles, results are enforced on article language.
-
-        TODO:
-            Order is dumb, must set the right ones.
 
         Returns:
             queryset: List of related articles.

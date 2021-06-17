@@ -6,7 +6,10 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
 
-from lotus.factories import CategoryFactory, multilingual_category
+from lotus.factories import (
+    ArticleFactory, CategoryFactory,
+    multilingual_category, multilingual_article,
+)
 from lotus.models import Category
 from lotus.utils.imaging import create_image_file
 from lotus.utils.tests import queryset_values
@@ -243,3 +246,87 @@ def test_category_model_file_purge(db):
     # untouched
     assert os.path.exists(pong_path) is False
     assert os.path.exists(pong.cover.path) is True
+
+
+def test_category_get_articles(db):
+    """
+    Demonstrate how to get category related articles.
+    """
+    ping = CategoryFactory()
+    pong = CategoryFactory()
+
+    foo = multilingual_article(
+        slug="foo",
+        langs=["fr"],
+        fill_categories=[ping, pong],
+        contents={
+            "fr": {
+                "slug": "fou",
+                "fill_categories": [ping, pong],
+            }
+        },
+    )
+
+    bar = multilingual_article(
+        slug="bar",
+        langs=["fr"],
+        fill_categories=[ping],
+        contents={
+            "fr": {
+                "slug": "barre",
+                "fill_categories": [ping, pong],
+            }
+        },
+    )
+
+    moo = multilingual_article(
+        slug="moo",
+        fill_categories=[ping],
+    )
+
+    yeah = multilingual_article(
+        slug="yeah",
+        langs=["fr"],
+        fill_categories=[pong],
+        contents={
+            "fr": {
+                "slug": "ouais",
+                "fill_categories": [ping],
+            }
+        },
+    )
+
+    nope = multilingual_article(slug="nope")
+
+    ping_articles = [
+        (item.slug, item.language)
+        for item in ping.get_articles()
+    ]
+
+    pong_articles = [
+        (item.slug, item.language)
+        for item in pong.get_articles()
+    ]
+
+    # Get unordered queryset then order by slug to avoid arbitrary order
+    unordered_ping_articles = [
+        (item.slug, item.language)
+        for item in ping.get_articles(ordered=False).order_by("slug")
+    ]
+
+    assert ping_articles == [
+        ("moo", "en"),
+        ("bar", "en"),
+        ("foo", "en"),
+    ]
+
+    assert pong_articles == [
+        ("yeah", "en"),
+        ("foo", "en"),
+    ]
+
+    assert unordered_ping_articles == [
+        ("bar", "en"),
+        ("foo", "en"),
+        ("moo", "en"),
+    ]

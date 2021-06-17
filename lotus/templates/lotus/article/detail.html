@@ -1,6 +1,7 @@
 {% extends "lotus/base.html" %}
 {% load i18n %}
 
+{% comment %}TODO: This lacks of usage of "lead" field to add header meta description{% endcomment %}
 {% block head_title %}{{ article_object.title }} - {{ block.super }}{% endblock head_title %}
 
 {% block lotus_content %}{% spaceless %}

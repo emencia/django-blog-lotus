@@ -24,7 +24,7 @@ class ArticleIndexView(ListView):
         if not self.request.user.is_authenticated:
             q = q.filter(private=False)
 
-        return q.order_by(*Article.COMMON_ORDER_BY)
+        return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
 class ArticleDetailView(DetailView):

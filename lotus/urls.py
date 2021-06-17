@@ -22,7 +22,7 @@ urlpatterns = [
 
     path("categories/", CategoryIndexView.as_view(), name="category-index"),
     path(
-        "categories/<int:category_pk>/",
+        "categories/<slug:slug>/",
         CategoryDetailView.as_view(),
         name="category-detail"
     ),
