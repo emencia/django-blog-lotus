@@ -1,0 +1,18 @@
+{% extends "lotus/base.html" %}
+{% load i18n %}
+
+{% block head_title %}Index - {{ block.super }}{% endblock head_title %}
+
+{% block lotus_content %}{% spaceless %}
+<div class="article-list-container">
+    <h2 class="title">{% blocktrans %}Article list{% endblocktrans %}</h2>
+
+    <div class="list">
+        {% for article in article_list %}
+        {% include "lotus/article/item.html" with article_object=article %}
+        {% endfor %}
+    </div>
+
+    {% include "lotus/pagination.html" %}
+</div>
+{% endspaceless %}{% endblock lotus_content %}

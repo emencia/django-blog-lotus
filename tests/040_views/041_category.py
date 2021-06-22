@@ -11,7 +11,7 @@ from lotus.choices import STATUS_DRAFT
 from lotus.utils.tests import html_pyquery
 
 
-def test_article_view_detail_404(db, client):
+def test_category_view_detail_404(db, client):
     """
     Trying to get unexisting Category should return a 404 response.
     """
@@ -27,19 +27,32 @@ def test_article_view_detail_404(db, client):
     assert response.status_code == 404
 
 
-def test_article_view_detail_success(db, client):
+def test_category_view_detail_success(db, client):
     """
     Category detail page should have category contents and related articles.
 
     TODO:
         Related articles.
     """
-    picsou_category = CategoryFactory(
+    category_picsou = CategoryFactory(
         title="Picsou",
         slug="picsou",
     )
 
-    response = client.get(picsou_category.get_absolute_url())
+    ArticleFactory(title="Nope")
+    article_foo = ArticleFactory(
+        title="Foo",
+    )
+    article_bar = ArticleFactory(
+        title="Bar",
+        fill_categories=[category_picsou],
+        status=STATUS_DRAFT,
+        pinned=True,
+        featured=True,
+        private=True,
+    )
+
+    response = client.get(category_picsou.get_absolute_url())
     assert response.status_code == 200
 
     # Parse HTML
@@ -47,14 +60,27 @@ def test_article_view_detail_success(db, client):
     title = dom.find("#lotus-content .category-detail h2")[0].text
     cover = dom.find("#lotus-content .cover img")[0].get("src")
 
-    assert title == picsou_category.title
-    assert cover == picsou_category.cover.url
+    assert title == category_picsou.title
+    assert cover == category_picsou.cover.url
+
+    # Get articles
+    items = dom.find("#lotus-content .category-detail .articles .item")
+
+    # Get useful content from list items
+    content = []
+    for item in items:
+        title = item.cssselect("h3 > a")[0].text
+        # Drop item class since it's useless for test
+        classes = [v for v in item.get("class").split() if v != "item"]
+        content.append([title, classes])
+
+    print(content)
 
     assert 1 == 42
 
 
 @pytest.mark.skip(reason="To do when detail has been covered")
-def test_article_view_list(db, admin_client, client):
+def test_category_view_list(db, admin_client, client):
     """
     TODO
     """

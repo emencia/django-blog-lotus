@@ -10,7 +10,7 @@ class CategoryIndexView(ListView):
     List of categories
     """
     model = Category
-    template_name = "lotus/category/index.html"
+    template_name = "lotus/category/list.html"
     paginate_by = settings.LOTUS_CATEGORY_PAGINATION
     context_object_name = "category_list"
 

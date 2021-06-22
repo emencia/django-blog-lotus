@@ -1,0 +1,21 @@
+{% load i18n %}{% spaceless %}
+<div class="item{% if article_object.pinned %} pinned{% endif %}{% if article_object.featured %} featured{% endif %}{% if article_object.status < 10 %} draft{% endif %}">
+    <h3>
+        <a href="{{ article_object.get_absolute_url }}">{{ article_object.title }}</a>
+    </h3>
+
+    <ul class="categories">
+        {% for category in article_object.get_categories %}
+        <li>{{ category.title }}</li>
+        {% endfor %}
+    </ul>
+
+    <p class="publish">{{ article_object.publish_datetime }}</p>
+
+    <p class="cover">{% if article_object.cover %}
+        <img src="{{ article_object.cover.url }}" alt="">
+    {% endif %}</p>
+
+    <div class="introduction">{{ article_object.introduction|safe }}</div>
+</div>
+{% endspaceless %}

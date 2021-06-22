@@ -13,5 +13,14 @@
     {% endif %}</p>
 
     <div class="description">{{ category_object.description|safe }}</div>
+
+    <p>Articles</p>
+    <div class="articles">
+        {% comment %}TODO: Usage of get_articles is too much naive, view have to apply
+        publication filtering on this list{% endcomment %}
+        {% for article in category_object.get_articles %}
+        {% include "lotus/article/item.html" with article_object=article %}
+        {% endfor %}
+    </div>
 </div>
 {% endspaceless %}{% endblock lotus_content %}

@@ -11,7 +11,7 @@ class ArticleIndexView(ListView):
     Paginated list of articles
     """
     model = Article
-    template_name = "lotus/article/index.html"
+    template_name = "lotus/article/list.html"
     paginate_by = settings.LOTUS_ARTICLE_PAGINATION
     context_object_name = "article_list"
 
