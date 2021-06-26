@@ -1,4 +1,4 @@
-{% spaceless %}{% if paginator %}
+{% spaceless %}{% if paginator and paginator.num_pages > 1 %}
     <div class="pagination">
     {% for page_num in paginator.page_range %}
         <a href="?page={{ page_num }}"

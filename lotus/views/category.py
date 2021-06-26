@@ -3,6 +3,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 
 from ..models import Article, Category
+from .article import ArticleFilterMixin
 
 
 class CategoryIndexView(ListView):
@@ -20,7 +21,7 @@ class CategoryIndexView(ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class CategoryDetailView(SingleObjectMixin, ListView):
+class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
     """
     Category detail and its related article list
 
@@ -53,11 +54,7 @@ class CategoryDetailView(SingleObjectMixin, ListView):
         """
         q = self.object.get_articles(ordered=False).get_for_lang(self.request.LANGUAGE_CODE)
 
-        if not self.request.GET.get("admin") or not self.request.user.is_staff:
-            q = q.get_published()
-
-        if not self.request.user.is_authenticated:
-            q = q.filter(private=False)
+        q = self.apply_article_lookups(q)
 
         return q.order_by(*self.listed_model.COMMON_ORDER_BY)
 

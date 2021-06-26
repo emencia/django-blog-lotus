@@ -6,7 +6,27 @@ from django.utils.translation import gettext as _
 from ..models import Article
 
 
-class ArticleIndexView(ListView):
+class ArticleFilterMixin:
+    """
+    A mixin to share Article filtering
+    """
+    def apply_article_lookups(self, queryset):
+        """
+        Apply publication lookups to given queryset without ordering.
+        """
+        if (
+            not self.request.GET.get("admin") or
+            not self.request.user.is_staff
+        ):
+            queryset = queryset.get_published()
+
+        if not self.request.user.is_authenticated:
+            queryset = queryset.filter(private=False)
+
+        return queryset
+
+
+class ArticleIndexView(ArticleFilterMixin, ListView):
     """
     Paginated list of articles
     """
@@ -18,16 +38,12 @@ class ArticleIndexView(ListView):
     def get_queryset(self):
         q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
 
-        if not self.request.GET.get("admin") or not self.request.user.is_staff:
-            q = q.get_published()
-
-        if not self.request.user.is_authenticated:
-            q = q.filter(private=False)
+        q = self.apply_article_lookups(q)
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class ArticleDetailView(DetailView):
+class ArticleDetailView(ArticleFilterMixin, DetailView):
     """
     Article detail
     """
@@ -49,11 +65,7 @@ class ArticleDetailView(DetailView):
         """
         q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
 
-        if not self.request.GET.get("admin") or not self.request.user.is_staff:
-            q = q.get_published()
-
-        if not self.request.user.is_authenticated:
-            q = q.filter(private=False)
+        q = self.apply_article_lookups(q)
 
         return q
 

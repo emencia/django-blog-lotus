@@ -42,6 +42,7 @@ def test_category_view_detail_success(db, client):
     ArticleFactory(title="Nope")
     article_foo = ArticleFactory(
         title="Foo",
+        fill_categories=[category_picsou],
     )
     article_bar = ArticleFactory(
         title="Bar",
@@ -74,7 +75,10 @@ def test_category_view_detail_success(db, client):
         classes = [v for v in item.get("class").split() if v != "item"]
         content.append([title, classes])
 
-    print(content)
+    assert content == [
+        ["Bar", ["pinned", "featured", "draft"]],
+        ["Foo", []]
+    ]
 
     assert 1 == 42
 
