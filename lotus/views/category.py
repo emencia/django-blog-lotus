@@ -52,7 +52,7 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
 
         Depend on "self.object" to list Category related objects.
         """
-        q = self.object.get_articles(ordered=False).get_for_lang(self.request.LANGUAGE_CODE)
+        q = self.object.get_articles(ordered=False)
 
         q = self.apply_article_lookups(q)
 

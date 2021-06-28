@@ -140,7 +140,7 @@ class Category(Translated):
         Returns:
             queryset: List of related articles.
         """
-        q = self.articles.get_for_lang(self.language).all()
+        q = self.articles.get_for_lang(self.language)
 
         if ordered:
             return q.order_by(
