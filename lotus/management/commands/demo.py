@@ -16,7 +16,7 @@ class Command(BaseCommand):
     Demo data maker.
 
     TODO:
-        * Implement Category and Article translations;
+        * Implement translations for Category and Article;
     """
     help = (
         "Create Author, Article and Category objects for demonstration purpose."

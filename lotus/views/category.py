@@ -23,11 +23,7 @@ class CategoryIndexView(ListView):
 
 class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
     """
-    Category detail and its related article list
-
-    TODO:
-        To finish when new model test has been added about getting category related
-        articles.
+    Category detail and its related article list.
     """
     pk_url_kwarg = "category_pk"
     model = Category
@@ -35,7 +31,7 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
     template_name = "lotus/category/detail.html"
     paginate_by = settings.LOTUS_ARTICLE_PAGINATION
     context_object_name = "category_object"
-    slug_url_kwarg = 'slug'
+    slug_url_kwarg = "slug"
     pk_url_kwarg = None
 
     def get_queryset_for_object(self):
@@ -59,6 +55,7 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
         return q.order_by(*self.listed_model.COMMON_ORDER_BY)
 
     def get(self, request, *args, **kwargs):
+        # Try to get Category object
         self.object = self.get_object(queryset=self.get_queryset_for_object())
 
         return super().get(request, *args, **kwargs)

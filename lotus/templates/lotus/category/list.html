@@ -2,7 +2,15 @@
 {% load i18n %}
 
 {% block lotus_content %}{% spaceless %}
-<div class="category-list">
-    <h2>category-list</h2>
+<div class="category-list-container">
+    <h2 class="title">{% blocktrans %}Category list{% endblocktrans %}</h2>
+
+    <div class="list">
+        {% for category in category_list %}
+        {% include "lotus/category/item.html" with category_object=category %}
+        {% endfor %}
+    </div>
+
+    {% include "lotus/pagination.html" %}
 </div>
 {% endspaceless %}{% endblock lotus_content %}

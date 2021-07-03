@@ -1,0 +1,11 @@
+{% load i18n %}{% spaceless %}
+<div class="item">
+    <h3>
+        <a href="{{ category_object.get_absolute_url }}">{{ category_object.title }}</a>
+    </h3>
+
+    <p class="cover">{% if category_object.cover %}
+        <img src="{{ category_object.cover.url }}" alt="">
+    {% endif %}</p>
+</div>
+{% endspaceless %}

@@ -214,7 +214,6 @@ def test_category_view_detail_pagination(db, client):
     # Parse HTML
     dom = html_pyquery(response)
     pagination = dom.find("#lotus-content .category-detail .articles .pagination")
-    #pagination = dom.find("#lotus-content .category-detail .articles .pagination a")
 
     # No pagination HTML is displayed when limit have not been reached
     assert len(pagination) == 0
@@ -238,9 +237,60 @@ def test_category_view_detail_pagination(db, client):
     assert len(items) == 1
 
 
-@pytest.mark.skip(reason="To do when detail has been covered")
-def test_category_view_list(db, admin_client, client):
+#@pytest.mark.skip(reason="To do when detail has been covered")
+def test_category_view_list(db, client):
     """
-    TODO
+    Category list should be correctly ordered and paginated.
     """
-    assert "TODO" == "NOT YET"
+    expected_pages = 2
+    total_items = settings.LOTUS_CATEGORY_PAGINATION * expected_pages
+
+    # Create a batch of category with numerated name on two digit filled with
+    # leading 0 to enforce sorting
+    names = [
+        "{}.Foo".format(str(i).zfill(2))
+        for i in range(1, total_items + 1)
+    ]
+    for item in names:
+        CategoryFactory(title=item)
+
+    # Expected items in page are simply ordered on name
+    expected_item_page_1 = names[0:settings.LOTUS_CATEGORY_PAGINATION]
+    expected_item_page_2 = names[settings.LOTUS_CATEGORY_PAGINATION:total_items]
+
+    # Get detail for first page
+    urlname = "lotus:category-index"
+    response = client.get(reverse(urlname))
+    assert response.status_code == 200
+
+    # Parse first page HTML
+    dom = html_pyquery(response)
+    items = dom.find("#lotus-content .category-list-container .list .item")
+    links = dom.find("#lotus-content .category-list-container .pagination a")
+    # Get item titles
+    link_title_page_1 = []
+    for item in items:
+        link_title_page_1.append(item.cssselect("h3 > a")[0].text)
+
+    # Expected pagination links
+    assert len(links) == 2
+    # Expected paginated item list length
+    assert len(items) == settings.LOTUS_CATEGORY_PAGINATION
+    # Ensure every expected items are here respecting order
+    assert expected_item_page_1 == link_title_page_1
+
+    # Get detail for second page
+    urlname = "lotus:category-index"
+    response = client.get(reverse(urlname), {"page": 2})
+    assert response.status_code == 200
+
+    # Parse second page HTML
+    dom = html_pyquery(response)
+    items = dom.find("#lotus-content .category-list-container .list .item")
+    # Get item titles
+    link_title_page_2 = []
+    for item in items:
+        link_title_page_2.append(item.cssselect("h3 > a")[0].text)
+
+    # Ensure every expected items are here respecting order
+    assert expected_item_page_2 == link_title_page_2
