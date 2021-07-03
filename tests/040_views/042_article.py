@@ -1,6 +1,7 @@
 import datetime
 
 import pytest
+from freezegun import freeze_time
 
 from django.urls import reverse
 from django.utils import timezone
@@ -39,15 +40,15 @@ def test_article_view_detail_draft(db, admin_client, client):
     assert response.status_code == 404
 
     # Admin mode behavior do not work for non admin users
-    response = client.get(instance.get_absolute_url(), {'admin': 1})
+    response = client.get(instance.get_absolute_url(), {"admin": 1})
     assert response.status_code == 404
 
     client.force_login(user)
-    response = client.get(instance.get_absolute_url(), {'admin': 1})
+    response = client.get(instance.get_absolute_url(), {"admin": 1})
     assert response.status_code == 404
 
     # Admin mode behavior only work for admin users
-    response = admin_client.get(instance.get_absolute_url(), {'admin': 1})
+    response = admin_client.get(instance.get_absolute_url(), {"admin": 1})
     assert response.status_code == 200
 
 
@@ -79,10 +80,11 @@ def test_article_view_detail_publication(db, admin_client, client):
     response = client.get(instance.get_absolute_url())
     assert response.status_code == 404
 
-    response = admin_client.get(instance.get_absolute_url(), {'admin': 1})
+    response = admin_client.get(instance.get_absolute_url(), {"admin": 1})
     assert response.status_code == 200
 
 
+@freeze_time("2010-10-15")
 @pytest.mark.parametrize("user_kind,client_kwargs,expected", [
     (
         "anonymous",
@@ -323,7 +325,7 @@ def test_article_view_detail_content(db, admin_client):
     )
 
     # Get detail HTML page
-    response = admin_client.get(article_3.get_absolute_url(), {'admin': 1})
+    response = admin_client.get(article_3.get_absolute_url(), {"admin": 1})
     assert response.status_code == 200
 
     # Parse HTML response to get content and relations

@@ -19,6 +19,7 @@ help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo
 	@echo "  install             -- to install this project with virtualenv and Pip"
+	@echo "  freeze              -- to create or update 'requirements_freeze.txt' from your current install. Only use this on stable environment."
 	@echo ""
 	@echo "  clean               -- to clean EVERYTHING (Warning)"
 	@echo "  clean-var           -- to clean data (uploaded medias, database, etc..)"
@@ -129,6 +130,10 @@ test-initial:
 
 quality: test-initial flake
 .PHONY: quality
+
+freeze:
+	$(PIP) freeze --exclude-editable --all --local > requirements_freeze.txt
+.PHONY: freeze
 
 release:
 	rm -Rf dist
