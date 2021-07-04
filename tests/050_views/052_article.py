@@ -1,13 +1,14 @@
 import datetime
 
 import pytest
+import pytz
 from freezegun import freeze_time
 
 from django.urls import reverse
-from django.utils import timezone
 
 from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
 from lotus.choices import STATUS_DRAFT
+from lotus.models import Article
 
 from lotus.utils.tests import html_pyquery
 
@@ -67,13 +68,14 @@ def test_article_view_detail_private(db, client):
     assert response.status_code == 200
 
 
+@freeze_time("2012-10-15 10:00:00")
 def test_article_view_detail_publication(db, admin_client, client):
     """
     Publication criteria should be respected to view an Article, excepted for admin
     mode.
     """
-    now = timezone.now()
-    past_hour = now - datetime.timedelta(hours=1)
+    default_tz = pytz.timezone("UTC")
+    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
 
     instance = ArticleFactory(publish_end=past_hour)
 
@@ -84,7 +86,7 @@ def test_article_view_detail_publication(db, admin_client, client):
     assert response.status_code == 200
 
 
-@freeze_time("2010-10-15")
+@freeze_time("2012-10-15 10:00:00")
 @pytest.mark.parametrize("user_kind,client_kwargs,expected", [
     (
         "anonymous",
@@ -92,8 +94,6 @@ def test_article_view_detail_publication(db, admin_client, client):
         [
             # Expected title and CSS classes
             ["05. pinned, published past hour", ["pinned"]],
-            ["09. publish next hour", []],
-            ["10. publish next hour, end tomorrow", []],
             ["04. published past hour", []],
             ["06. featured, published past hour", ["featured"]],
             ["08. published past hour, end next hour", []],
@@ -106,8 +106,6 @@ def test_article_view_detail_publication(db, admin_client, client):
         [
             # Expected title and CSS classes
             ["05. pinned, published past hour", ["pinned"]],
-            ["09. publish next hour", []],
-            ["10. publish next hour, end tomorrow", []],
             ["04. published past hour", []],
             ["06. featured, published past hour", ["featured"]],
             ["08. published past hour, end next hour", []],
@@ -120,8 +118,6 @@ def test_article_view_detail_publication(db, admin_client, client):
         [
             # Expected title and CSS classes
             ["05. pinned, published past hour", ["pinned"]],
-            ["09. publish next hour", []],
-            ["10. publish next hour, end tomorrow", []],
             ["04. published past hour", []],
             ["06. featured, published past hour", ["featured"]],
             ["07. private, published past hour", []],
@@ -135,8 +131,6 @@ def test_article_view_detail_publication(db, admin_client, client):
         [
             # Expected title and CSS classes
             ["05. pinned, published past hour", ["pinned"]],
-            ["09. publish next hour", []],
-            ["10. publish next hour, end tomorrow", []],
             ["04. published past hour", []],
             ["06. featured, published past hour", ["featured"]],
             ["07. private, published past hour", []],
@@ -150,8 +144,6 @@ def test_article_view_detail_publication(db, admin_client, client):
         [
             # Expected title and CSS classes
             ["05. pinned, published past hour", ["pinned"]],
-            ["09. publish next hour", []],
-            ["10. publish next hour, end tomorrow", []],
             ["04. published past hour", []],
             ["06. featured, published past hour", ["featured"]],
             ["07. private, published past hour", []],
@@ -164,16 +156,18 @@ def test_article_view_detail_publication(db, admin_client, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
+            # TODO: New CSS class states for article which have published status but
+            # publish date is not yet or publish end is over
             ["05. pinned, published past hour", ["pinned"]],
-            ["09. publish next hour", []],
-            ["10. publish next hour, end tomorrow", []],
+            ["09. publish next hour", ["to-come"]],
+            ["10. publish next hour, end tomorrow", ["to-come"]],
             ["04. published past hour", []],
             ["06. featured, published past hour", ["featured"]],
             ["07. private, published past hour", []],
             ["08. published past hour, end next hour", []],
             ["01. draft yesterday", ["draft"]],
             ["02. published yesterday", []],
-            ["03. published yesterday, ended one hour ago", []],
+            ["03. published yesterday, ended one hour ago", ["past"]],
         ],
     ),
 ])
@@ -200,11 +194,11 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
     }
 
     # Date references
-    now = timezone.now()
-    yesterday = now - datetime.timedelta(days=1)
-    past_hour = now - datetime.timedelta(hours=1)
-    tomorrow = now + datetime.timedelta(days=1)
-    next_hour = now + datetime.timedelta(hours=1)
+    default_tz = pytz.timezone("UTC")
+    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
+    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 00))
 
     # Create 10 articles (according to pagination limit) with different publication
     # parameters

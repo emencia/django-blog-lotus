@@ -1,5 +1,7 @@
 {% load i18n %}{% spaceless %}
-<div class="item{% if article_object.pinned %} pinned{% endif %}{% if article_object.featured %} featured{% endif %}{% if article_object.status < 10 %} draft{% endif %}">
+{% comment %}<div class="item{% if article_object.pinned %} pinned{% endif %}{% if article_object.featured %} featured{% endif %}{% if article_object.status < 10 %} draft{% endif %}
+{% if article_object.publish_datetime < lotus_now %} past{% endif %}{% if article_object.publish_datetime > lotus_now %} to-come{% endif %}">{% endcomment %}
+<div class="item{% for name in article_object.get_states %} {{ name }}{% endfor %}">
     <h3>
         <a href="{{ article_object.get_absolute_url }}">{{ article_object.title }}</a>
     </h3>

@@ -1,5 +1,8 @@
 import datetime
 
+import pytz
+from freezegun import freeze_time
+
 from django.utils import timezone
 
 from lotus.factories import ArticleFactory, multilingual_article
@@ -8,16 +11,21 @@ from lotus.utils.tests import queryset_values
 from lotus.choices import STATUS_DRAFT
 
 
+@freeze_time("2012-10-15 10:00:00")
 def test_article_managers(db):
     """
     Article manager should be able to correctly filter on language and
     publication.
     """
-    now = timezone.now()
-    yesterday = now - datetime.timedelta(days=1)
-    tomorrow = now + datetime.timedelta(days=1)
+    default_tz = pytz.timezone("UTC")
+
+    # Craft dates
+    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
+    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 00))
     # Today 5min sooner to avoid shifting with pytest and factory delays
-    today = now - datetime.timedelta(minutes=5)
+    today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
 
     # Single language only
     common_kwargs = {
@@ -69,13 +77,20 @@ def test_article_managers(db):
         publish_date=yesterday.date(),
         publish_time=yesterday.time(),
     )
-    # All lang and publish ends tomorrow, still available for publication
+    # All lang and publish later, still available for publication
     multilingual_article(
-        slug="shortlife-today",
+        slug="shortlife-to-tomorrow",
         langs=["fr", "de"],
         publish_date=today.date(),
         publish_time=today.time(),
         publish_end=tomorrow,
+    )
+    multilingual_article(
+        slug="shortlife-to-nexthour",
+        langs=["fr", "de"],
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=next_hour,
     )
     # All lang but not available for publication
     multilingual_article(
@@ -91,21 +106,27 @@ def test_article_managers(db):
         publish_time=today.time(),
         publish_end=yesterday,
     )
+    multilingual_article(
+        slug="will-be-next-hour",
+        langs=["fr", "de"],
+        publish_date=next_hour.date(),
+        publish_time=next_hour.time(),
+    )
 
     # Check all english articles
-    assert Article.objects.get_for_lang().count() == 9
+    assert Article.objects.get_for_lang().count() == 11
 
     # Check all french articles
-    assert Article.objects.get_for_lang("fr").count() == 8
+    assert Article.objects.get_for_lang("fr").count() == 10
 
     # Check all french articles
-    assert Article.objects.get_for_lang("de").count() == 8
+    assert Article.objects.get_for_lang("de").count() == 10
 
     # Check all published
-    assert Article.objects.get_published().count() == 18
+    assert Article.objects.get_published().count() == 21
 
     # Check all unpublished
-    assert Article.objects.get_unpublished().count() == 7
+    assert Article.objects.get_unpublished().count() == 10
 
     # Check all english published
     q_en_published = Article.objects.get_for_lang().get_published()
@@ -114,7 +135,8 @@ def test_article_managers(db):
         {"slug": "burger", "language": "en"},
         {"slug": "cheese", "language": "en"},
         {"slug": "english", "language": "en"},
-        {"slug": "shortlife-today", "language": "en"},
+        {"slug": "shortlife-to-nexthour", "language": "en"},
+        {"slug": "shortlife-to-tomorrow", "language": "en"},
         {"slug": "yesterday", "language": "en"},
     ]
 
@@ -124,7 +146,8 @@ def test_article_managers(db):
         {"slug": "banana", "language": "fr"},
         {"slug": "cheese", "language": "fr"},
         {"slug": "french", "language": "fr"},
-        {"slug": "shortlife-today", "language": "fr"},
+        {"slug": "shortlife-to-nexthour", "language": "fr"},
+        {"slug": "shortlife-to-tomorrow", "language": "fr"},
         {"slug": "wurst", "language": "fr"},
         {"slug": "yesterday", "language": "fr"},
     ]
@@ -135,7 +158,8 @@ def test_article_managers(db):
         {"slug": "burger", "language": "de"},
         {"slug": "cheese", "language": "de"},
         {"slug": "deutsch", "language": "de"},
-        {"slug": "shortlife-today", "language": "de"},
+        {"slug": "shortlife-to-nexthour", "language": "de"},
+        {"slug": "shortlife-to-tomorrow", "language": "de"},
         {"slug": "wurst", "language": "de"},
         {"slug": "yesterday", "language": "de"},
     ]

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.http import Http404
 from django.views.generic import DetailView, ListView
 from django.utils.translation import gettext as _
+from django.utils import timezone
 
 from ..models import Article
 
@@ -14,16 +15,27 @@ class ArticleFilterMixin:
         """
         Apply publication lookups to given queryset without ordering.
         """
+        # Store date checked against as a reference for further usage
+        self.target_date = timezone.now()
+
         if (
             not self.request.GET.get("admin") or
             not self.request.user.is_staff
         ):
-            queryset = queryset.get_published()
+            queryset = queryset.get_published(target_date=self.target_date)
 
         if not self.request.user.is_authenticated:
             queryset = queryset.filter(private=False)
 
         return queryset
+
+    def get_context_data(self, **kwargs):
+        """
+        Expose the date "now" checked against for publication filter.
+        """
+        context = super().get_context_data(**kwargs)
+        context["lotus_now"] = self.target_date
+        return context
 
 
 class ArticleIndexView(ArticleFilterMixin, ListView):

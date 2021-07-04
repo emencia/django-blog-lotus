@@ -19,9 +19,6 @@ class BasePublishedQuerySet(models.QuerySet):
         """
         Return a queryset with published entries selected.
 
-        TODO:
-            "publish_time" is not used in query.
-
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
                 publication target, default to the current datetime.
@@ -38,6 +35,7 @@ class BasePublishedQuerySet(models.QuerySet):
         return self.filter(
             models.Q(**{prefix + "status": STATUS_PUBLISHED}),
             models.Q(**{prefix + "publish_date__lte": target_date.date()}),
+            models.Q(**{prefix + "publish_time__lte": target_date.time()}),
             models.Q(**{prefix + "publish_end__gt": target_date}) |
             models.Q(**{prefix + "publish_end": None}),
         )
@@ -62,6 +60,7 @@ class BasePublishedQuerySet(models.QuerySet):
         return self.exclude(
             models.Q(**{prefix + "status": STATUS_PUBLISHED}),
             models.Q(**{prefix + "publish_date__lte": target_date.date()}),
+            models.Q(**{prefix + "publish_time__lte": target_date.time()}),
             models.Q(**{prefix + "publish_end__gt": target_date}) |
             models.Q(**{prefix + "publish_end": None}),
         )

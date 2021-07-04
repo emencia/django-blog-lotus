@@ -2,12 +2,15 @@ import os
 import datetime
 
 import pytest
+import pytz
+from freezegun import freeze_time
 
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
 from django.utils import timezone
 
+from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
     ArticleFactory, CategoryFactory, multilingual_article,
 )
@@ -410,3 +413,78 @@ def test_article_model_file_purge(db):
     assert os.path.exists(pong_image_path) is False
     assert os.path.exists(pong.cover.path) is True
     assert os.path.exists(pong.image.path) is True
+
+
+def test_article_model_get_states(db):
+    """
+    Object method "get_states" should return the right state names depending object
+    values and publication criterias.
+    """
+    # Date references
+    default_tz = pytz.timezone("UTC")
+    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 00))
+    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
+    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
+    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+
+    article_draft = ArticleFactory(
+        title="draft",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        status=STATUS_DRAFT,
+    )
+    article_pinned = ArticleFactory(
+        title="pinned",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        pinned=True,
+    )
+    article_featured = ArticleFactory(
+        title="featured",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        featured=True,
+    )
+    article_private = ArticleFactory(
+        title="private",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        private=True,
+    )
+    article_yesterday = ArticleFactory(
+        title="published yesterday",
+        publish_date=yesterday.date(),
+        publish_time=yesterday.time(),
+    )
+    article_passed = ArticleFactory(
+        title="published but ended one hour ago",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=past_hour,
+    )
+    article_mixed_available = ArticleFactory(
+        title="pinned, private and ended one hour ago",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=past_hour,
+        pinned=True,
+        private=True,
+    )
+    article_mixed_draft = ArticleFactory(
+        title="draft, pinned, private and ended one hour ago",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=past_hour,
+        status=STATUS_DRAFT,
+        pinned=True,
+        private=True,
+    )
+
+    assert article_draft.get_states(now) == ["draft"]
+    assert article_pinned.get_states(now) == ["pinned", "available"]
+    assert article_featured.get_states(now) == ["featured", "available"]
+    assert article_private.get_states(now) == ["private", "available"]
+    assert article_yesterday.get_states(now) == ["available"]
+    assert article_mixed_draft.get_states(now) == ["pinned", "private", "draft"]
+    assert article_mixed_available.get_states(now) == ["pinned", "private", "available",
+                                                       "passed"]

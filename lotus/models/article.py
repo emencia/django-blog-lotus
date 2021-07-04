@@ -340,6 +340,68 @@ class Article(Translated):
             self.publish_date, self.publish_time
         ).replace(tzinfo=timezone.utc)
 
+    def get_states(self, now=None):
+        """
+        Computate every publication states.
+
+        State names depend from ``settings.ARTICLE_PUBLICATION_STATE_NAMES`` and each
+        state name can be disabled (never raised in states) if their name key have been
+        removed from setting.
+
+        Keywords Arguments:
+            now (datetime.datetime): Commonly the current datetime now  (timezone aware)
+                which have been used in queryset lookup to check for publication
+                availability. It is used to determine if article publish start date is
+                to come next or if article publish end date is over the current date.
+                Empty by default, there will be no state against start/end dates.
+
+        Returns:
+            datetime.datetime: Publish datetime.
+        """
+        ARTICLE_PUBLICATION_STATE_NAMES = {
+            "pinned": "pinned",
+            "featured": "featured",
+            "private": "private",
+            "status_draft": "draft",
+            "status_available": "available",
+            "publish_end_passed": "passed",
+            "publish_start_below": "not-yet",
+        }
+        states = []
+
+        if "pinned" in ARTICLE_PUBLICATION_STATE_NAMES and self.pinned:
+            states.append(ARTICLE_PUBLICATION_STATE_NAMES["pinned"])
+
+        if "featured" in ARTICLE_PUBLICATION_STATE_NAMES and self.featured:
+            states.append(ARTICLE_PUBLICATION_STATE_NAMES["featured"])
+
+        if "private" in ARTICLE_PUBLICATION_STATE_NAMES and self.private:
+            states.append(ARTICLE_PUBLICATION_STATE_NAMES["private"])
+
+        if "status_draft" in ARTICLE_PUBLICATION_STATE_NAMES and self.status < 10:
+            states.append(ARTICLE_PUBLICATION_STATE_NAMES["status_draft"])
+
+        if "status_available" in ARTICLE_PUBLICATION_STATE_NAMES and self.status == 10:
+            states.append(ARTICLE_PUBLICATION_STATE_NAMES["status_available"])
+
+        # Available article can describe if it is below the publish start or over the
+        # publish end
+        if now and self.status == 10:
+            if (
+                "publish_start_below" in ARTICLE_PUBLICATION_STATE_NAMES and
+                self.publish_datetime() > now
+            ):
+                states.append(ARTICLE_PUBLICATION_STATE_NAMES["publish_start_below"])
+
+            if (
+                "publish_end_passed" in ARTICLE_PUBLICATION_STATE_NAMES and
+                self.publish_end and
+                self.publish_end < now
+            ):
+                states.append(ARTICLE_PUBLICATION_STATE_NAMES["publish_end_passed"])
+
+        return states
+
     def save(self, *args, **kwargs):
         # Auto update ``last_update`` value on each save
         self.last_update = timezone.now()
