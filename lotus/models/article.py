@@ -10,6 +10,7 @@ TODO:
 """
 import datetime
 
+from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
@@ -344,7 +345,7 @@ class Article(Translated):
         """
         Computate every publication states.
 
-        State names depend from ``settings.ARTICLE_PUBLICATION_STATE_NAMES`` and each
+        State names depend from ``settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES`` and each
         state name can be disabled (never raised in states) if their name key have been
         removed from setting.
 
@@ -359,47 +360,39 @@ class Article(Translated):
             datetime.datetime: Publish datetime.
         """
         #TODO: This should be a setting.
-        ARTICLE_PUBLICATION_STATE_NAMES = {
-            "pinned": "pinned",
-            "featured": "featured",
-            "private": "private",
-            "status_draft": "draft",
-            "status_available": "available",
-            "publish_end_passed": "passed",
-            "publish_start_below": "not-yet",
-        }
+        state_names = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
         states = []
 
-        if "pinned" in ARTICLE_PUBLICATION_STATE_NAMES and self.pinned:
-            states.append(ARTICLE_PUBLICATION_STATE_NAMES["pinned"])
+        if "pinned" in state_names and self.pinned:
+            states.append(state_names["pinned"])
 
-        if "featured" in ARTICLE_PUBLICATION_STATE_NAMES and self.featured:
-            states.append(ARTICLE_PUBLICATION_STATE_NAMES["featured"])
+        if "featured" in state_names and self.featured:
+            states.append(state_names["featured"])
 
-        if "private" in ARTICLE_PUBLICATION_STATE_NAMES and self.private:
-            states.append(ARTICLE_PUBLICATION_STATE_NAMES["private"])
+        if "private" in state_names and self.private:
+            states.append(state_names["private"])
 
-        if "status_draft" in ARTICLE_PUBLICATION_STATE_NAMES and self.status < 10:
-            states.append(ARTICLE_PUBLICATION_STATE_NAMES["status_draft"])
+        if "status_draft" in state_names and self.status < 10:
+            states.append(state_names["status_draft"])
 
-        if "status_available" in ARTICLE_PUBLICATION_STATE_NAMES and self.status == 10:
-            states.append(ARTICLE_PUBLICATION_STATE_NAMES["status_available"])
+        if "status_available" in state_names and self.status == 10:
+            states.append(state_names["status_available"])
 
         # Available article can describe if it is below the publish start or over the
         # publish end
         if now and self.status == 10:
             if (
-                "publish_start_below" in ARTICLE_PUBLICATION_STATE_NAMES and
+                "publish_start_below" in state_names and
                 self.publish_datetime() > now
             ):
-                states.append(ARTICLE_PUBLICATION_STATE_NAMES["publish_start_below"])
+                states.append(state_names["publish_start_below"])
 
             if (
-                "publish_end_passed" in ARTICLE_PUBLICATION_STATE_NAMES and
+                "publish_end_passed" in state_names and
                 self.publish_end and
                 self.publish_end < now
             ):
-                states.append(ARTICLE_PUBLICATION_STATE_NAMES["publish_end_passed"])
+                states.append(state_names["publish_end_passed"])
 
         return states
 

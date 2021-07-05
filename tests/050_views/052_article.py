@@ -93,11 +93,11 @@ def test_article_view_detail_publication(db, admin_client, client):
         {},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned"]],
-            ["04. published past hour", []],
-            ["06. featured, published past hour", ["featured"]],
-            ["08. published past hour, end next hour", []],
-            ["02. published yesterday", []],
+            ["05. pinned, published past hour", ["pinned", "available"]],
+            ["04. published past hour", ["available"]],
+            ["06. featured, published past hour", ["featured", "available"]],
+            ["08. published past hour, end next hour", ["available"]],
+            ["02. published yesterday", ["available"]],
         ],
     ),
     (
@@ -105,11 +105,11 @@ def test_article_view_detail_publication(db, admin_client, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned"]],
-            ["04. published past hour", []],
-            ["06. featured, published past hour", ["featured"]],
-            ["08. published past hour, end next hour", []],
-            ["02. published yesterday", []],
+            ["05. pinned, published past hour", ["pinned", "available"]],
+            ["04. published past hour", ["available"]],
+            ["06. featured, published past hour", ["featured", "available"]],
+            ["08. published past hour, end next hour", ["available"]],
+            ["02. published yesterday", ["available"]],
         ],
     ),
     (
@@ -117,12 +117,12 @@ def test_article_view_detail_publication(db, admin_client, client):
         {},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned"]],
-            ["04. published past hour", []],
-            ["06. featured, published past hour", ["featured"]],
-            ["07. private, published past hour", []],
-            ["08. published past hour, end next hour", []],
-            ["02. published yesterday", []],
+            ["05. pinned, published past hour", ["pinned", "available"]],
+            ["04. published past hour", ["available"]],
+            ["06. featured, published past hour", ["featured", "available"]],
+            ["07. private, published past hour", ["private", "available"]],
+            ["08. published past hour, end next hour", ["available"]],
+            ["02. published yesterday", ["available"]],
         ],
     ),
     (
@@ -130,12 +130,12 @@ def test_article_view_detail_publication(db, admin_client, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned"]],
-            ["04. published past hour", []],
-            ["06. featured, published past hour", ["featured"]],
-            ["07. private, published past hour", []],
-            ["08. published past hour, end next hour", []],
-            ["02. published yesterday", []],
+            ["05. pinned, published past hour", ["pinned", "available"]],
+            ["04. published past hour", ["available"]],
+            ["06. featured, published past hour", ["featured", "available"]],
+            ["07. private, published past hour", ["private", "available"]],
+            ["08. published past hour, end next hour", ["available"]],
+            ["02. published yesterday", ["available"]],
         ],
     ),
     (
@@ -143,12 +143,12 @@ def test_article_view_detail_publication(db, admin_client, client):
         {},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned"]],
-            ["04. published past hour", []],
-            ["06. featured, published past hour", ["featured"]],
-            ["07. private, published past hour", []],
-            ["08. published past hour, end next hour", []],
-            ["02. published yesterday", []],
+            ["05. pinned, published past hour", ["pinned", "available"]],
+            ["04. published past hour", ["available"]],
+            ["06. featured, published past hour", ["featured", "available"]],
+            ["07. private, published past hour", ["private", "available"]],
+            ["08. published past hour, end next hour", ["available"]],
+            ["02. published yesterday", ["available"]],
         ],
     ),
     (
@@ -156,18 +156,16 @@ def test_article_view_detail_publication(db, admin_client, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
-            # TODO: New CSS class states for article which have published status but
-            # publish date is not yet or publish end is over
-            ["05. pinned, published past hour", ["pinned"]],
-            ["09. publish next hour", ["to-come"]],
-            ["10. publish next hour, end tomorrow", ["to-come"]],
-            ["04. published past hour", []],
-            ["06. featured, published past hour", ["featured"]],
-            ["07. private, published past hour", []],
-            ["08. published past hour, end next hour", []],
+            ["05. pinned, published past hour", ["pinned", "available"]],
+            ["09. publish next hour", ["available", "not-yet"]],
+            ["10. publish next hour, end tomorrow", ["available", "not-yet"]],
+            ["04. published past hour", ["available"]],
+            ["06. featured, published past hour", ["featured", "available"]],
+            ["07. private, published past hour", ["private", "available"]],
+            ["08. published past hour, end next hour", ["available"]],
             ["01. draft yesterday", ["draft"]],
-            ["02. published yesterday", []],
-            ["03. published yesterday, ended one hour ago", ["past"]],
+            ["02. published yesterday", ["available"]],
+            ["03. published yesterday, ended one hour ago", ["available", "passed"]],
         ],
     ),
 ])

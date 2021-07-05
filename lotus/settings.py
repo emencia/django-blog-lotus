@@ -24,3 +24,27 @@ Determine if your project enable content translation or not.
 
 TODO: Not used yet, lotus is always in translated mode.
 """
+
+LOTUS_ARTICLE_PUBLICATION_STATE_NAMES = {
+    "pinned": "pinned",
+    "featured": "featured",
+    "private": "private",
+    "status_draft": "draft",
+    "status_available": "available",
+    "publish_start_below": "not-yet",
+    "publish_end_passed": "passed",
+}
+"""
+Available article state names.
+
+You can remove an entry to ignore some states and they won't be returned in article
+states.
+
+Note than ``publish_start_below`` and ``publish_end_passed`` are only elligible with
+``available`` state, never for ``draft``.
+
+In practice ``draft``, ``publish_start_below`` and ``publish_end_passed`` states will
+only be visible for admin in preview mode.
+
+``private`` state will only be visible to authenticated users.
+"""
