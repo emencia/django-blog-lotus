@@ -358,6 +358,7 @@ class Article(Translated):
         Returns:
             datetime.datetime: Publish datetime.
         """
+        #TODO: This should be a setting.
         ARTICLE_PUBLICATION_STATE_NAMES = {
             "pinned": "pinned",
             "featured": "featured",

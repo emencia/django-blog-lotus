@@ -9,7 +9,7 @@ from ..models import Article
 
 class ArticleFilterMixin:
     """
-    A mixin to share Article filtering
+    A mixin to share Article filtering.
     """
     def apply_article_lookups(self, queryset):
         """
@@ -40,7 +40,7 @@ class ArticleFilterMixin:
 
 class ArticleIndexView(ArticleFilterMixin, ListView):
     """
-    Paginated list of articles
+    Paginated list of articles.
     """
     model = Article
     template_name = "lotus/article/list.html"
@@ -57,7 +57,7 @@ class ArticleIndexView(ArticleFilterMixin, ListView):
 
 class ArticleDetailView(ArticleFilterMixin, DetailView):
     """
-    Article detail
+    Article detail.
     """
     model = Article
     pk_url_kwarg = "article_pk"
