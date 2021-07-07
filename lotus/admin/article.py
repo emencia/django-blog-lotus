@@ -85,11 +85,17 @@ class ArticleAdmin(admin.ModelAdmin):
         (
             _("Content"), {
                 "fields": (
-                    "lead",
                     "cover",
                     "introduction",
                     "image",
                     "content",
+                )
+            }
+        ),
+        (
+            _("SEO"), {
+                "fields": (
+                    "lead",
                 )
             }
         ),

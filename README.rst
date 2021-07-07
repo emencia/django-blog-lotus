@@ -50,6 +50,7 @@ Additional features:
   thumbnail, the second one for larger picture;
 * Article pinning;
 * Lead text for Category;
+* Private article (for authenticated users only);
 
 On hold features:
 

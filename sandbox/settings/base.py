@@ -151,7 +151,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.forms",
-    "lotus",
+    "lotus.apps.LotusConfig",
 ]
 
 LOGIN_REDIRECT_URL = "/"

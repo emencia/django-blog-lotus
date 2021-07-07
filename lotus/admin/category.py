@@ -56,9 +56,15 @@ class CategoryAdmin(admin.ModelAdmin):
         (
             _("Content"), {
                 "fields": (
-                    "lead",
                     "cover",
                     "description",
+                )
+            }
+        ),
+        (
+            _("SEO"), {
+                "fields": (
+                    "lead",
                 )
             }
         ),

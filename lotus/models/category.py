@@ -58,7 +58,7 @@ class Category(Translated):
         _("lead"),
         blank=True,
         help_text=_(
-            "Lead paragraph, mostly used for SEO purposes."
+            "Lead paragraph, mostly used for SEO purposes in page metas."
         ),
     )
     """
