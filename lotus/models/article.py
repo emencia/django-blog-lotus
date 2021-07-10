@@ -345,9 +345,9 @@ class Article(Translated):
         """
         Computate every publication states.
 
-        State names depend from ``settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES`` and each
-        state name can be disabled (never raised in states) if their name key have been
-        removed from setting.
+        State names depend from ``settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES`` and
+        each state name can be disabled (never raised in states) if their name key have
+        been removed from setting.
 
         Keywords Arguments:
             now (datetime.datetime): Commonly the current datetime now  (timezone aware)
@@ -359,7 +359,6 @@ class Article(Translated):
         Returns:
             datetime.datetime: Publish datetime.
         """
-        #TODO: This should be a setting.
         state_names = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
         states = []
 
