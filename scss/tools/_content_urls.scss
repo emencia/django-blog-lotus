@@ -1,0 +1,47 @@
+/*
+ *
+ * Some useful basic functions and mixins
+ *
+ */
+
+
+/// Define images directory used by `image-url()` function.
+///
+/// @type String
+///
+$image-directory: '../images/' !default;
+
+
+/// Define fonts directory used by `font-url()` function.
+///
+/// @type String
+///
+$font-directory: '../fonts/' !default;
+
+
+///
+/// Shortand to augment given url with images directory.
+///
+/// @arg {String} $url [null]
+///   Relative path to prepend with images directory path or url.
+///
+/// @return {String}
+///   Url such as `$image-directory` + `$url`.
+///
+@function image-url($url) {
+    @return url($image-directory + $url);
+}
+
+
+///
+/// Shortand to augment given url with fonts directory.
+///
+/// @arg {String} $url [null]
+///   Relative path to prepend with fonts directory path or url.
+///
+/// @return {String}
+///   Url such as `$font-directory` + `$url`.
+///
+@function font-url($url) {
+    @return url($font-directory + $url);
+}

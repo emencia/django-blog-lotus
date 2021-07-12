@@ -138,6 +138,12 @@ def test_category_view_detail_content(db, admin_client, client, user_kind,
         "admin": admin_client,
     }
 
+    # Available article state CSS class names to look for
+    available_state_classes = [
+        v
+        for k, v in settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES.items()
+    ]
+
     # Our main category to test
     picsou = CategoryFactory(title="Picsou", slug="picsou")
 
@@ -173,7 +179,7 @@ def test_category_view_detail_content(db, admin_client, client, user_kind,
 
     # Parse HTML
     dom = html_pyquery(response)
-    title = dom.find("#lotus-content .category-detail h2")[0].text
+    title = dom.find("#lotus-content .category-detail .title")[0].text
     cover = dom.find("#lotus-content .cover img")[0].get("src")
 
     assert title == picsou.title
@@ -185,9 +191,13 @@ def test_category_view_detail_content(db, admin_client, client, user_kind,
     # Get useful content from list items
     content = []
     for item in items:
-        title = item.cssselect("h3 > a")[0].text
+        title = item.cssselect(".title > a")[0].text
         # Drop item class since it's useless for test
-        classes = [v for v in item.get("class").split() if v != "item"]
+        classes = [
+            v
+            for v in item.get("class").split()
+            if v in available_state_classes
+        ]
         content.append([title, classes])
 
     assert content == expected
@@ -270,7 +280,7 @@ def test_category_view_list(db, client):
     # Get item titles
     link_title_page_1 = []
     for item in items:
-        link_title_page_1.append(item.cssselect("h3 > a")[0].text)
+        link_title_page_1.append(item.cssselect(".title")[0].text)
 
     # Expected pagination links
     assert len(links) == 2
@@ -290,7 +300,7 @@ def test_category_view_list(db, client):
     # Get item titles
     link_title_page_2 = []
     for item in items:
-        link_title_page_2.append(item.cssselect("h3 > a")[0].text)
+        link_title_page_2.append(item.cssselect(".title")[0].text)
 
     # Ensure every expected items are here respecting order
     assert expected_item_page_2 == link_title_page_2

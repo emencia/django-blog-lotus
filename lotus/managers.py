@@ -29,9 +29,22 @@ class BasePublishedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
+        print()
+        print("   📈 get_published")
         prefix = prefix or ""
         target_date = target_date or timezone.now()
+        print("      target_date:", target_date)
 
+        """
+        TODO: "publish_time__lte" usage is BUGGED. It has passed tests but causes
+        empty results in frontend on some specific time.
+
+        It's because date and time are two distinct columns, the current SQL
+        request does not match them as we expect it (as a single datetime where
+        date and time are solely related).
+
+        See #22 on github issues.
+        """
         return self.filter(
             models.Q(**{prefix + "status": STATUS_PUBLISHED}),
             models.Q(**{prefix + "publish_date__lte": target_date.date()}),

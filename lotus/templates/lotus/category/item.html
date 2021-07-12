@@ -1,11 +1,11 @@
 {% load i18n %}{% spaceless %}
-<div class="item">
-    <h3>
-        <a href="{{ category_object.get_absolute_url }}">{{ category_object.title }}</a>
-    </h3>
-
-    <p class="cover">{% if category_object.cover %}
-        <img src="{{ category_object.cover.url }}" alt="">
-    {% endif %}</p>
-</div>
+<a href="{{ category_object.get_absolute_url }}" class="item card h-100 text-decoration-none text-reset">
+    {% if category_object.cover %}
+        <img src="{{ category_object.cover.url }}" class="cover card-img-top" alt="">
+    {% endif %}
+    <div class="card-body">
+        <h2 class="title card-title">{{ category_object.title }}</h2>
+        <div class="card-text">{{ category_object.description }}</div>
+    </div>
+</a>
 {% endspaceless %}

@@ -1,9 +1,15 @@
-<!DOCTYPE html>
+{% load i18n %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
 <head>{% spaceless %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block head_title %}Lotus{% endblock head_title %}</title>
-    {% block head_styles %}{% comment %}Dummy styles for visual develop debug{% endcomment %}<style type="text/css">
+    {% block head_styles %}
+    <link href="/static/css/main.css" rel="stylesheet">
+    {% comment %}
+    Dummy styles for visual develop debug
+
+    TODO: Make this properly in Sass source
+    {% endcomment %}<style type="text/css">
         #lotus-content .item.pinned h3::after,
         #lotus-content .article-detail.pinned h2::after {
             content: " (pinned)";
@@ -25,8 +31,42 @@
 </head>
 
 <body>{% spaceless %}
-    <h1>Django Blog Lotus</h1>
 
-    {% block content %}Sandbox skeleton{% endblock %}
+<div class="d-grid gap-3 p-3">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/{{ LANGUAGE_CODE }}/">Django Blog Lotus</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navbar-toggler" aria-controls="main-navbar-toggler" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="main-navbar-toggler">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "lotus:article-index" %}">Articles</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "lotus:category-index" %}">Categories</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <div class="btn-group btn-group-sm" role="group" aria-label="Languages">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as languages %}
+                        {% for code, name in languages %}
+                        <a class="btn btn-primary{% if code == LANGUAGE_CODE %} active{% endif %}" href="/{{ code }}/">{{ name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content container-xxl">
+        {% block content %}Sandbox skeleton{% endblock %}
+    </div>
+</div>
+
 {% endspaceless %}</body>
 </html>

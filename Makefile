@@ -20,26 +20,30 @@ help:
 	@echo
 	@echo "  install             -- to install this project with virtualenv and Pip"
 	@echo "  freeze              -- to create or update 'requirements_freeze.txt' from your current install. Only use this on stable environment."
-	@echo ""
+	@echo
 	@echo "  clean               -- to clean EVERYTHING (Warning)"
 	@echo "  clean-var           -- to clean data (uploaded medias, database, etc..)"
 	@echo "  clean-doc           -- to remove documentation builds"
 	@echo "  clean-install       -- to clean Python side installation"
 	@echo "  clean-pycache       -- to remove all __pycache__, this is recursive from current directory"
-	@echo ""
+	@echo
 	@echo "  run                 -- to run Django development server"
 	@echo "  migrate             -- to apply demo database migrations"
 	@echo "  migrations          -- to create new migrations for application after changes"
 	@echo "  superuser           -- to create a superuser for Django admin"
-	@echo ""
+	@echo
+	@echo "  css                  -- to build uncompressed CSS from Sass sources"
+	@echo "  watch-css            -- to watch for Sass changes to rebuild CSS"
+	@echo "  css-prod             -- to build compressed and minified CSS from Sass sources"
+	@echo
 	@echo "  docs                -- to build documentation"
 	@echo "  livedocs            -- to run livereload server to rebuild documentation on source changes"
-	@echo ""
+	@echo
 	@echo "  flake               -- to launch Flake8 checking"
 	@echo "  test                -- to launch base test suite using Pytest"
 	@echo "  test-initial        -- to launch tests with pytest and re-initialized database (for after new application or model changes)"
 	@echo "  quality             -- to launch Flake8 checking and every tests suites"
-	@echo ""
+	@echo
 	@echo "  release             -- to release package for latest version on PyPi (once release has been pushed to repository)"
 	@echo
 
@@ -98,12 +102,25 @@ superuser:
 install: venv create-var-dirs
 	$(PIP) install -e .[dev]
 	${MAKE} migrate
+	npm install
 .PHONY: install
 
 run:
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
 	$(DJANGO_MANAGE) runserver 0.0.0.0:8001
 .PHONY: run
+
+css:
+	npm run-script css
+.PHONY: css
+
+watch-sass:
+	npm run-script watch-css
+.PHONY: watch-sass
+
+css-prod:
+	npm run-script css-prod
+.PHONY: css-prod
 
 docs:
 	cd docs && make html

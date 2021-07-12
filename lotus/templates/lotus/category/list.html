@@ -3,12 +3,16 @@
 
 {% block lotus_content %}{% spaceless %}
 <div class="category-list-container">
-    <h2 class="title">{% blocktrans %}Category list{% endblocktrans %}</h2>
+    <h1 class="title border-bottom border-5 py-1 mb-3">{% blocktrans %}Category list{% endblocktrans %}</h1>
 
-    <div class="list">
-        {% for category in category_list %}
-        {% include "lotus/category/item.html" with category_object=category %}
-        {% endfor %}
+    <div class="list container">
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            {% for category in category_list %}
+            <div class="col">
+                {% include "lotus/category/item.html" with category_object=category %}
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
     {% include "lotus/pagination.html" %}

@@ -17,6 +17,9 @@ __pycache__/
 # Settings
 localsettings.py
 
+# Node.js stuff
+node_modules
+
 # Unit test / coverage reports
 htmlcov/
 .coverage

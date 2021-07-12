@@ -6,7 +6,7 @@
 
 {% block lotus_content %}{% spaceless %}
 <div class="category-detail">
-    <h2>{{ category_object.title }}</h2>
+    <h1 class="title">{{ category_object.title }}</h1>
 
     <p class="cover">{% if category_object.cover %}
         <img src="{{ category_object.cover.url }}" alt="">

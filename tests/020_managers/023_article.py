@@ -1,5 +1,6 @@
 import datetime
 
+import pytest
 import pytz
 from freezegun import freeze_time
 
@@ -163,3 +164,15 @@ def test_article_managers(db):
         {"slug": "wurst", "language": "de"},
         {"slug": "yesterday", "language": "de"},
     ]
+
+
+@pytest.mark.skip(reason="Empty test to remember to fix issue and write coverage about it, See #22 on github issues.")
+def test_article_managers_bug(db):
+    """
+    TODO
+        There is a bug causing no result even there is eligible articles.
+
+        This is because of divided publish date and time, see
+        "BasePublishedQuerySet.get_published".
+    """
+    assert 1 == 42

@@ -1,0 +1,21 @@
+@charset "utf-8";
+
+// Basic functions must be loaded before settings to be able to use them from
+// settings and objects
+@import "./tools/rem";
+@import "./tools/content_urls";
+
+// Load project settings
+@import "./settings/site";
+@import "./settings/bootstrap";
+
+// Import the whole Bootstrap component library
+@import "bootstrap/scss/bootstrap";
+// Icon maps, not ready yet since a problem with icon font path hardcoded, it seems ?
+// https://github.com/twbs/icons/issues/563
+//@import "bootstrap-icons/font/bootstrap-icons";
+
+// Internal addons (import order does matter due to some mixin usage from
+// deeper mixins)
+@import "./tools/flexbox";
+@import "./tools/spacing";

@@ -4,6 +4,7 @@ import pytest
 import pytz
 from freezegun import freeze_time
 
+from django.conf import settings
 from django.urls import reverse
 
 from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
@@ -191,6 +192,12 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
         "admin": admin_client,
     }
 
+    # Available article state CSS class names to look for
+    available_state_classes = [
+        v
+        for k, v in settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES.items()
+    ]
+
     # Date references
     default_tz = pytz.timezone("UTC")
     yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
@@ -279,9 +286,13 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
     # Get useful content from list items
     content = []
     for item in items:
-        title = item.cssselect("h3 > a")[0].text
+        title = item.cssselect(".title > a")[0].text
         # Drop item class since it's useless for test
-        classes = [v for v in item.get("class").split() if v != "item"]
+        classes = [
+            v
+            for v in item.get("class").split()
+            if v in available_state_classes
+        ]
         content.append([title, classes])
 
     assert content == expected

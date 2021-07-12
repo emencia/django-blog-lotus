@@ -6,41 +6,51 @@
 
 {% block lotus_content %}{% spaceless %}
 <div class="article-detail{% if article_object.featured %} featured{% endif %}{% if article_object.pinned %} pinned{% endif %}{% if article_object.status < 10 %} draft{% endif %}{% if article_object.private %} private{% endif %}">
-    <h2>{{ article_object.title }}</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-lg-9">
+                <p class="image">{% if article_object.image %}
+                    <img src="{{ article_object.image.url }}" alt="">
+                {% endif %}</p>
 
-    <p>Categories</p>
-    <ul class="categories">
-        {% for category in article_object.get_categories %}
-        <li><a href="{{ category.get_absolute_url }}">{{ category.title }}</a></li>
-        {% endfor %}
-    </ul>
+                <h1 class="title">{{ article_object.title }}</h1>
 
-    <p>Authors</p>
-    <ul class="authors">
-        {% for author in article_object.get_authors %}
-        <li>{{ author.get_full_name }}</li>
-        {% endfor %}
-    </ul>
+                <p class="publish">{{ article_object.publish_datetime }}</p>
 
-    <p class="publish">{{ article_object.publish_datetime }}</p>
+                <div class="introduction">{{ article_object.introduction|safe }}</div>
 
-    <p class="cover">{% if article_object.cover %}
-        <img src="{{ article_object.cover.url }}" alt="">
-    {% endif %}</p>
+                <div class="content">{{ article_object.content|safe }}</div>
+            </div>
 
-    <div class="introduction">{{ article_object.introduction|safe }}</div>
+            <div class="col-12 col-lg-3">
+                <p class="cover">{% if article_object.cover %}
+                    <img src="{{ article_object.cover.url }}" alt="">
+                {% endif %}</p>
 
-    <p class="image">{% if article_object.image %}
-        <img src="{{ article_object.image.url }}" alt="">
-    {% endif %}</p>
+                <p>Categories</p>
+                <ul class="categories">
+                    {% for category in article_object.get_categories %}
+                    <li>
+                        <a href="{{ category.get_absolute_url }}" class="badge rounded-pill bg-light text-dark">{{ category.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
 
-    <div class="content">{{ article_object.content|safe }}</div>
+                <p>Authors</p>
+                <ul class="authors">
+                    {% for author in article_object.get_authors %}
+                    <li>{{ author.get_full_name }}</li>
+                    {% endfor %}
+                </ul>
 
-    <p>Related articles</p>
-    <ul class="relateds">
-        {% for related in article_object.get_related %}
-        <li><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
-        {% endfor %}
-    </ul>
+                <p>Related articles</p>
+                <ul class="relateds">
+                    {% for related in article_object.get_related %}
+                    <li><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 {% endspaceless %}{% endblock lotus_content %}
