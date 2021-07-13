@@ -4,6 +4,7 @@ import pytest
 import pytz
 from freezegun import freeze_time
 
+from django.conf import settings
 from django.template import Context, Template
 from django.utils import timezone
 
@@ -11,6 +12,10 @@ from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
     ArticleFactory,
 )
+
+
+# Shortcut for a shorter variable name
+STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
 
 
 def test_tag_article_state_list_basic(db):
@@ -30,7 +35,7 @@ def test_tag_article_state_list_basic(db):
     })
     rendered = template.render(context)
 
-    assert rendered == "available"
+    assert rendered == STATES["status_available"]
 
 
 def test_tag_article_state_list_mixed(db):
@@ -64,7 +69,12 @@ def test_tag_article_state_list_mixed(db):
     })
     rendered = template.render(context)
 
-    assert rendered == "pinned,private,available,passed"
+    assert rendered == ",".join([
+        STATES["pinned"],
+        STATES["private"],
+        STATES["status_available"],
+        STATES["publish_end_passed"],
+    ])
 
 
 def test_tag_article_state_list_prefixed(db):
@@ -99,7 +109,12 @@ def test_tag_article_state_list_prefixed(db):
     })
     rendered = template.render(context)
 
-    assert rendered == "foo-pinned,foo-private,foo-available,foo-passed"
+    assert rendered == ",".join([
+        "foo-" + STATES["pinned"],
+        "foo-" + STATES["private"],
+        "foo-" + STATES["status_available"],
+        "foo-" + STATES["publish_end_passed"],
+    ])
 
 
 def test_tag_article_states_mixed(db):
@@ -132,7 +147,12 @@ def test_tag_article_states_mixed(db):
     })
     rendered = template.render(context)
 
-    assert rendered == "pinned private available passed"
+    assert rendered == " ".join([
+        STATES["pinned"],
+        STATES["private"],
+        STATES["status_available"],
+        STATES["publish_end_passed"],
+    ])
 
 
 def test_tag_article_states_prefixed(db):
@@ -165,4 +185,9 @@ def test_tag_article_states_prefixed(db):
     })
     rendered = template.render(context)
 
-    assert rendered == "foo-pinned foo-private foo-available foo-passed"
+    assert rendered == " ".join([
+        "foo-" + STATES["pinned"],
+        "foo-" + STATES["private"],
+        "foo-" + STATES["status_available"],
+        "foo-" + STATES["publish_end_passed"],
+    ])

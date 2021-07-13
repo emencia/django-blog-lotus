@@ -12,6 +12,10 @@ from lotus.choices import STATUS_DRAFT
 from lotus.utils.tests import html_pyquery
 
 
+# Shortcut for a shorter variable name
+STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
+
+
 def test_category_view_detail_404(db, client):
     """
     Trying to get unexisting Category should return a 404 response.
@@ -34,14 +38,14 @@ def test_category_view_detail_404(db, client):
         {},
         [
             # Expected title and CSS classes
-            ["Pinned", ["pinned", "available"]],
-            ["Featured", ["featured", "available"]],
-            ["06. Plip", ["available"]],
-            ["05. Plop", ["available"]],
-            ["04. Pong", ["available"]],
-            ["03. Ping", ["available"]],
-            ["02. Bar", ["available"]],
-            ["01. Foo", ["available"]],
+            ["Pinned", [STATES["pinned"], STATES["status_available"]]],
+            ["Featured", [STATES["featured"], STATES["status_available"]]],
+            ["06. Plip", [STATES["status_available"]]],
+            ["05. Plop", [STATES["status_available"]]],
+            ["04. Pong", [STATES["status_available"]]],
+            ["03. Ping", [STATES["status_available"]]],
+            ["02. Bar", [STATES["status_available"]]],
+            ["01. Foo", [STATES["status_available"]]],
         ],
     ),
     (
@@ -49,14 +53,14 @@ def test_category_view_detail_404(db, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
-            ["Pinned", ["pinned", "available"]],
-            ["Featured", ["featured", "available"]],
-            ["06. Plip", ["available"]],
-            ["05. Plop", ["available"]],
-            ["04. Pong", ["available"]],
-            ["03. Ping", ["available"]],
-            ["02. Bar", ["available"]],
-            ["01. Foo", ["available"]],
+            ["Pinned", [STATES["pinned"], STATES["status_available"]]],
+            ["Featured", [STATES["featured"], STATES["status_available"]]],
+            ["06. Plip", [STATES["status_available"]]],
+            ["05. Plop", [STATES["status_available"]]],
+            ["04. Pong", [STATES["status_available"]]],
+            ["03. Ping", [STATES["status_available"]]],
+            ["02. Bar", [STATES["status_available"]]],
+            ["01. Foo", [STATES["status_available"]]],
         ],
     ),
     (
@@ -64,15 +68,15 @@ def test_category_view_detail_404(db, client):
         {},
         [
             # Expected title and CSS classes
-            ["Pinned", ["pinned", "available"]],
-            ["Featured", ["featured", "available"]],
-            ["06. Plip", ["available"]],
-            ["05. Plop", ["available"]],
-            ["04. Pong", ["available"]],
-            ["03. Ping", ["available"]],
-            ["02. Bar", ["available"]],
-            ["01. Foo", ["available"]],
-            ["Private", ["private", "available"]],
+            ["Pinned", [STATES["pinned"], STATES["status_available"]]],
+            ["Featured", [STATES["featured"], STATES["status_available"]]],
+            ["06. Plip", [STATES["status_available"]]],
+            ["05. Plop", [STATES["status_available"]]],
+            ["04. Pong", [STATES["status_available"]]],
+            ["03. Ping", [STATES["status_available"]]],
+            ["02. Bar", [STATES["status_available"]]],
+            ["01. Foo", [STATES["status_available"]]],
+            ["Private", [STATES["private"], STATES["status_available"]]],
         ],
     ),
     (
@@ -80,15 +84,15 @@ def test_category_view_detail_404(db, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
-            ["Pinned", ["pinned", "available"]],
-            ["Featured", ["featured", "available"]],
-            ["06. Plip", ["available"]],
-            ["05. Plop", ["available"]],
-            ["04. Pong", ["available"]],
-            ["03. Ping", ["available"]],
-            ["02. Bar", ["available"]],
-            ["01. Foo", ["available"]],
-            ["Private", ["private", "available"]],
+            ["Pinned", [STATES["pinned"], STATES["status_available"]]],
+            ["Featured", [STATES["featured"], STATES["status_available"]]],
+            ["06. Plip", [STATES["status_available"]]],
+            ["05. Plop", [STATES["status_available"]]],
+            ["04. Pong", [STATES["status_available"]]],
+            ["03. Ping", [STATES["status_available"]]],
+            ["02. Bar", [STATES["status_available"]]],
+            ["01. Foo", [STATES["status_available"]]],
+            ["Private", [STATES["private"], STATES["status_available"]]],
         ],
     ),
     (
@@ -96,15 +100,15 @@ def test_category_view_detail_404(db, client):
         {},
         [
             # Expected title and CSS classes
-            ["Pinned", ["pinned", "available"]],
-            ["Featured", ["featured", "available"]],
-            ["06. Plip", ["available"]],
-            ["05. Plop", ["available"]],
-            ["04. Pong", ["available"]],
-            ["03. Ping", ["available"]],
-            ["02. Bar", ["available"]],
-            ["01. Foo", ["available"]],
-            ["Private", ["private", "available"]],
+            ["Pinned", [STATES["pinned"], STATES["status_available"]]],
+            ["Featured", [STATES["featured"], STATES["status_available"]]],
+            ["06. Plip", [STATES["status_available"]]],
+            ["05. Plop", [STATES["status_available"]]],
+            ["04. Pong", [STATES["status_available"]]],
+            ["03. Ping", [STATES["status_available"]]],
+            ["02. Bar", [STATES["status_available"]]],
+            ["01. Foo", [STATES["status_available"]]],
+            ["Private", [STATES["private"], STATES["status_available"]]],
         ],
     ),
     (
@@ -112,16 +116,16 @@ def test_category_view_detail_404(db, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
-            ["Pinned", ["pinned", "available"]],
-            ["Featured", ["featured", "available"]],
-            ["06. Plip", ["available"]],
-            ["05. Plop", ["available"]],
-            ["04. Pong", ["available"]],
-            ["03. Ping", ["available"]],
-            ["02. Bar", ["available"]],
-            ["01. Foo", ["available"]],
-            ["Private", ["private", "available"]],
-            ["In draft", ["draft"]],
+            ["Pinned", [STATES["pinned"], STATES["status_available"]]],
+            ["Featured", [STATES["featured"], STATES["status_available"]]],
+            ["06. Plip", [STATES["status_available"]]],
+            ["05. Plop", [STATES["status_available"]]],
+            ["04. Pong", [STATES["status_available"]]],
+            ["03. Ping", [STATES["status_available"]]],
+            ["02. Bar", [STATES["status_available"]]],
+            ["01. Foo", [STATES["status_available"]]],
+            ["Private", [STATES["private"], STATES["status_available"]]],
+            ["In draft", [STATES["status_draft"]]],
         ],
     ),
 ])
@@ -141,7 +145,7 @@ def test_category_view_detail_content(db, admin_client, client, user_kind,
     # Available article state CSS class names to look for
     available_state_classes = [
         v
-        for k, v in settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES.items()
+        for k, v in STATES.items()
     ]
 
     # Our main category to test
@@ -186,7 +190,7 @@ def test_category_view_detail_content(db, admin_client, client, user_kind,
     assert cover == picsou.cover.url
 
     # Get articles
-    items = dom.find("#lotus-content .category-detail .articles .item")
+    items = dom.find("#lotus-content .category-detail .articles .article")
 
     # Get useful content from list items
     content = []
@@ -243,7 +247,7 @@ def test_category_view_detail_pagination(db, client):
     url = picsou.get_absolute_url() + page_2_arg
     response = client.get(url)
     dom = html_pyquery(response)
-    items = dom.find("#lotus-content .category-detail .articles .item")
+    items = dom.find("#lotus-content .category-detail .articles .article")
     assert len(items) == 1
 
 

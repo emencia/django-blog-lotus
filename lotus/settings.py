@@ -26,13 +26,13 @@ TODO: Not used yet, lotus is always in translated mode.
 """
 
 LOTUS_ARTICLE_PUBLICATION_STATE_NAMES = {
-    "pinned": "pinned",
-    "featured": "featured",
-    "private": "private",
-    "status_draft": "draft",
-    "status_available": "available",
-    "publish_start_below": "not-yet",
-    "publish_end_passed": "passed",
+    "pinned": "article--pinned",
+    "featured": "article--featured",
+    "private": "article--private",
+    "status_draft": "article--draft",
+    "status_available": "article--available",
+    "publish_start_below": "article--not-yet",
+    "publish_end_passed": "article--passed",
 }
 """
 Available article state names.

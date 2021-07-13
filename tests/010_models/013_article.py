@@ -5,6 +5,7 @@ import pytest
 import pytz
 from freezegun import freeze_time
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
@@ -17,6 +18,10 @@ from lotus.factories import (
 from lotus.models import Article
 from lotus.utils.imaging import create_image_file
 from lotus.utils.tests import queryset_values
+
+
+# Shortcut for a shorter variable name
+STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
 
 
 def test_article_basic(db):
@@ -434,19 +439,19 @@ def test_article_model_get_states(db):
         status=STATUS_DRAFT,
     )
     article_pinned = ArticleFactory(
-        title="pinned",
+        title=STATES["pinned"],
         publish_date=today.date(),
         publish_time=today.time(),
         pinned=True,
     )
     article_featured = ArticleFactory(
-        title="featured",
+        title=STATES["featured"],
         publish_date=today.date(),
         publish_time=today.time(),
         featured=True,
     )
     article_private = ArticleFactory(
-        title="private",
+        title=STATES["private"],
         publish_date=today.date(),
         publish_time=today.time(),
         private=True,
@@ -480,11 +485,11 @@ def test_article_model_get_states(db):
         private=True,
     )
 
-    assert article_draft.get_states(now) == ["draft"]
-    assert article_pinned.get_states(now) == ["pinned", "available"]
-    assert article_featured.get_states(now) == ["featured", "available"]
-    assert article_private.get_states(now) == ["private", "available"]
-    assert article_yesterday.get_states(now) == ["available"]
-    assert article_mixed_draft.get_states(now) == ["pinned", "private", "draft"]
-    assert article_mixed_available.get_states(now) == ["pinned", "private", "available",
-                                                       "passed"]
+    assert article_draft.get_states(now) == [STATES["status_draft"]]
+    assert article_pinned.get_states(now) == [STATES["pinned"], STATES["status_available"]]
+    assert article_featured.get_states(now) == [STATES["featured"], STATES["status_available"]]
+    assert article_private.get_states(now) == [STATES["private"], STATES["status_available"]]
+    assert article_yesterday.get_states(now) == [STATES["status_available"]]
+    assert article_mixed_draft.get_states(now) == [STATES["pinned"], STATES["private"], STATES["status_draft"]]
+    assert article_mixed_available.get_states(now) == [STATES["pinned"], STATES["private"], STATES["status_available"],
+                                                       STATES["publish_end_passed"]]

@@ -1,11 +1,11 @@
 {% extends "lotus/base.html" %}
-{% load i18n %}
+{% load i18n lotus %}
 
 {% comment %}TODO: This lacks of usage of "lead" field to add header meta description{% endcomment %}
 {% block head_title %}{{ article_object.title }} - {{ block.super }}{% endblock head_title %}
 
 {% block lotus_content %}{% spaceless %}
-<div class="article-detail{% if article_object.featured %} featured{% endif %}{% if article_object.pinned %} pinned{% endif %}{% if article_object.status < 10 %} draft{% endif %}{% if article_object.private %} private{% endif %}">
+<div class="article-detail {% article_states article_object %}">
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-9">

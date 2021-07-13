@@ -14,6 +14,10 @@ from lotus.models import Article
 from lotus.utils.tests import html_pyquery
 
 
+# Shortcut for a shorter variable name
+STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
+
+
 def test_article_view_detail_published(db, admin_client, client):
     """
     Published article is reachable from anyone.
@@ -94,11 +98,26 @@ def test_article_view_detail_publication(db, admin_client, client):
         {},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned", "available"]],
-            ["04. published past hour", ["available"]],
-            ["06. featured, published past hour", ["featured", "available"]],
-            ["08. published past hour, end next hour", ["available"]],
-            ["02. published yesterday", ["available"]],
+            [
+                "05. pinned, published past hour",
+                [STATES["pinned"], STATES["status_available"]],
+            ],
+            [
+                "04. published past hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "06. featured, published past hour",
+                [STATES["featured"], STATES["status_available"]],
+            ],
+            [
+                "08. published past hour, end next hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "02. published yesterday",
+                [STATES["status_available"]]
+            ],
         ],
     ),
     (
@@ -106,11 +125,26 @@ def test_article_view_detail_publication(db, admin_client, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned", "available"]],
-            ["04. published past hour", ["available"]],
-            ["06. featured, published past hour", ["featured", "available"]],
-            ["08. published past hour, end next hour", ["available"]],
-            ["02. published yesterday", ["available"]],
+            [
+                "05. pinned, published past hour",
+                [STATES["pinned"], STATES["status_available"]],
+            ],
+            [
+                "04. published past hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "06. featured, published past hour",
+                [STATES["featured"], STATES["status_available"]],
+            ],
+            [
+                "08. published past hour, end next hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "02. published yesterday",
+                [STATES["status_available"]]
+            ],
         ],
     ),
     (
@@ -118,12 +152,30 @@ def test_article_view_detail_publication(db, admin_client, client):
         {},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned", "available"]],
-            ["04. published past hour", ["available"]],
-            ["06. featured, published past hour", ["featured", "available"]],
-            ["07. private, published past hour", ["private", "available"]],
-            ["08. published past hour, end next hour", ["available"]],
-            ["02. published yesterday", ["available"]],
+            [
+                "05. pinned, published past hour",
+                [STATES["pinned"], STATES["status_available"]],
+            ],
+            [
+                "04. published past hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "06. featured, published past hour",
+                [STATES["featured"], STATES["status_available"]],
+            ],
+            [
+                "07. private, published past hour",
+                [STATES["private"], STATES["status_available"]],
+            ],
+            [
+                "08. published past hour, end next hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "02. published yesterday",
+                [STATES["status_available"]]
+            ],
         ],
     ),
     (
@@ -131,12 +183,30 @@ def test_article_view_detail_publication(db, admin_client, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned", "available"]],
-            ["04. published past hour", ["available"]],
-            ["06. featured, published past hour", ["featured", "available"]],
-            ["07. private, published past hour", ["private", "available"]],
-            ["08. published past hour, end next hour", ["available"]],
-            ["02. published yesterday", ["available"]],
+            [
+                "05. pinned, published past hour",
+                [STATES["pinned"], STATES["status_available"]],
+            ],
+            [
+                "04. published past hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "06. featured, published past hour",
+                [STATES["featured"], STATES["status_available"]],
+            ],
+            [
+                "07. private, published past hour",
+                [STATES["private"], STATES["status_available"]],
+            ],
+            [
+                "08. published past hour, end next hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "02. published yesterday",
+                [STATES["status_available"]]
+            ],
         ],
     ),
     (
@@ -144,12 +214,30 @@ def test_article_view_detail_publication(db, admin_client, client):
         {},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned", "available"]],
-            ["04. published past hour", ["available"]],
-            ["06. featured, published past hour", ["featured", "available"]],
-            ["07. private, published past hour", ["private", "available"]],
-            ["08. published past hour, end next hour", ["available"]],
-            ["02. published yesterday", ["available"]],
+            [
+                "05. pinned, published past hour",
+                [STATES["pinned"], STATES["status_available"]],
+            ],
+            [
+                "04. published past hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "06. featured, published past hour",
+                [STATES["featured"], STATES["status_available"]],
+            ],
+            [
+                "07. private, published past hour",
+                [STATES["private"], STATES["status_available"]],
+            ],
+            [
+                "08. published past hour, end next hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "02. published yesterday",
+                [STATES["status_available"]]
+            ],
         ],
     ),
     (
@@ -157,16 +245,46 @@ def test_article_view_detail_publication(db, admin_client, client):
         {"admin": 1},
         [
             # Expected title and CSS classes
-            ["05. pinned, published past hour", ["pinned", "available"]],
-            ["09. publish next hour", ["available", "not-yet"]],
-            ["10. publish next hour, end tomorrow", ["available", "not-yet"]],
-            ["04. published past hour", ["available"]],
-            ["06. featured, published past hour", ["featured", "available"]],
-            ["07. private, published past hour", ["private", "available"]],
-            ["08. published past hour, end next hour", ["available"]],
-            ["01. draft yesterday", ["draft"]],
-            ["02. published yesterday", ["available"]],
-            ["03. published yesterday, ended one hour ago", ["available", "passed"]],
+            [
+                "05. pinned, published past hour",
+                [STATES["pinned"], STATES["status_available"]],
+            ],
+            [
+                "09. publish next hour",
+                [STATES["status_available"], STATES["publish_start_below"]],
+            ],
+            [
+                "10. publish next hour, end tomorrow",
+                [STATES["status_available"], STATES["publish_start_below"]],
+            ],
+            [
+                "04. published past hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "06. featured, published past hour",
+                [STATES["featured"], STATES["status_available"]],
+            ],
+            [
+                "07. private, published past hour",
+                [STATES["private"], STATES["status_available"]],
+            ],
+            [
+                "08. published past hour, end next hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "01. draft yesterday",
+                [STATES["status_draft"]]
+            ],
+            [
+                "02. published yesterday",
+                [STATES["status_available"]]
+            ],
+            [
+                "03. published yesterday, ended one hour ago",
+                [STATES["status_available"], STATES["publish_end_passed"]],
+            ],
         ],
     ),
 ])
@@ -195,7 +313,7 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
     # Available article state CSS class names to look for
     available_state_classes = [
         v
-        for k, v in settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES.items()
+        for k, v in STATES.items()
     ]
 
     # Date references
@@ -281,7 +399,7 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
 
     # Parse HTML
     dom = html_pyquery(response)
-    items = dom.find("#lotus-content .article-list-container .list .item")
+    items = dom.find("#lotus-content .article-list-container .list .article")
 
     # Get useful content from list items
     content = []
@@ -347,6 +465,6 @@ def test_article_view_detail_content(db, admin_client):
     assert categories == ["cat_1"]
     assert authors == ["Picsou McDuck"]
     assert relateds == ["Bar"]
-    assert classes == ["draft", "featured", "pinned", "private"]
+    assert classes == [STATES["status_draft"], STATES["featured"], STATES["pinned"], STATES["private"]]
     assert cover == article_3.cover.url
     assert large_img == article_3.image.url

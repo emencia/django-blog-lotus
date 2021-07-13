@@ -1,5 +1,5 @@
 {% load i18n lotus %}{% spaceless %}
-<div class="card mb-3 item {% article_states article_object %}">
+<div class="card mb-3 article {% article_states article_object %}">
     <div class="row g-0">
         <div class="col-md-4 cover">{% if article_object.cover %}
             <img src="{{ article_object.cover.url }}" class="img-fluid rounded-start" alt="">
