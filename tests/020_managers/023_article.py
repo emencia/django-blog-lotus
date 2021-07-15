@@ -78,7 +78,7 @@ def test_article_managers(db):
         publish_date=yesterday.date(),
         publish_time=yesterday.time(),
     )
-    # All lang and publish later, still available for publication
+    # All lang and publish end later, still available for publication
     multilingual_article(
         slug="shortlife-to-tomorrow",
         langs=["fr", "de"],
@@ -166,13 +166,105 @@ def test_article_managers(db):
     ]
 
 
-@pytest.mark.skip(reason="Empty test to remember to fix issue and write coverage about it, See #22 on github issues.")
+#@pytest.mark.xfail(reason="ongoing to resolve issue #22")
 def test_article_managers_bug(db):
     """
     TODO
-        There is a bug causing no result even there is eligible articles.
+        There is a bug causing no results even there are eligible articles.
 
         This is because of divided publish date and time, see
         "BasePublishedQuerySet.get_published".
+
+        Why is publish date and time instead of datetime ? Because date is used in
+        constraint at DB level for unique date with unique slug. We couldn't do it
+        with a single datetime field. And we cannot make a constraint for an unique
+        datetime with unique slug, because detail URLs does not include time, only date
+        so we need to have multiple dates the same slug.
+
+        Either we move back to a datetime field, but constraint will have to be removed
+        and done at model level (in Model.clean) and ensure this soft constraint is
+        correctly supported everywhere.
+
+        Or we find a way to match correct datetime frame in lookups with divided date
+        and time fields.
     """
+    default_tz = pytz.timezone("UTC")
+
+    # Craft dates
+    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 0))
+    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
+    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    midnight = default_tz.localize(datetime.datetime(2012, 10, 15, 0, 0))
+    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 0))
+    sooner = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
+    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 0))
+    next_year = default_tz.localize(datetime.datetime(2013, 10, 15, 10, 0))
+
+    ArticleFactory(slug="yesterday", publish_date=yesterday.date(), publish_time=yesterday.time())
+    ArticleFactory(slug="tomorrow", publish_date=tomorrow.date(), publish_time=tomorrow.time())
+    ArticleFactory(slug="midnight", publish_date=midnight.date(), publish_time=midnight.time())
+    ArticleFactory(slug="past_hour", publish_date=past_hour.date(), publish_time=past_hour.time())
+    ArticleFactory(slug="sooner", publish_date=sooner.date(), publish_time=sooner.time())
+    ArticleFactory(slug="next_hour", publish_date=next_hour.date(), publish_time=next_hour.time())
+    ArticleFactory(slug="next_year", publish_date=next_year.date(), publish_time=next_year.time())
+
+    print()
+    print("=== Automatic now")
+    results = Article.objects.get_for_lang().get_published()
+    autonow_items = [item.slug for item in results]
+    print(autonow_items)
+
+    print()
+    print("=== sooner")
+    results = Article.objects.get_for_lang().get_published(target_date=sooner)
+    sooner_items = [item.slug for item in results]
+    print(sooner_items)
+
+    # Here is reproduction of expected bug. Publish dates is below targeted date but
+    # publish times are always bigger than targeted time.
+    print()
+    print("=== forged five days in futur")
+    results = Article.objects.get_for_lang().get_published(
+        target_date=default_tz.localize(datetime.datetime(2012, 10, 20, 0, 0))
+    )
+    futur_items = [item.slug for item in results]
+    print(futur_items)
+
+    assert sorted(autonow_items) == [
+        "midnight", "past_hour", "sooner", "yesterday",
+    ]
+    assert sorted(forgednow_items) == [
+        "midnight", "past_hour", "sooner", "yesterday",
+    ]
+    assert sorted(sooner_items) == [
+        "midnight", "past_hour", "sooner",
+    ]
+    assert sorted(futur_items) == [
+        "midnight", "next_hour", "past_hour", "sooner", "tomorrow", "yesterday",
+    ]
+
+    assert 1 == 42
+
+
+#@pytest.mark.xfail(reason="ongoing to resolve issue #22")
+def test_date_n_time_lookups(db):
+    """
+    TODO
+        A more basic test for R&D to find a way of matching correctly a datetime frame
+        against a composition of a date and a time fields.
+    """
+    default_tz = pytz.timezone("UTC")
+
+    now = timezone.now()
+    now_forged = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 0))
+    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
+    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    midnight = default_tz.localize(datetime.datetime(2012, 10, 15, 0, 0))
+    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 0))
+    sooner = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
+    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 0))
+    next_year = default_tz.localize(datetime.datetime(2013, 10, 15, 10, 0))
+
+    target = default_tz.localize(datetime.datetime(2012, 10, 20, 0, 0))
+
     assert 1 == 42

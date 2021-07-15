@@ -29,11 +29,11 @@ class BasePublishedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
-        print()
-        print("   📈 get_published")
+        #print()
+        #print("   📈 get_published")
         prefix = prefix or ""
         target_date = target_date or timezone.now()
-        print("      target_date:", target_date)
+        #print("      target_date:", target_date)
 
         """
         TODO: "publish_time__lte" usage is BUGGED. It has passed tests but causes
