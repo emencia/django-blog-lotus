@@ -9,7 +9,6 @@ from django.urls import reverse
 
 from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
 from lotus.choices import STATUS_DRAFT
-from lotus.models import Article
 
 from lotus.utils.tests import html_pyquery
 
@@ -465,6 +464,8 @@ def test_article_view_detail_content(db, admin_client):
     assert categories == ["cat_1"]
     assert authors == ["Picsou McDuck"]
     assert relateds == ["Bar"]
-    assert classes == [STATES["status_draft"], STATES["featured"], STATES["pinned"], STATES["private"]]
+    assert classes == [
+        STATES["status_draft"], STATES["featured"], STATES["pinned"], STATES["private"],
+    ]
     assert cover == article_3.cover.url
     assert large_img == article_3.image.url

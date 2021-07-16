@@ -15,27 +15,17 @@ class ArticleFilterMixin:
         """
         Apply publication lookups to given queryset without ordering.
         """
-        print("")
-        print("🐛 apply_article_lookups")
-        print("  given queryset count:", queryset.count())
-        # Store date checked against as a reference for further usage
+        # Store the date checked against as a reference for further usage
         self.target_date = timezone.now()
-        print("  target_date:", self.target_date)
-        print("  request.GET.get>admin:", self.request.GET.get("admin"))
-        print("  request.user.is_staff:", self.request.user.is_staff)
+
         if (
             not self.request.GET.get("admin") or
             not self.request.user.is_staff
         ):
             queryset = queryset.get_published(target_date=self.target_date)
-            print("  admin filters queryset count:", queryset.count())
 
         if not self.request.user.is_authenticated:
             queryset = queryset.filter(private=False)
-            print("  is_authenticated filters queryset count:", queryset.count())
-
-
-        print("  final queryset count:", queryset.count())
 
         return queryset
 
@@ -59,10 +49,7 @@ class ArticleIndexView(ArticleFilterMixin, ListView):
 
     def get_queryset(self):
         q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
-        print("self.request.LANGUAGE_CODE:", self.request.LANGUAGE_CODE)
-        print("base count:", q.count())
         q = self.apply_article_lookups(q)
-        print("filtered count:", q.count())
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
 

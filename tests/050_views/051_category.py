@@ -1,10 +1,7 @@
-import datetime
-
 import pytest
 
 from django.conf import settings
 from django.urls import reverse
-from django.utils import timezone
 
 from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
 from lotus.choices import STATUS_DRAFT
@@ -215,7 +212,7 @@ def test_category_view_detail_pagination(db, client):
     picsou = CategoryFactory(title="Picsou", slug="picsou")
 
     # No more articles than pagination limit
-    articles = ArticleFactory.create_batch(
+    ArticleFactory.create_batch(
         settings.LOTUS_ARTICLE_PAGINATION,
         fill_categories=[picsou],
     )
@@ -251,7 +248,6 @@ def test_category_view_detail_pagination(db, client):
     assert len(items) == 1
 
 
-#@pytest.mark.skip(reason="To do when detail has been covered")
 def test_category_view_list(db, client):
     """
     Category list should be correctly ordered and paginated.

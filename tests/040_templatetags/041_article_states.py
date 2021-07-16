@@ -1,17 +1,11 @@
 import datetime
 
-import pytest
 import pytz
-from freezegun import freeze_time
 
 from django.conf import settings
 from django.template import Context, Template
-from django.utils import timezone
 
-from lotus.choices import STATUS_DRAFT
-from lotus.factories import (
-    ArticleFactory,
-)
+from lotus.factories import ArticleFactory
 
 
 # Shortcut for a shorter variable name

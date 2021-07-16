@@ -7,8 +7,7 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 
 from lotus.factories import (
-    ArticleFactory, CategoryFactory,
-    multilingual_category, multilingual_article,
+    CategoryFactory, multilingual_category, multilingual_article,
 )
 from lotus.models import Category
 from lotus.utils.imaging import create_image_file
@@ -255,7 +254,7 @@ def test_category_get_articles(db):
     ping = CategoryFactory()
     pong = CategoryFactory()
 
-    foo = multilingual_article(
+    multilingual_article(
         slug="foo",
         langs=["fr"],
         fill_categories=[ping, pong],
@@ -267,7 +266,7 @@ def test_category_get_articles(db):
         },
     )
 
-    bar = multilingual_article(
+    multilingual_article(
         slug="bar",
         langs=["fr"],
         fill_categories=[ping],
@@ -279,12 +278,12 @@ def test_category_get_articles(db):
         },
     )
 
-    moo = multilingual_article(
+    multilingual_article(
         slug="moo",
         fill_categories=[ping],
     )
 
-    yeah = multilingual_article(
+    multilingual_article(
         slug="yeah",
         langs=["fr"],
         fill_categories=[pong],
@@ -296,7 +295,7 @@ def test_category_get_articles(db):
         },
     )
 
-    nope = multilingual_article(slug="nope")
+    multilingual_article(slug="nope")
 
     ping_articles = [
         (item.slug, item.language)

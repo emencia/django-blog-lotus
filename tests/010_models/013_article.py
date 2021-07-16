@@ -3,7 +3,6 @@ import datetime
 
 import pytest
 import pytz
-from freezegun import freeze_time
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -461,7 +460,7 @@ def test_article_model_get_states(db):
         publish_date=yesterday.date(),
         publish_time=yesterday.time(),
     )
-    article_passed = ArticleFactory(
+    ArticleFactory(
         title="published but ended one hour ago",
         publish_date=today.date(),
         publish_time=today.time(),
@@ -485,11 +484,25 @@ def test_article_model_get_states(db):
         private=True,
     )
 
-    assert article_draft.get_states(now) == [STATES["status_draft"]]
-    assert article_pinned.get_states(now) == [STATES["pinned"], STATES["status_available"]]
-    assert article_featured.get_states(now) == [STATES["featured"], STATES["status_available"]]
-    assert article_private.get_states(now) == [STATES["private"], STATES["status_available"]]
-    assert article_yesterday.get_states(now) == [STATES["status_available"]]
-    assert article_mixed_draft.get_states(now) == [STATES["pinned"], STATES["private"], STATES["status_draft"]]
-    assert article_mixed_available.get_states(now) == [STATES["pinned"], STATES["private"], STATES["status_available"],
-                                                       STATES["publish_end_passed"]]
+    assert article_draft.get_states(now) == [
+        STATES["status_draft"]
+    ]
+    assert article_pinned.get_states(now) == [
+        STATES["pinned"], STATES["status_available"],
+    ]
+    assert article_featured.get_states(now) == [
+        STATES["featured"], STATES["status_available"],
+    ]
+    assert article_private.get_states(now) == [
+        STATES["private"], STATES["status_available"],
+    ]
+    assert article_yesterday.get_states(now) == [
+        STATES["status_available"],
+    ]
+    assert article_mixed_draft.get_states(now) == [
+        STATES["pinned"], STATES["private"], STATES["status_draft"],
+    ]
+    assert article_mixed_available.get_states(now) == [
+        STATES["pinned"], STATES["private"], STATES["status_available"],
+        STATES["publish_end_passed"],
+    ]

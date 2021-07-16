@@ -19,9 +19,13 @@ class BasePublishedQuerySet(models.QuerySet):
         """
         Return a queryset with published entries selected.
 
+        This build a complex queryset about status, publish start date, publish start
+        time and publish end datetime.
+
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
-                publication target, default to the current datetime.
+                publication target, if empty default value will be the current
+                datetime.
             prefix (string): Prefix to append on each lookup expression on
                 publication dates fields (start/end). Commonly used to filter
                 from a relation like ``author__``. Default is empty.
@@ -29,26 +33,16 @@ class BasePublishedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
-        #print()
-        #print("   📈 get_published")
         prefix = prefix or ""
         target_date = target_date or timezone.now()
-        #print("      target_date:", target_date)
 
-        """
-        TODO: "publish_time__lte" usage is BUGGED. It has passed tests but causes
-        empty results in frontend on some specific time.
-
-        It's because date and time are two distinct columns, the current SQL
-        request does not match them as we expect it (as a single datetime where
-        date and time are solely related).
-
-        See #22 on github issues.
-        """
         return self.filter(
             models.Q(**{prefix + "status": STATUS_PUBLISHED}),
-            models.Q(**{prefix + "publish_date__lte": target_date.date()}),
-            models.Q(**{prefix + "publish_time__lte": target_date.time()}),
+            models.Q(**{prefix + "publish_date__lt": target_date.date()}) |
+            models.Q(
+                models.Q(**{prefix + "publish_date": target_date.date()}),
+                models.Q(**{prefix + "publish_time__lte": target_date.time()})
+            ),
             models.Q(**{prefix + "publish_end__gt": target_date}) |
             models.Q(**{prefix + "publish_end": None}),
         )
@@ -72,8 +66,11 @@ class BasePublishedQuerySet(models.QuerySet):
 
         return self.exclude(
             models.Q(**{prefix + "status": STATUS_PUBLISHED}),
-            models.Q(**{prefix + "publish_date__lte": target_date.date()}),
-            models.Q(**{prefix + "publish_time__lte": target_date.time()}),
+            models.Q(**{prefix + "publish_date__lt": target_date.date()}) |
+            models.Q(
+                models.Q(**{prefix + "publish_date": target_date.date()}),
+                models.Q(**{prefix + "publish_time__lte": target_date.time()})
+            ),
             models.Q(**{prefix + "publish_end__gt": target_date}) |
             models.Q(**{prefix + "publish_end": None}),
         )
@@ -91,7 +88,7 @@ class BaseTranslatedQuerySet(models.QuerySet):
 
 class ArticleQuerySet(BasePublishedQuerySet, BaseTranslatedQuerySet):
     """
-    Article queryset mix publication and translation querysets.
+    Article queryset mix publication and translation QuerySet classes.
     """
     pass
 
