@@ -423,6 +423,8 @@ def test_article_view_detail_content(db, admin_client):
     article to check for the "draft" CSS class.
 
     Also, this does not care about textual content (title, lead, content, etc..).
+
+    TODO: Check for seo_title
     """
     picsou = AuthorFactory(first_name="Picsou", last_name="McDuck")
     AuthorFactory(first_name="Flairsou", last_name="Cresus")

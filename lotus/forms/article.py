@@ -32,13 +32,13 @@ class ArticleAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Model choices querysets for create form get all objects since there is no
+        # Model choices querysets for create form gets all objects since there is no
         # data yet to constraint
         if not self.instance.pk:
             original_queryset = Article.objects.all()
             related_queryset = Article.objects.all()
             category_queryset = Category.objects.all()
-        # Model choices querysets for change form filter objects against constraints
+        # Model choices querysets for change form filters objects against constraints
         else:
             # Avoid selecting itself or object with the same language
             original_queryset = Article.objects.exclude(

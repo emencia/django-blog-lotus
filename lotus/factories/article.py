@@ -33,6 +33,7 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     pinned = False
     private = False
     publish_end = None
+    seo_title = ""
 
     class Meta:
         model = Article

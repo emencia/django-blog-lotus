@@ -95,6 +95,7 @@ class ArticleAdmin(admin.ModelAdmin):
         (
             _("SEO"), {
                 "fields": (
+                    "seo_title",
                     "lead",
                 )
             }

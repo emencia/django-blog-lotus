@@ -161,6 +161,21 @@ class Article(Translated):
     Required unique slug string.
     """
 
+    seo_title = models.CharField(
+        _("SEO title"),
+        blank=True,
+        max_length=150,
+        default="",
+        help_text=_(
+            "This value Will be used as page meta title if not blank, else the "
+            "article title is used."
+        ),
+    )
+    """
+    Optional SEO title string used as meta title if not blank, instead of default
+    behavior to use article title.
+    """
+
     lead = models.TextField(
         _("lead"),
         blank=True,
