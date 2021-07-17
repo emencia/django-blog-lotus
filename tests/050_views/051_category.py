@@ -29,6 +29,64 @@ def test_category_view_detail_404(db, client):
     assert response.status_code == 404
 
 
+def test_category_view_list(db, client):
+    """
+    Category list should be correctly ordered and paginated.
+    """
+    expected_pages = 2
+    total_items = settings.LOTUS_CATEGORY_PAGINATION * expected_pages
+
+    # Create a batch of category with numerated name on two digit filled with
+    # leading 0 to enforce sorting
+    names = [
+        "{}.Foo".format(str(i).zfill(2))
+        for i in range(1, total_items + 1)
+    ]
+    for item in names:
+        CategoryFactory(title=item)
+
+    # Expected items in page are simply ordered on name
+    expected_item_page_1 = names[0:settings.LOTUS_CATEGORY_PAGINATION]
+    expected_item_page_2 = names[settings.LOTUS_CATEGORY_PAGINATION:total_items]
+
+    # Get detail for first page
+    urlname = "lotus:category-index"
+    response = client.get(reverse(urlname))
+    assert response.status_code == 200
+
+    # Parse first page HTML
+    dom = html_pyquery(response)
+    items = dom.find("#lotus-content .category-list-container .list .item")
+    links = dom.find("#lotus-content .category-list-container .pagination a")
+    # Get item titles
+    link_title_page_1 = []
+    for item in items:
+        link_title_page_1.append(item.cssselect(".title")[0].text)
+
+    # Expected pagination links
+    assert len(links) == 2
+    # Expected paginated item list length
+    assert len(items) == settings.LOTUS_CATEGORY_PAGINATION
+    # Ensure every expected items are here respecting order
+    assert expected_item_page_1 == link_title_page_1
+
+    # Get detail for second page
+    urlname = "lotus:category-index"
+    response = client.get(reverse(urlname), {"page": 2})
+    assert response.status_code == 200
+
+    # Parse second page HTML
+    dom = html_pyquery(response)
+    items = dom.find("#lotus-content .category-list-container .list .item")
+    # Get item titles
+    link_title_page_2 = []
+    for item in items:
+        link_title_page_2.append(item.cssselect(".title")[0].text)
+
+    # Ensure every expected items are here respecting order
+    assert expected_item_page_2 == link_title_page_2
+
+
 @pytest.mark.parametrize("user_kind,client_kwargs,expected", [
     (
         "anonymous",
@@ -248,59 +306,42 @@ def test_category_view_detail_pagination(db, client):
     assert len(items) == 1
 
 
-def test_category_view_list(db, client):
+def test_category_view_detail_metas(db, client):
     """
-    Category list should be correctly ordered and paginated.
+    Detail page should have the right metas content.
     """
-    expected_pages = 2
-    total_items = settings.LOTUS_CATEGORY_PAGINATION * expected_pages
+    # No specific SEO content
+    category_noseo = CategoryFactory(
+        title="Picsou",
+        lead="",
+    )
+    # Fill all the SEO fields
+    category_seo = CategoryFactory(
+        title="Donald",
+        lead="Blah blah blah",
+    )
 
-    # Create a batch of category with numerated name on two digit filled with
-    # leading 0 to enforce sorting
-    names = [
-        "{}.Foo".format(str(i).zfill(2))
-        for i in range(1, total_items + 1)
-    ]
-    for item in names:
-        CategoryFactory(title=item)
-
-    # Expected items in page are simply ordered on name
-    expected_item_page_1 = names[0:settings.LOTUS_CATEGORY_PAGINATION]
-    expected_item_page_2 = names[settings.LOTUS_CATEGORY_PAGINATION:total_items]
-
-    # Get detail for first page
-    urlname = "lotus:category-index"
-    response = client.get(reverse(urlname))
+    # Parse HTML response for 'no SEO category'
+    url = category_noseo.get_absolute_url()
+    response = client.get(url)
     assert response.status_code == 200
 
-    # Parse first page HTML
     dom = html_pyquery(response)
-    items = dom.find("#lotus-content .category-list-container .list .item")
-    links = dom.find("#lotus-content .category-list-container .pagination a")
-    # Get item titles
-    link_title_page_1 = []
-    for item in items:
-        link_title_page_1.append(item.cssselect(".title")[0].text)
+    meta_title = dom.find("head title")[0]
+    meta_description = dom.find("head meta[name='description']")
 
-    # Expected pagination links
-    assert len(links) == 2
-    # Expected paginated item list length
-    assert len(items) == settings.LOTUS_CATEGORY_PAGINATION
-    # Ensure every expected items are here respecting order
-    assert expected_item_page_1 == link_title_page_1
+    assert meta_title.text == "Picsou"
+    assert len(meta_description) == 0
 
-    # Get detail for second page
-    urlname = "lotus:category-index"
-    response = client.get(reverse(urlname), {"page": 2})
+    # Parse HTML response for 'SEO category'
+    url = category_seo.get_absolute_url()
+    response = client.get(url)
     assert response.status_code == 200
 
-    # Parse second page HTML
     dom = html_pyquery(response)
-    items = dom.find("#lotus-content .category-list-container .list .item")
-    # Get item titles
-    link_title_page_2 = []
-    for item in items:
-        link_title_page_2.append(item.cssselect(".title")[0].text)
+    meta_title = dom.find("head title")[0]
+    meta_description = dom.find("head meta[name='description']")
 
-    # Ensure every expected items are here respecting order
-    assert expected_item_page_2 == link_title_page_2
+    assert meta_title.text == "Donald"
+    assert len(meta_description) == 1
+    assert meta_description[0].get("content") == "Blah blah blah"

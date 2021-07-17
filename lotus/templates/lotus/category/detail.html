@@ -1,8 +1,10 @@
 {% extends "lotus/base.html" %}
 {% load i18n %}
 
-{% comment %}TODO: This lacks of usage of "lead" field to add header meta description{% endcomment %}
-{% block head_title %}{{ category_object.title }} - {{ block.super }}{% endblock head_title %}
+{% block head_title %}{{ category_object.title }}{% endblock head_title %}
+{% block head_metas %}
+{% if category_object.lead %}<meta name="description" content="{{ category_object.lead|striptags }}">{% endif %}
+{% endblock head_metas %}
 
 {% block lotus_content %}{% spaceless %}
 <div class="category-detail">

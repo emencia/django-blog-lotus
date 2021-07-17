@@ -423,8 +423,6 @@ def test_article_view_detail_content(db, admin_client):
     article to check for the "draft" CSS class.
 
     Also, this does not care about textual content (title, lead, content, etc..).
-
-    TODO: Check for seo_title
     """
     picsou = AuthorFactory(first_name="Picsou", last_name="McDuck")
     AuthorFactory(first_name="Flairsou", last_name="Cresus")
@@ -471,3 +469,43 @@ def test_article_view_detail_content(db, admin_client):
     ]
     assert cover == article_3.cover.url
     assert large_img == article_3.image.url
+
+
+def test_article_view_detail_metas(db, client):
+    """
+    Detail page should have the right metas content.
+    """
+    # No specific SEO content
+    article_noseo = ArticleFactory(
+        title="Ping",
+        lead="",
+    )
+    # Fill all the SEO fields
+    article_seo = ArticleFactory(
+        title="Bar",
+        seo_title="Meow",
+        lead="Pwet pwet",
+    )
+
+    # Parse HTML response for 'no SEO article'
+    response = client.get(article_noseo.get_absolute_url())
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    meta_title = dom.find("head title")[0]
+    meta_description = dom.find("head meta[name='description']")
+
+    assert meta_title.text == "Ping"
+    assert len(meta_description) == 0
+
+    # Parse HTML response for 'SEO article'
+    response = client.get(article_seo.get_absolute_url())
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    meta_title = dom.find("head title")[0]
+    meta_description = dom.find("head meta[name='description']")
+
+    assert meta_title.text == "Meow"
+    assert len(meta_description) == 1
+    assert meta_description[0].get("content") == "Pwet pwet"
