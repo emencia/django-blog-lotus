@@ -18,6 +18,12 @@ Article entry per page limit for pagination, set it to ``None`` to disable
 pagination.
 """
 
+LOTUS_AUTHOR_PAGINATION = 6
+"""
+Author per page limit for pagination, set it to ``None`` to disable
+pagination.
+"""
+
 LOTUS_TRANSLATE_CONTENT = True
 """
 Determine if your project enable content translation or not.

@@ -16,6 +16,11 @@ DATABASES = {
     }
 }
 
+# Upgrade limit to fit to layout
+LOTUS_CATEGORY_PAGINATION = 8
+LOTUS_ARTICLE_PAGINATION = 14
+LOTUS_AUTHOR_PAGINATION = 9
+
 # Import local settings if any
 try:
     from .local import *

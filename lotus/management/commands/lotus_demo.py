@@ -2,6 +2,7 @@ import random
 
 from faker import Faker
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.text import slugify
 
@@ -22,14 +23,14 @@ class Command(BaseCommand):
         "Create Author, Article and Category objects for demonstration purpose."
         "You may need to use flush options to remove objects to avoid constraint "
         "failures on some unique fields. Currently only working for default "
-        "language."
+        "language. Default length of created objects depends on their limit setting."
     )
 
     def add_arguments(self, parser):
         parser.add_argument(
             "--authors",
             type=int,
-            default=3,
+            default=(settings.LOTUS_AUTHOR_PAGINATION * 2),
         )
         parser.add_argument(
             "--flush-authors",
@@ -39,7 +40,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--articles",
             type=int,
-            default=20
+            default=(settings.LOTUS_ARTICLE_PAGINATION * 2)
         )
         parser.add_argument(
             "--flush-articles",
@@ -49,7 +50,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--categories",
             type=int,
-            default=6
+            default=(settings.LOTUS_CATEGORY_PAGINATION * 2)
         )
         parser.add_argument(
             "--flush-categories",
@@ -98,7 +99,7 @@ class Command(BaseCommand):
             self.style.SUCCESS("* Creating {} authors".format(self.author_length))
         )
 
-        for i in range(1, self.author_length+1):
+        for i in range(1, self.author_length + 1):
             first_name = self.faker.unique.first_name()
             last_name = self.faker.unique.last_name()
             username = slugify("{} {}".format(first_name, last_name))
@@ -110,7 +111,10 @@ class Command(BaseCommand):
                 flag_is_admin=True,
             )
 
-            self.stdout.write("  - Author: {}".format(obj.username))
+            self.stdout.write("  {}) Author: {}".format(
+                str(i).zfill(2),
+                obj.username,
+            ))
             created.append(obj)
 
         return created
@@ -125,7 +129,7 @@ class Command(BaseCommand):
             self.style.SUCCESS("* Creating {} categories".format(self.category_length))
         )
 
-        for i in range(1, self.category_length+1):
+        for i in range(1, self.category_length + 1):
             title = self.faker.unique.company()
             slug = slugify(title)
 
@@ -134,7 +138,10 @@ class Command(BaseCommand):
                 slug=slug,
             )
 
-            self.stdout.write("  - Category: {}".format(obj.title))
+            self.stdout.write("  {}) Category: {}".format(
+                str(i).zfill(2),
+                obj.title,
+            ))
             created.append(obj)
 
         return created
@@ -149,28 +156,58 @@ class Command(BaseCommand):
             self.style.SUCCESS("* Creating {} articles".format(self.article_length))
         )
 
-        for i in range(1, self.article_length+1):
+        for i in range(1, self.article_length + 1):
             title = self.faker.unique.sentence(nb_words=5)
             slug = slugify(title)
+
+            # Estimate how many authors exists to relate on, but never more than 5
+            authors_count = 0
+            if self.author_length > 5:
+                authors_count = 5
+            elif self.author_length > 1:
+                authors_count = self.author_length
+            elif self.author_length > 0:
+                authors_count = 1
+
+            # Estimate how many categories exists to relate on, but never more than 5
+            categories_count = 0
+            if self.category_length > 5:
+                categories_count = 5
+            elif self.category_length > 1:
+                categories_count = self.category_length
+            elif self.category_length > 0:
+                categories_count = 1
+
+            # Estimate how many article exists to relate on, but never more than 5
+            relations_count = 0
+            if len(created) > 5:
+                relations_count = 5
+            elif len(created) > 1:
+                relations_count = len(created)
+            elif len(created) > 0:
+                relations_count = 1
 
             obj = ArticleFactory(
                 title=title,
                 slug=slug,
                 fill_authors=random.sample(
                     authors,
-                    random.randint(1, self.author_length),
+                    random.randint(1, authors_count),
                 ),
                 fill_categories=random.sample(
                     categories,
-                    random.randint(1, self.category_length),
+                    random.randint(1, categories_count),
                 ),
                 fill_related=random.sample(
                     created,
-                    random.randint(0, len(created)),
+                    random.randint(0, relations_count),
                 ),
             )
 
-            self.stdout.write("  - Article: {}".format(obj.title))
+            self.stdout.write("  {}) Article: {}".format(
+                str(i).zfill(2),
+                obj.title,
+            ))
             created.append(obj)
 
         return created
