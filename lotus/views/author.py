@@ -16,7 +16,7 @@ class AuthorIndexView(ListView):
     context_object_name = "author_list"
 
     def get_queryset(self):
-        q = self.model.lotus_objects.get_published()
+        q = self.model.lotus_objects.get_active(language=self.request.LANGUAGE_CODE)
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
@@ -46,9 +46,10 @@ class AuthorDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
 
         Depend on "self.object" to list Author related objects.
         """
-        q = self.object.get_articles(ordered=False)
-
-        q = self.apply_article_lookups(q)
+        q = self.apply_article_lookups(
+            self.object.articles,
+            self.request.LANGUAGE_CODE,
+        )
 
         return q.order_by(*self.listed_model.COMMON_ORDER_BY)
 

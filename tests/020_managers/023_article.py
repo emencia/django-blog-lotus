@@ -21,7 +21,7 @@ def test_article_managers(db):
     yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
     tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
     next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 00))
-    # Today 5min sooner to avoid shifting with pytest and factory delays
+    # Today 5min sooner
     today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
 
     # Single language only
@@ -110,13 +110,12 @@ def test_article_managers(db):
         publish_time=next_hour.time(),
     )
 
-    # Check all english articles
-    assert Article.objects.get_for_lang().count() == 11
+    # Check all articles for default language
+    assert Article.objects.count() == 31
 
-    # Check all french articles
+    # Check articles for each language
+    assert Article.objects.get_for_lang("en").count() == 11
     assert Article.objects.get_for_lang("fr").count() == 10
-
-    # Check all french articles
     assert Article.objects.get_for_lang("de").count() == 10
 
     # Check all published
@@ -126,7 +125,7 @@ def test_article_managers(db):
     assert Article.objects.get_unpublished().count() == 10
 
     # Check all english published
-    q_en_published = Article.objects.get_for_lang().get_published()
+    q_en_published = Article.objects.get_published(language="en")
     assert queryset_values(q_en_published) == [
         {"slug": "banana", "language": "en"},
         {"slug": "burger", "language": "en"},
@@ -138,7 +137,7 @@ def test_article_managers(db):
     ]
 
     # Check all french published
-    q_fr_published = Article.objects.get_for_lang("fr").get_published()
+    q_fr_published = Article.objects.get_published(language="fr")
     assert queryset_values(q_fr_published) == [
         {"slug": "banana", "language": "fr"},
         {"slug": "cheese", "language": "fr"},
@@ -150,7 +149,7 @@ def test_article_managers(db):
     ]
 
     # Check all deutsch published
-    q_de_published = Article.objects.get_for_lang("de").get_published()
+    q_de_published = Article.objects.get_published(language="de")
     assert queryset_values(q_de_published) == [
         {"slug": "burger", "language": "de"},
         {"slug": "cheese", "language": "de"},
@@ -221,25 +220,26 @@ def test_article_managers_publication_time(db):
         publish_time=next_year.time()
     )
 
-    results = Article.objects.get_for_lang().get_published()
+    results = Article.objects.get_published(language="en")
     autonow_items = [item.slug for item in results]
 
-    results = Article.objects.get_for_lang().get_published(target_date=forged_now)
+    results = Article.objects.get_published(target_date=forged_now, language="en")
     forgednow_items = [item.slug for item in results]
 
-    results = Article.objects.get_for_lang().get_published(target_date=sooner)
+    results = Article.objects.get_published(target_date=sooner, language="en")
     sooner_items = [item.slug for item in results]
 
-    results = Article.objects.get_for_lang().get_published(target_date=tomorrow)
+    results = Article.objects.get_published(target_date=tomorrow, language="en")
     tomorrow_items = [item.slug for item in results]
 
-    results = Article.objects.get_for_lang().get_published(target_date=yesterday)
+    results = Article.objects.get_published(target_date=yesterday, language="en")
     yesterday_items = [item.slug for item in results]
 
     # Here is reproduction of expected bug. Publish dates is below targeted date but
     # publish times are always bigger than targeted time.
-    results = Article.objects.get_for_lang().get_published(
-        target_date=default_tz.localize(datetime.datetime(2012, 10, 20, 0, 0))
+    results = Article.objects.get_published(
+        target_date=default_tz.localize(datetime.datetime(2012, 10, 20, 0, 0)),
+        language="en",
     )
     futur_items = [item.slug for item in results]
 

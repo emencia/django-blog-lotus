@@ -54,27 +54,6 @@ class Author(safe_get_user_model(), AuthorManagerEnabled):
         except AttributeError:
             return reverse('lotus:author-detail', args=[self.get_username()])
 
-    def get_articles(self, ordered=True):
-        """
-        Return articles which author have contributed to.
-
-        Keyword Arguments:
-            ordered (boolean): When enabled, returned queryset is ordered by fields
-                from ``Author.COMMON_ORDER_BY`` else the queryset will unordered.
-                Enabled by default.
-
-        Returns:
-            queryset: Article list.
-        """
-        q = self.articles.get_published()
-
-        if ordered:
-            return q.order_by(
-                *self.articles.model.COMMON_ORDER_BY
-            )
-
-        return q
-
     COMMON_ORDER_BY = ["username"]
     """
     List of field order commonly used in frontend view/api

@@ -328,7 +328,7 @@ class Article(Translated):
         Returns:
             queryset: List of article categories.
         """
-        return self.categories.get_for_lang(self.language).all().order_by("title")
+        return self.categories.get_for_lang(self.language).order_by("title")
 
     def get_related(self):
         """
@@ -337,7 +337,7 @@ class Article(Translated):
         Returns:
             queryset: List of related articles.
         """
-        return self.related.get_for_lang(self.language).all().order_by(
+        return self.related.get_for_lang(self.language).order_by(
             *self.COMMON_ORDER_BY
         )
 

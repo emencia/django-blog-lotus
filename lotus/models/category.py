@@ -128,27 +128,6 @@ class Category(Translated):
             "slug": self.slug,
         })
 
-    def get_articles(self, ordered=True):
-        """
-        Return Category related articles, results are enforced on category language.
-
-        Keyword Arguments:
-            ordered (boolean): When enabled, returned queryset is ordered by fields
-                from ``Article.COMMON_ORDER_BY`` else the queryset will unordered.
-                Enabled by default.
-
-        Returns:
-            queryset: List of related articles.
-        """
-        q = self.articles.get_for_lang(self.language)
-
-        if ordered:
-            return q.order_by(
-                *self.articles.model.COMMON_ORDER_BY
-            )
-
-        return q
-
 
 # Connect some signals
 post_delete.connect(

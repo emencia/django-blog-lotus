@@ -1,4 +1,6 @@
-from lotus.factories import CategoryFactory, multilingual_category
+from lotus.factories import (
+    CategoryFactory, multilingual_article, multilingual_category,
+)
 from lotus.models import Category
 from lotus.utils.tests import queryset_values
 
@@ -41,8 +43,8 @@ def test_category_managers(db):
         },
     )
 
-    # Use default language as configured in settings
-    assert queryset_values(Category.objects.get_for_lang()) == [
+    # For english language
+    assert queryset_values(Category.objects.get_for_lang("en")) == [
         {"slug": "foobar", "language": "en"},
         {"slug": "food", "language": "en"},
         {"slug": "music", "language": "en"},
@@ -59,4 +61,88 @@ def test_category_managers(db):
     # For deutsch language
     assert queryset_values(Category.objects.get_for_lang("de")) == [
         {"slug": "recipe", "language": "de"},
+    ]
+
+
+def test_category_get_articles(db):
+    """
+    Demonstrate how to get category related articles correctly using Article manager.
+    """
+    ping = CategoryFactory()
+    pong = CategoryFactory()
+
+    multilingual_article(
+        slug="foo",
+        langs=["fr"],
+        fill_categories=[ping, pong],
+        contents={
+            "fr": {
+                "slug": "fou",
+                "fill_categories": [ping, pong],
+            }
+        },
+    )
+
+    multilingual_article(
+        slug="bar",
+        langs=["fr"],
+        fill_categories=[ping],
+        contents={
+            "fr": {
+                "slug": "barre",
+                "fill_categories": [ping, pong],
+            }
+        },
+    )
+
+    multilingual_article(
+        slug="moo",
+        fill_categories=[ping],
+    )
+
+    multilingual_article(
+        slug="yeah",
+        langs=["fr"],
+        fill_categories=[pong],
+        contents={
+            "fr": {
+                "slug": "ouais",
+                "fill_categories": [ping],
+            }
+        },
+    )
+
+    multilingual_article(slug="nope")
+
+    ping_articles = [
+        (item.slug, item.language)
+        for item in ping.articles.get_for_lang("en")
+    ]
+
+    pong_articles = [
+        (item.slug, item.language)
+        for item in pong.articles.get_for_lang("en")
+    ]
+
+    # Get unordered queryset then order by slug to avoid arbitrary order
+    unordered_ping_articles = [
+        (item.slug, item.language)
+        for item in ping.articles.get_for_lang("en").order_by("slug")
+    ]
+
+    assert ping_articles == [
+        ("moo", "en"),
+        ("bar", "en"),
+        ("foo", "en"),
+    ]
+
+    assert pong_articles == [
+        ("yeah", "en"),
+        ("foo", "en"),
+    ]
+
+    assert unordered_ping_articles == [
+        ("bar", "en"),
+        ("foo", "en"),
+        ("moo", "en"),
     ]

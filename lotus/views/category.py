@@ -16,6 +16,9 @@ class CategoryIndexView(ListView):
     context_object_name = "category_list"
 
     def get_queryset(self):
+        """
+        Build queryset base with language filtering to list categories.
+        """
         q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
@@ -35,7 +38,7 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
 
     def get_queryset_for_object(self):
         """
-        Build queryset base to get Category.
+        Build queryset base with language filtering to get Category.
         """
         q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
 
@@ -45,10 +48,11 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
         """
         Build queryset base to list Category articles.
 
-        Depend on "self.object" to list Category related objects.
+        Depend on "self.object" to list Category related objects filtered on its
+        language.
         """
         q = self.apply_article_lookups(
-            self.object.get_articles(ordered=False),
+            self.object.articles,
             self.object.language,
         )
 

@@ -22,18 +22,6 @@ class BasePublishedQuerySet(models.QuerySet):
         This build a complex queryset about status, publish start date, publish start
         time, publish end datetime and language.
 
-        TODO:
-            New way to get published article. This is required since actually it
-            does not work correctly with joining like usage in AuthorManager. It
-            does not group status & languages lookup which lead to unexpected
-            results (only status or language lookup is used in SQL, depending there
-            order in complete queryset).
-
-            This new way require to merge "get_for_lang" here so we can put status &
-            language lookups aside to be correctly grouped.
-
-            And report it also for unpublished.
-
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
                 publication target, if empty default value will be the current
@@ -68,25 +56,35 @@ class BasePublishedQuerySet(models.QuerySet):
             models.Q(**{prefix + "publish_end": None}),
         )
 
-    def get_unpublished(self, target_date=None, prefix=None):
+    def get_unpublished(self, target_date=None, language=None, prefix=None):
         """
         Return a queryset with unpublished entries selected.
 
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
-                publication target, default to the current datetime.
+                publication target, if empty default value will be the current
+                datetime.
+            language (string): Language code to filter on. If empty, language is not
+                filtered.
             prefix (string): Prefix to append on each lookup expression on
                 publication dates fields (start/end). Commonly used to filter
-                from a relation. Default is empty.
+                from a relation like ``author__``. Default is empty.
 
         Returns:
             queryset: Queryset to filter published entries.
         """
+        print("   .. BasePublishedQuerySet.get_published:", target_date, prefix, language)
         prefix = prefix or ""
         target_date = target_date or timezone.now()
 
+        base_lookups = {
+            prefix + "status": STATUS_PUBLISHED,
+        }
+        if language:
+            base_lookups[prefix + "language"] = language
+
         return self.exclude(
-            models.Q(**{prefix + "status": STATUS_PUBLISHED}),
+            models.Q(**base_lookups),
             models.Q(**{prefix + "publish_date__lt": target_date.date()}) |
             models.Q(
                 models.Q(**{prefix + "publish_date": target_date.date()}),
@@ -101,12 +99,18 @@ class BaseTranslatedQuerySet(models.QuerySet):
     """
     Base queryset for translation methods only.
     """
-    def get_for_lang(self, language=None, prefix=None):
+    def get_for_lang(self, language, prefix=None):
         """
         Return a queryset with unpublished entries selected.
 
-        Keyword Arguments:
+        TODO:
+            Maybe argument language should be required ? Keep it like this until
+            migration to NG manager is done.
+
+        Arguments:
             language (string): Language code to filter on.
+
+        Keyword Arguments:
             prefix (string): Prefix to append on each lookup expression. Commonly used
                 to filterfrom a relation. Default is empty.
 
@@ -130,14 +134,12 @@ class ArticleQuerySet(BasePublishedQuerySet, BaseTranslatedQuerySet):
 class CategoryManager(models.Manager):
     """
     Categroy objects manager.
-
-    NOTE: This will still untouched from NG managers.
     """
     def get_queryset(self):
         print("   .. CategoryManager.get_queryset")
         return BaseTranslatedQuerySet(self.model, using=self._db)
 
-    def get_for_lang(self, language=None):
+    def get_for_lang(self, language):
         print("   .. CategoryManager.get_for_lang:", language)
         return self.get_queryset().get_for_lang(language)
 
@@ -145,35 +147,26 @@ class CategoryManager(models.Manager):
 class ArticleManager(models.Manager):
     """
     Article objects manager.
-
-    NOTE: Since of manager+QuerySet chaining, some methods may never be used.
     """
     def get_queryset(self):
         print("   .. ArticleManager.get_queryset")
         return ArticleQuerySet(self.model, using=self._db)
 
     def get_published(self, target_date=None, language=None):
-        """
-        TODO:
-            New way to get published article, include the language filtering.
-            Its usage have to be propagated everywhere
-        """
-        print("   .. ArticleManager.get_published", target_date)
+        print("   .. ArticleManager.get_published", target_date, language)
         return self.get_queryset().get_published(
             target_date=target_date,
             language=language,
         )
 
-    def get_unpublished(self, target_date=None):
-        return self.get_queryset().get_unpublished(target_date)
+    def get_unpublished(self, target_date=None, language=None):
+        print("   .. ArticleManager.get_unpublished", target_date, language)
+        return self.get_queryset().get_unpublished(
+            target_date=target_date,
+            language=language,
+        )
 
-    def get_for_lang(self, language=None):
-        """
-        TODO:
-            Will be removed once get_ng_published is used everywhere
-
-            Or not ? (it could be helpful).
-        """
+    def get_for_lang(self, language):
         print("   .. ArticleManager.get_for_lang:", language)
         return self.get_queryset().get_for_lang(language)
 
@@ -194,7 +187,7 @@ class AuthorManager(models.Manager):
         q = self.get_queryset()
 
         q = q.get_published(
-            target_date,
+            target_date=target_date,
             language=language,
             prefix="articles__"
         )

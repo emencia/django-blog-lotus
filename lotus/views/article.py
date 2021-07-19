@@ -11,9 +11,7 @@ class ArticleFilterMixin:
     """
     A mixin to share Article filtering.
     """
-    #def apply_article_lookups(self, queryset, language=None):
-    # TODO: Temporary: until migration is over, language is optional
-    def apply_article_lookups(self, queryset, language=None):
+    def apply_article_lookups(self, queryset, language):
         """
         Apply publication and language lookups to given queryset.
 
@@ -58,8 +56,6 @@ class ArticleFilterMixin:
 class ArticleIndexView(ArticleFilterMixin, ListView):
     """
     Paginated list of articles.
-
-    NOTE: Migrated to NG manager.
     """
     model = Article
     template_name = "lotus/article/list.html"
@@ -75,8 +71,6 @@ class ArticleIndexView(ArticleFilterMixin, ListView):
 class ArticleDetailView(ArticleFilterMixin, DetailView):
     """
     Article detail.
-
-    NOTE: Migrated to NG manager.
     """
     model = Article
     pk_url_kwarg = "article_pk"
