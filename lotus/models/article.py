@@ -3,10 +3,6 @@
 Article models
 ==============
 
-TODO:
-    Make a base view class to include in context some possible Lotus global
-    context. For now this will be only the "admin mode", so the links can be
-    augmented to include it everywhere to maintain mode during navigation.
 """
 import datetime
 

@@ -11,9 +11,9 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-9">
-                <p class="image">{% if article_object.image %}
-                    <img src="{{ article_object.image.url }}" alt="">
-                {% endif %}</p>
+                <div class="image bg-light rounded text-center mb-2 p-2">{% if article_object.image %}
+                    <img src="{{ article_object.image.url }}" class="rounded" alt="">
+                {% endif %}</div>
 
                 <h1 class="title">{{ article_object.title }}</h1>
 
@@ -25,32 +25,44 @@
             </div>
 
             <div class="col-12 col-lg-3">
-                <p class="cover">{% if article_object.cover %}
-                    <img src="{{ article_object.cover.url }}" alt="">
-                {% endif %}</p>
+                <div class="cover text-center mb-4">{% if article_object.cover %}
+                    <img src="{{ article_object.cover.url }}" class="rounded" alt="">
+                {% endif %}</div>
 
-                <p>Categories</p>
-                <ul class="categories">
-                    {% for category in article_object.get_categories %}
-                    <li>
-                        <a href="{{ category.get_absolute_url }}" class="badge rounded-pill bg-light text-dark">{{ category.title }}</a>
-                    </li>
-                    {% endfor %}
-                </ul>
+                <div class="categories card mb-4">
+                    <div class="card-header">
+                        <strong>Categories</strong>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for category in article_object.get_categories %}
+                        <li class="list-group-item">
+                            <a href="{{ category.get_absolute_url }}">{{ category.title }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-                <p>Authors</p>
-                <ul class="authors">
-                    {% for author in article_object.get_authors %}
-                    <li>{{ author.get_full_name }}</li>
-                    {% endfor %}
-                </ul>
+                <div class="authors card mb-4">
+                    <div class="card-header">
+                        <strong>Authors</strong>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for author in article_object.get_authors %}
+                        <li class="list-group-item">{{ author.get_full_name }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-                <p>Related articles</p>
-                <ul class="relateds">
-                    {% for related in article_object.get_related %}
-                    <li><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
-                    {% endfor %}
-                </ul>
+                <div class="relateds card mb-4">
+                    <div class="card-header">
+                        <strong>Related articles</strong>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for related in article_object.get_related %}
+                        <li class="list-group-item"><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

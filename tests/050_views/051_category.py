@@ -56,7 +56,7 @@ def test_category_view_list(db, client):
 
     # Parse first page HTML
     dom = html_pyquery(response)
-    items = dom.find("#lotus-content .category-list-container .list .item")
+    items = dom.find("#lotus-content .category-list-container .list .category")
     links = dom.find("#lotus-content .category-list-container .pagination a")
     # Get item titles
     link_title_page_1 = []
@@ -77,7 +77,7 @@ def test_category_view_list(db, client):
 
     # Parse second page HTML
     dom = html_pyquery(response)
-    items = dom.find("#lotus-content .category-list-container .list .item")
+    items = dom.find("#lotus-content .category-list-container .list .category")
     # Get item titles
     link_title_page_2 = []
     for item in items:

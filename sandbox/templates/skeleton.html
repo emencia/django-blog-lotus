@@ -6,28 +6,7 @@
     {% block head_metas %}{% endblock head_metas %}
     {% block head_styles %}
     <link href="/static/css/main.css" rel="stylesheet">
-    {% comment %}
-    Dummy styles for visual develop debug
-
-    TODO: Make this properly in Sass source
-    {% endcomment %}<style type="text/css">
-        #lotus-content .item.pinned h3::after,
-        #lotus-content .article-detail.pinned h2::after {
-            content: " (pinned)";
-        }
-        #lotus-content .item.draft h3::after,
-        #lotus-content .article-detail.draft h2::before {
-            content: " [draft]";
-        }
-        #lotus-content .item.featured h3::after,
-        #lotus-content .article-detail.featured h2::after {
-            content: " (featured)";
-        }
-        #lotus-content .item.pinned.featured h3::after,
-        #lotus-content .article-detail.pinned.featured h2::after {
-            content: " (pinned,featured)";
-        }
-    </style>{% endblock head_styles %}
+    {% endblock head_styles %}
 {% endspaceless %}
 </head>
 
@@ -49,6 +28,9 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url "lotus:category-index" %}">Categories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "lotus:author-index" %}">Authors</a>
                     </li>
                 </ul>
                 <div class="d-flex">

@@ -25,7 +25,6 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
     """
     Category detail and its related article list.
     """
-    pk_url_kwarg = "category_pk"
     model = Category
     listed_model = Article
     template_name = "lotus/category/detail.html"
@@ -36,7 +35,7 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
 
     def get_queryset_for_object(self):
         """
-        Used to get Category.
+        Build queryset base to get Category.
         """
         q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
 
@@ -44,7 +43,7 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
 
     def get_queryset(self):
         """
-        Used for article listing.
+        Build queryset base to list Category articles.
 
         Depend on "self.object" to list Category related objects.
         """
@@ -58,4 +57,5 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
         # Try to get Category object
         self.object = self.get_object(queryset=self.get_queryset_for_object())
 
+        # Let the ListView mechanics manage list pagination from given queryset
         return super().get(request, *args, **kwargs)

@@ -34,13 +34,16 @@ class AuthorManagerEnabled(models.Model):
 
 class Author(safe_get_user_model(), AuthorManagerEnabled):
     """
-    Proxy model around :class:`django.contrib.auth.models.get_user_model`.
+    Proxy model around User model gotten from
+    :class:`django.contrib.auth.models.get_user_model`.
     """
-    def published_articles(self):
+    def __str__(self):
         """
-        Returns author's published articles.
+        If the user has a full name, use it instead of the username.
         """
-        return self.articles.get_published()
+        return (self.get_full_name()
+                or self.get_short_name()
+                or self.get_username())
 
     def get_absolute_url(self):
         """
@@ -49,15 +52,33 @@ class Author(safe_get_user_model(), AuthorManagerEnabled):
         try:
             return super().get_absolute_url()
         except AttributeError:
-            return reverse('lotus:author_detail', args=[self.get_username()])
+            return reverse('lotus:author-detail', args=[self.get_username()])
 
-    def __str__(self):
+    def get_articles(self, ordered=True):
         """
-        If the user has a full name, use it instead of the username.
+        Return articles which author have contributed to.
+
+        Keyword Arguments:
+            ordered (boolean): When enabled, returned queryset is ordered by fields
+                from ``Author.COMMON_ORDER_BY`` else the queryset will unordered.
+                Enabled by default.
+
+        Returns:
+            queryset: Article list.
         """
-        return (self.get_short_name()
-                or self.get_full_name()
-                or self.get_username())
+        q = self.articles.get_published()
+
+        if ordered:
+            return q.order_by(
+                *self.articles.model.COMMON_ORDER_BY
+            )
+
+        return q
+
+    COMMON_ORDER_BY = ["username"]
+    """
+    List of field order commonly used in frontend view/api
+    """
 
     class Meta:
         """

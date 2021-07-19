@@ -1,0 +1,8 @@
+{% load i18n %}{% spaceless %}
+<a href="{{ author_object.get_absolute_url }}" class="author card h-100 text-decoration-none text-reset">
+    <div class="card-body">
+        <h2 class="title card-title">{{ author_object }}</h2>
+        <div class="description card-text">{{ author_object.username }}</div>
+    </div>
+</a>
+{% endspaceless %}

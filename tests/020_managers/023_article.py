@@ -3,10 +3,10 @@ import datetime
 import pytz
 from freezegun import freeze_time
 
+from lotus.choices import STATUS_DRAFT
 from lotus.factories import ArticleFactory, multilingual_article
 from lotus.models import Article
 from lotus.utils.tests import queryset_values
-from lotus.choices import STATUS_DRAFT
 
 
 @freeze_time("2012-10-15 10:00:00")

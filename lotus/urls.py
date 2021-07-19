@@ -5,6 +5,7 @@ from django.urls import path
 
 from lotus.views import (
     ArticleIndexView, ArticleDetailView,
+    AuthorIndexView, AuthorDetailView,
     CategoryIndexView, CategoryDetailView,
 )
 
@@ -18,6 +19,13 @@ urlpatterns = [
         'articles/<int:year>/<int:month>/<int:day>/<slug:slug>/',
         ArticleDetailView.as_view(),
         name="article-detail"
+    ),
+
+    path("authors/", AuthorIndexView.as_view(), name="author-index"),
+    path(
+        "authors/<slug:username>/",
+        AuthorDetailView.as_view(),
+        name="author-detail"
     ),
 
     path("categories/", CategoryIndexView.as_view(), name="category-index"),

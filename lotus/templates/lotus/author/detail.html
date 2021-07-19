@@ -1,22 +1,22 @@
 {% extends "lotus/base.html" %}
 {% load i18n %}
 
-{% block head_title %}{% blocktrans %}Article list{% endblocktrans %}{% endblock head_title %}
+{% block head_title %}{{ author_object }}{% endblock head_title %}
 
 {% block lotus_content %}{% spaceless %}
-<div class="article-list-container">
-    <h1 class="title border-bottom border-5 py-1 mb-3">{% blocktrans %}Article list{% endblocktrans %}</h1>
+<div class="author-detail">
+    <h1 class="title">{{ author_object }}</h1>
 
-    <div class="list container">
+    <p>Articles</p>
+    <div class="articles container">
         <div class="row row-cols-2 g-4">
-            {% for article in article_list %}
+            {% for article in object_list %}
             <div class="col">
                 {% include "lotus/article/item.html" with article_object=article %}
             </div>
             {% endfor %}
         </div>
+        {% include "lotus/pagination.html" %}
     </div>
-
-    {% include "lotus/pagination.html" %}
 </div>
 {% endspaceless %}{% endblock lotus_content %}

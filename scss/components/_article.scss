@@ -1,0 +1,24 @@
+#lotus-content {
+    /* Old implementation to mark article item from their states */
+    /*
+    .item.pinned h3::after,
+    .article-detail.pinned h2::after {
+        content: " (pinned)";
+    }
+
+    .item.draft h3::after,
+    .article-detail.draft h2::before {
+        content: " [draft]";
+    }
+
+    .item.featured h3::after,
+    .article-detail.featured h2::after {
+        content: " (featured)";
+    }
+
+    .item.pinned.featured h3::after,
+    .article-detail.pinned.featured h2::after {
+        content: " (pinned,featured)";
+    }
+    */
+}

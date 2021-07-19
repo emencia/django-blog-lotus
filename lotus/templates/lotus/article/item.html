@@ -1,7 +1,7 @@
 {% load i18n lotus %}{% spaceless %}
-<div class="card mb-3 article {% article_states article_object %}">
+<div class="article card h-100 mb-3 {% article_states article_object %}">
     <div class="row g-0">
-        <div class="col-md-4 cover">{% if article_object.cover %}
+        <div class="cover col-md-4">{% if article_object.cover %}
             <img src="{{ article_object.cover.url }}" class="img-fluid rounded-start" alt="">
         {% endif %}</div>
 
@@ -10,13 +10,13 @@
                 <h2 class="title">
                     <a href="{{ article_object.get_absolute_url }}">{{ article_object.title }}</a>
                 </h2>
-                <div class="card-text introduction">{{ article_object.introduction|safe }}</div>
+                <div class="introduction card-text">{{ article_object.introduction|safe }}</div>
                 <div class="card-text mb-2">
                     {% for category in article_object.get_categories %}
                     <span class="badge rounded-pill bg-light text-dark">{{ category.title }}</span>
                     {% endfor %}
                 </div>
-                <p class="card-text"><small class="text-muted publish">{{ article_object.publish_datetime }}</small></p>
+                <p class="card-text"><small class="publish text-muted">{{ article_object.publish_datetime }}</small></p>
             </div>
         </div>
     </div>
