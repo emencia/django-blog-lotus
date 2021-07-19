@@ -47,9 +47,10 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
 
         Depend on "self.object" to list Category related objects.
         """
-        q = self.object.get_articles(ordered=False)
-
-        q = self.apply_article_lookups(q)
+        q = self.apply_article_lookups(
+            self.object.get_articles(ordered=False),
+            self.object.language,
+        )
 
         return q.order_by(*self.listed_model.COMMON_ORDER_BY)
 

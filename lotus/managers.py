@@ -15,45 +15,12 @@ class BasePublishedQuerySet(models.QuerySet):
     """
     Base queryset for publication methods.
     """
-    def get_published(self, target_date=None, prefix=None):
+    def get_published(self, target_date=None, language=None, prefix=None):
         """
         Return a queryset with published entries selected.
 
         This build a complex queryset about status, publish start date, publish start
-        time and publish end datetime.
-
-        Keyword Arguments:
-            target_date (datetime.datetime): Datetime timezone aware for
-                publication target, if empty default value will be the current
-                datetime.
-            prefix (string): Prefix to append on each lookup expression on
-                publication dates fields (start/end). Commonly used to filter
-                from a relation like ``author__``. Default is empty.
-
-        Returns:
-            queryset: Queryset to filter published entries.
-        """
-        print("   .. BasePublishedQuerySet.get_published:", target_date, prefix)
-        prefix = prefix or ""
-        target_date = target_date or timezone.now()
-
-        return self.filter(
-            models.Q(**{prefix + "status": STATUS_PUBLISHED}),
-            models.Q(**{prefix + "publish_date__lt": target_date.date()}) |
-            models.Q(
-                models.Q(**{prefix + "publish_date": target_date.date()}),
-                models.Q(**{prefix + "publish_time__lte": target_date.time()})
-            ),
-            models.Q(**{prefix + "publish_end__gt": target_date}) |
-            models.Q(**{prefix + "publish_end": None}),
-        )
-
-    def get_ng_published(self, target_date=None, language=None, prefix=None):
-        """
-        Return a queryset with published entries selected.
-
-        This build a complex queryset about status, publish start date, publish start
-        time and publish end datetime.
+        time, publish end datetime and language.
 
         TODO:
             New way to get published article. This is required since actually it
@@ -64,6 +31,8 @@ class BasePublishedQuerySet(models.QuerySet):
 
             This new way require to merge "get_for_lang" here so we can put status &
             language lookups aside to be correctly grouped.
+
+            And report it also for unpublished.
 
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
@@ -78,9 +47,8 @@ class BasePublishedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
-        print("   .. BasePublishedQuerySet.get_ng_published:", target_date, prefix, language)
+        print("   .. BasePublishedQuerySet.get_published:", target_date, prefix, language)
         prefix = prefix or ""
-        #language = language or settings.LANGUAGE_CODE
         target_date = target_date or timezone.now()
 
         base_lookups = {
@@ -162,6 +130,8 @@ class ArticleQuerySet(BasePublishedQuerySet, BaseTranslatedQuerySet):
 class CategoryManager(models.Manager):
     """
     Categroy objects manager.
+
+    NOTE: This will still untouched from NG managers.
     """
     def get_queryset(self):
         print("   .. CategoryManager.get_queryset")
@@ -182,18 +152,14 @@ class ArticleManager(models.Manager):
         print("   .. ArticleManager.get_queryset")
         return ArticleQuerySet(self.model, using=self._db)
 
-    def get_published(self, target_date=None):
-        print("   .. ArticleManager.get_published", target_date)
-        return self.get_queryset().get_published(target_date)
-
-    def get_ng_published(self, target_date=None, language=None):
+    def get_published(self, target_date=None, language=None):
         """
         TODO:
             New way to get published article, include the language filtering.
             Its usage have to be propagated everywhere
         """
         print("   .. ArticleManager.get_published", target_date)
-        return self.get_queryset().get_ng_published(
+        return self.get_queryset().get_published(
             target_date=target_date,
             language=language,
         )
@@ -205,6 +171,8 @@ class ArticleManager(models.Manager):
         """
         TODO:
             Will be removed once get_ng_published is used everywhere
+
+            Or not ? (it could be helpful).
         """
         print("   .. ArticleManager.get_for_lang:", language)
         return self.get_queryset().get_for_lang(language)
@@ -225,7 +193,7 @@ class AuthorManager(models.Manager):
         print("   .. AuthorManager.get_active", target_date, language)
         q = self.get_queryset()
 
-        q = q.get_ng_published(
+        q = q.get_published(
             target_date,
             language=language,
             prefix="articles__"

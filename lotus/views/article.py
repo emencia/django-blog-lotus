@@ -11,18 +11,35 @@ class ArticleFilterMixin:
     """
     A mixin to share Article filtering.
     """
-    def apply_article_lookups(self, queryset):
+    #def apply_article_lookups(self, queryset, language=None):
+    # TODO: Temporary: until migration is over, language is optional
+    def apply_article_lookups(self, queryset, language=None):
         """
-        Apply publication lookups to given queryset without ordering.
+        Apply publication and language lookups to given queryset.
+
+        Also this will set a ``self.target_date`` attribute to store the date checked
+        against as a reference for further usage (like in ``get_context_data``).
+
+        Arguments:
+            queryset (django.db.models.QuerySet): Base queryset to start on.
+            language (string): Language code to filter on.
+
+        Returns:
+            django.db.models.QuerySet: Improved queryset with required filtering
+            lookups.
         """
-        # Store the date checked against as a reference for further usage
         self.target_date = timezone.now()
 
         if (
             not self.request.GET.get("admin") or
             not self.request.user.is_staff
         ):
-            queryset = queryset.get_published(target_date=self.target_date)
+            queryset = queryset.get_published(
+                target_date=self.target_date,
+                language=language,
+            )
+        else:
+            queryset = queryset.get_for_lang(language=language)
 
         if not self.request.user.is_authenticated:
             queryset = queryset.filter(private=False)
@@ -31,7 +48,7 @@ class ArticleFilterMixin:
 
     def get_context_data(self, **kwargs):
         """
-        Expose the date "now" checked against for publication filter.
+        Expose the date "now" used for publication filter.
         """
         context = super().get_context_data(**kwargs)
         context["lotus_now"] = self.target_date
@@ -41,6 +58,8 @@ class ArticleFilterMixin:
 class ArticleIndexView(ArticleFilterMixin, ListView):
     """
     Paginated list of articles.
+
+    NOTE: Migrated to NG manager.
     """
     model = Article
     template_name = "lotus/article/list.html"
@@ -48,8 +67,7 @@ class ArticleIndexView(ArticleFilterMixin, ListView):
     context_object_name = "article_list"
 
     def get_queryset(self):
-        q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
-        q = self.apply_article_lookups(q)
+        q = self.apply_article_lookups(self.model.objects, self.request.LANGUAGE_CODE)
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
@@ -57,6 +75,8 @@ class ArticleIndexView(ArticleFilterMixin, ListView):
 class ArticleDetailView(ArticleFilterMixin, DetailView):
     """
     Article detail.
+
+    NOTE: Migrated to NG manager.
     """
     model = Article
     pk_url_kwarg = "article_pk"
@@ -74,9 +94,7 @@ class ArticleDetailView(ArticleFilterMixin, DetailView):
 
         Also apply lookup for "private" mode for non authenticated users.
         """
-        q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
-
-        q = self.apply_article_lookups(q)
+        q = self.apply_article_lookups(self.model.objects, self.request.LANGUAGE_CODE)
 
         return q
 

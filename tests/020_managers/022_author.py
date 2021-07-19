@@ -118,7 +118,7 @@ def test_author_manager_published(db):
 
     now = timezone.now()
     tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
-    # Today 5min sooner to avoid shifting with pytest and factory delays
+    # Today 5min sooner
     today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
 
     # Some authors
@@ -165,25 +165,47 @@ def test_author_manager_published(db):
     )
 
     # Check for published articles for each author
-    en_flairsou = queryset_values(flairsou.articles.get_ng_published(language="en"))
-    fr_flairsou = queryset_values(flairsou.articles.get_ng_published(language="fr"))
-    print(json.dumps(en_flairsou, indent=4))
+    all_flairsou = queryset_values(flairsou.articles.get_published())
+    en_flairsou = queryset_values(flairsou.articles.get_published(language="en"))
+    fr_flairsou = queryset_values(flairsou.articles.get_published(language="fr"))
+    assert all_flairsou == [
+        {"language": "fr", "slug": "Camembert"}
+    ]
     assert en_flairsou == []
-    print(json.dumps(fr_flairsou, indent=4))
     assert fr_flairsou == [
         {"language": "fr", "slug": "Camembert"}
     ]
 
-    all_donald = queryset_values(donald.articles.get_ng_published())
-    print(json.dumps(all_donald, indent=4))
+    all_donald = queryset_values(donald.articles.get_published())
+    en_donald = queryset_values(donald.articles.get_published(language="en"))
+    fr_donald = queryset_values(donald.articles.get_published(language="fr"))
     assert all_donald == [
         {"language": "en", "slug": "DuckCity"},
     ]
+    assert en_donald == [
+        {"language": "en", "slug": "DuckCity"},
+    ]
+    assert fr_donald == []
 
-    all_picsou = queryset_values(picsou.articles.get_ng_published())
-    print(json.dumps(all_picsou, indent=4))
+    all_picsou = queryset_values(picsou.articles.get_published())
+    en_picsou = queryset_values(picsou.articles.get_published(language="en"))
+    fr_picsou = queryset_values(picsou.articles.get_published(language="fr"))
     assert all_picsou == [
         {"language": "fr", "slug": "Camembert"},
         {"language": "en", "slug": "DuckCity"},
         {"language": "en", "slug": "Klondike"},
+    ]
+    assert en_picsou == [
+        {"language": "en", "slug": "DuckCity"},
+        {"language": "en", "slug": "Klondike"},
+    ]
+    assert fr_picsou == [
+        {"language": "fr", "slug": "Camembert"},
+    ]
+
+    lang_fr_picsou = queryset_values(picsou.articles.get_for_lang(language="en"))
+    assert lang_fr_picsou == [
+        {"language": "en", "slug": "DuckCity"},
+        {"language": "en", "slug": "Klondike"},
+        {"language": "en", "slug": "NopeCity"},
     ]
