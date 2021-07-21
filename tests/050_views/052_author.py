@@ -36,25 +36,35 @@ def test_author_view_list(db, client):
     # Create a batch of author with numerated name on two digit filled with
     # leading 0 to enforce sorting
     authors = []
-    names = [
-        "{}_Foo".format(str(i).zfill(2))
-        for i in range(1, total_items + 1)
-    ]
-    for item in names:
-        authors.append(AuthorFactory(username=item))
+    names = []
+    for i in range(1, total_items + 1):
+        indice = str(i).zfill(2)
+        name = "Foo_{}".format(indice)
+        authors.append(
+            AuthorFactory(
+                username=name,
+                first_name="Foo",
+                last_name=indice,
+            )
+        )
 
-    # A published article is required
+    # Author need at least a published article to be "active"
     article = ArticleFactory(title="Sample", fill_authors=authors)
 
     # Additional author which are invisible because it does not have any published
     # article
     nietman = AuthorFactory(username="niet")
-    ArticleFactory(title="Nope", fill_authors=[nietman])
-
+    ArticleFactory(title="Nope", status=STATUS_DRAFT, fill_authors=[nietman])
 
     # Expected items in page are simply ordered on name
-    expected_item_page_1 = names[0:settings.LOTUS_AUTHOR_PAGINATION]
-    expected_item_page_2 = names[settings.LOTUS_AUTHOR_PAGINATION:total_items]
+    expected_item_page_1 = [
+        v.get_full_name()
+        for v in authors[0:settings.LOTUS_AUTHOR_PAGINATION]
+    ]
+    expected_item_page_2 = [
+        v.get_full_name()
+        for v in authors[settings.LOTUS_AUTHOR_PAGINATION:total_items]
+    ]
 
     # Get detail for first page
     urlname = "lotus:author-index"
@@ -64,9 +74,6 @@ def test_author_view_list(db, client):
     # Parse first page HTML
     dom = html_pyquery(response)
     items = dom.find("#lotus-content .author-list-container .list .author")
-    print()
-    print(dom.find("#lotus-content .author-list-container"))
-    print()
     links = dom.find("#lotus-content .author-list-container .pagination a")
     # Get item titles
     link_title_page_1 = []
@@ -95,3 +102,16 @@ def test_author_view_list(db, client):
 
     # Ensure every expected items are here respecting order
     assert expected_item_page_2 == link_title_page_2
+
+
+@pytest.mark.skip(reason="Todo")
+def test_author_view_admin(db, client):
+    """
+    Explicitely test the listing with "?admin=1" ?
+    """
+    assert 1 == 42
+
+
+@pytest.mark.skip(reason="A reminder to finish test coverage for author views")
+def test_author_view_complete(db, client):
+    assert 1 == 42

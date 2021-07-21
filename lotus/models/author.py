@@ -54,7 +54,7 @@ class Author(safe_get_user_model(), AuthorManagerEnabled):
         except AttributeError:
             return reverse('lotus:author-detail', args=[self.get_username()])
 
-    COMMON_ORDER_BY = ["username"]
+    COMMON_ORDER_BY = ["first_name", "last_name"]
     """
     List of field order commonly used in frontend view/api
     """
