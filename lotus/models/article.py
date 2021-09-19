@@ -270,7 +270,7 @@ class Article(Translated):
         ordering = [
             "-publish_date",
             "-publish_time",
-            "-title",
+            "title",
         ]
         verbose_name = _("Article")
         verbose_name_plural = _("Articles")

@@ -19,7 +19,7 @@ help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo
 	@echo "  install             -- to install this project with virtualenv and Pip"
-	@echo "  freeze              -- to create or update 'requirements_freeze.txt' from your current install. Only use this on stable environment."
+	@echo "  freeze-dependencies -- to write a frozen.txt file with installed dependencies versions"
 	@echo
 	@echo "  clean               -- to clean EVERYTHING (Warning)"
 	@echo "  clean-var           -- to clean data (uploaded medias, database, etc..)"
@@ -44,25 +44,38 @@ help:
 	@echo "  test-initial        -- to launch tests with pytest and re-initialized database (for after new application or model changes)"
 	@echo "  quality             -- to launch Flake8 checking and every tests suites"
 	@echo
+	@echo "  check-release	     -- to check package release before uploading it to PyPi"
 	@echo "  release             -- to release package for latest version on PyPi (once release has been pushed to repository)"
 	@echo
 
 clean-pycache:
+	@echo ""
+	@echo "==== Clear Python cache ===="
+	@echo ""
 	rm -Rf .pytest_cache
 	find . -type d -name "__pycache__"|xargs rm -Rf
 	find . -name "*\.pyc"|xargs rm -f
 .PHONY: clean-pycache
 
 clean-install:
+	@echo ""
+	@echo "==== Clear installation ===="
+	@echo ""
 	rm -Rf $(VENV_PATH)
 	rm -Rf $(PACKAGE_SLUG).egg-info
 .PHONY: clean-install
 
 clean-var:
+	@echo ""
+	@echo "==== Clear var/ directory ===="
+	@echo ""
 	rm -Rf var
 .PHONY: clean-var
 
 clean-doc:
+	@echo ""
+	@echo "==== Clear documentation ===="
+	@echo ""
 	rm -Rf docs/_build
 .PHONY: clean-doc
 
@@ -70,6 +83,9 @@ clean: clean-var clean-doc clean-install clean-pycache
 .PHONY: clean
 
 venv:
+	@echo ""
+	@echo "==== Install virtual environment ===="
+	@echo ""
 	virtualenv -p $(PYTHON_INTERPRETER) $(VENV_PATH)
 	# This is required for those ones using old distribution
 	$(PIP) install --upgrade pip
@@ -84,37 +100,58 @@ create-var-dirs:
 	@mkdir -p sandbox/static/css
 .PHONY: create-var-dirs
 
-migrations:
-	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(DJANGO_MANAGE) makemigrations $(APPLICATION_NAME)
-.PHONY: migrations
-
-migrate:
-	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(DJANGO_MANAGE) migrate
-.PHONY: migrate
-
-superuser:
-	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(DJANGO_MANAGE) createsuperuser
-.PHONY: superuser
-
 install: venv create-var-dirs
+	@echo ""
+	@echo "==== Install everything for development ===="
+	@echo ""
 	$(PIP) install -e .[dev]
 	${MAKE} migrate
 	npm install
 .PHONY: install
 
+migrations:
+	@echo ""
+	@echo "==== Making application migrations ===="
+	@echo ""
+	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
+	$(DJANGO_MANAGE) makemigrations $(APPLICATION_NAME)
+.PHONY: migrations
+
+migrate:
+	@echo ""
+	@echo "==== Apply pending migrations ===="
+	@echo ""
+	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
+	$(DJANGO_MANAGE) migrate
+.PHONY: migrate
+
+superuser:
+	@echo ""
+	@echo "==== Create new superuser ===="
+	@echo ""
+	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
+	$(DJANGO_MANAGE) createsuperuser
+.PHONY: superuser
+
 run:
+	@echo ""
+	@echo "==== Running development server ===="
+	@echo ""
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
 	$(DJANGO_MANAGE) runserver 0.0.0.0:8001
 .PHONY: run
 
 css:
+	@echo ""
+	@echo "==== Build CSS ===="
+	@echo ""
 	npm run-script css
 .PHONY: css
 
 watch-sass:
+	@echo ""
+	@echo "==== Watching Sass sources ===="
+	@echo ""
 	npm run-script watch-css
 .PHONY: watch-sass
 
@@ -123,37 +160,75 @@ css-prod:
 .PHONY: css-prod
 
 docs:
+	@echo ""
+	@echo "==== Build documentation ===="
+	@echo ""
 	cd docs && make html
 .PHONY: docs
 
 livedocs:
+	@echo ""
+	@echo "==== Watching documentation sources ===="
+	@echo ""
 	$(SPHINX_RELOAD)
 .PHONY: livedocs
 
 flake:
+	@echo ""
+	@echo "==== Flake ===="
+	@echo ""
 	$(FLAKE) --show-source $(APPLICATION_NAME)
 	$(FLAKE) --show-source tests
 .PHONY: flake
 
 test:
+	@echo ""
+	@echo "==== Tests ===="
+	@echo ""
 	$(PYTEST) -vv --reuse-db tests/
 	rm -Rf var/media-tests/
 .PHONY: test
 
 test-initial:
+	@echo ""
+	@echo "==== Tests from zero ===="
+	@echo ""
 	$(PYTEST) -vv --reuse-db --create-db tests/
 	rm -Rf var/media-tests/
 .PHONY: test-initial
 
-quality: test-initial flake
-.PHONY: quality
+freeze-dependencies:
+	@echo ""
+	@echo "==== Freeze dependencies versions ===="
+	@echo ""
+	$(VENV_PATH)/bin/python freezer.py
+.PHONY: freeze-dependencies
 
-freeze:
-	$(PIP) freeze --exclude-editable --all --local > requirements_freeze.txt
-.PHONY: freeze
-
-release:
+build-package:
+	@echo ""
+	@echo "==== Build package ===="
+	@echo ""
 	rm -Rf dist
 	$(VENV_PATH)/bin/python setup.py sdist
+.PHONY: build-package
+
+release: build-package
+	@echo ""
+	@echo "==== Release ===="
+	@echo ""
 	$(TWINE) upload dist/*
 .PHONY: release
+
+check-release: build-package
+	@echo ""
+	@echo "==== Check package ===="
+	@echo ""
+	$(TWINE) check dist/*
+.PHONY: check-release
+
+
+quality: test-initial flake docs freeze-dependencies check-release
+	@echo ""
+	@echo "♥ ♥ Everything should be fine ♥ ♥"
+	@echo ""
+.PHONY: quality
