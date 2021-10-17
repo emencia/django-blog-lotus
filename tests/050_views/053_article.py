@@ -451,7 +451,7 @@ def test_article_view_detail_content(db, admin_client):
     dom = html_pyquery(response)
     container = dom.find("#lotus-content .article-detail")[0]
     categories = [item.text for item in dom.find("#lotus-content .categories li a")]
-    authors = [item.text for item in dom.find("#lotus-content .authors li")]
+    authors = [item.text for item in dom.find("#lotus-content .authors li a")]
     relateds = [item.text for item in dom.find("#lotus-content .relateds li a")]
     cover = dom.find("#lotus-content .cover img")[0].get("src")
     large_img = dom.find("#lotus-content .image img")[0].get("src")

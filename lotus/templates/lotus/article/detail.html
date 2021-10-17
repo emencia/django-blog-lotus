@@ -48,7 +48,7 @@
                     </div>
                     <ul class="list-group list-group-flush">
                         {% for author in article_object.get_authors %}
-                        <li class="list-group-item">{{ author.get_full_name }}</li>
+                        <li class="list-group-item"><a href="{{ author.get_absolute_url }}">{{ author.get_full_name }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
