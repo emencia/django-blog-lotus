@@ -30,10 +30,7 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {
         "slug": ("title",),
     }
-    ordering = (
-        "title",
-        "language",
-    )
+    ordering = Category.COMMON_ORDER_BY
     search_fields = [
         "title",
     ]
@@ -73,6 +70,7 @@ class CategoryAdmin(admin.ModelAdmin):
     def language_name(self, obj):
         return LANGUAGE_NAMES[obj.language]
     language_name.short_description = _("language")
+    language_name.admin_order_field = "language"
 
     def article_count(self, obj):
         return obj.articles.count()

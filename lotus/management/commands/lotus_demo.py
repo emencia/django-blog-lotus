@@ -23,7 +23,7 @@ class Command(BaseCommand):
         "Create Author, Article and Category objects for demonstration purpose."
         "You may need to use flush options to remove objects to avoid constraint "
         "failures on some unique fields. Currently only working for default "
-        "language. Default length of created objects depends on their limit setting."
+        "language. Default length of created objects depends on limits settings."
     )
 
     def add_arguments(self, parser):
@@ -31,6 +31,7 @@ class Command(BaseCommand):
             "--authors",
             type=int,
             default=(settings.LOTUS_AUTHOR_PAGINATION * 2),
+            help="Number of Author object to create. Must be greater than 1.",
         )
         parser.add_argument(
             "--flush-authors",
@@ -41,6 +42,7 @@ class Command(BaseCommand):
             "--articles",
             type=int,
             default=(settings.LOTUS_ARTICLE_PAGINATION * 2)
+            help="Number of Article object to create. Must be greater than 1.",
         )
         parser.add_argument(
             "--flush-articles",
@@ -51,6 +53,7 @@ class Command(BaseCommand):
             "--categories",
             type=int,
             default=(settings.LOTUS_CATEGORY_PAGINATION * 2)
+            help="Number of Category object to create. Must be greater than 1.",
         )
         parser.add_argument(
             "--flush-categories",

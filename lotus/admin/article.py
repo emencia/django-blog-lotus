@@ -18,15 +18,12 @@ LANGUAGE_NAMES = dict(settings.LANGUAGES)
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    """
-    TODO:
-        A new 'list_filter' to filter on a category?
-    """
     form = ArticleAdminForm
     list_display = (
         "title",
         "language_name",
         "is_published",
+        "pinned",
         "private",
         "publish_datetime",
         "last_update",
@@ -37,11 +34,7 @@ class ArticleAdmin(admin.ModelAdmin):
     prepopulated_fields = {
         "slug": ("title",),
     }
-    ordering = (
-        "publish_date",
-        "publish_time",
-        "title",
-    )
+    ordering = Article.COMMON_ORDER_BY
     search_fields = [
         "title",
     ]
@@ -114,10 +107,12 @@ class ArticleAdmin(admin.ModelAdmin):
     def language_name(self, obj):
         return LANGUAGE_NAMES[obj.language]
     language_name.short_description = _("language")
+    language_name.admin_order_field = "language"
 
     def publish_datetime(self, obj):
         return obj.publish_datetime()
     publish_datetime.short_description = _("publish date")
+    publish_datetime.admin_order_field = "-publish_date"
 
     def is_published(self, obj):
         now = timezone.now()
