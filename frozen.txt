@@ -1,0 +1,13 @@
+# Frozen requirement versions from '0.1.5' installation
+Django==3.2.3
+django-ckeditor==6.1.0
+factory-boy==3.2.0
+flake8==3.9.2
+livereload==2.6.3
+Pillow==8.2.0
+pyquery==1.4.3
+pytest==6.2.4
+pytest-django==4.3.0
+Sphinx==4.0.2
+sphinx-rtd-theme==0.5.2
+twine==3.4.1

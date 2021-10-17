@@ -177,8 +177,8 @@ flake:
 	@echo ""
 	@echo "==== Flake ===="
 	@echo ""
-	$(FLAKE) --show-source $(APPLICATION_NAME)
-	$(FLAKE) --show-source tests
+	$(FLAKE) --statistics --show-source $(APPLICATION_NAME)
+	$(FLAKE) --statistics --show-source tests
 .PHONY: flake
 
 test:
@@ -227,7 +227,7 @@ check-release: build-package
 .PHONY: check-release
 
 
-quality: test-initial flake docs freeze-dependencies check-release
+quality: test-initial flake docs check-release freeze-dependencies
 	@echo ""
 	@echo "♥ ♥ Everything should be fine ♥ ♥"
 	@echo ""
