@@ -24,11 +24,14 @@ class AuthorIndexView(ListView):
 class AuthorDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
     """
     Author detail and its related article list.
+
+    Opposed to article or category listing, this one list objects for language from
+    request, not from the author language since it dont have one.
     """
     model = Author
     listed_model = Article
     template_name = "lotus/author/detail.html"
-    paginate_by = settings.LOTUS_AUTHOR_PAGINATION
+    paginate_by = settings.LOTUS_ARTICLE_PAGINATION
     context_object_name = "author_object"
     slug_field = "username"
     slug_url_kwarg = "username"
@@ -44,7 +47,7 @@ class AuthorDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
         """
         Build queryset base to list Author articles.
 
-        Depend on "self.object" to list Author related objects.
+        Depend on "self.object" to list the Author related objects.
         """
         q = self.apply_article_lookups(
             self.object.articles,

@@ -1,13 +1,10 @@
 import datetime
-import json
 
 import pytz
 from freezegun import freeze_time
 
-from django.utils import timezone
-
 from lotus.choices import STATUS_DRAFT
-from lotus.factories import ArticleFactory, AuthorFactory, multilingual_article
+from lotus.factories import ArticleFactory, AuthorFactory
 from lotus.models import Author
 from lotus.utils.tests import queryset_values
 
@@ -20,7 +17,6 @@ def test_author_manager_active(db):
     """
     default_tz = pytz.timezone("UTC")
 
-    now = timezone.now()
     tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
     # Today 5min sooner to avoid shifting with pytest and factory delays
     today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
@@ -69,19 +65,12 @@ def test_author_manager_active(db):
     )
 
     # Check for author which have published articles for all language
-    #print()
-    #print("# usernames_all:")
     q_authors_published = Author.lotus_objects.get_active()
     usernames_all = queryset_values(
         q_authors_published,
         names=["username", "articles__language"],
         orders=["username"],
     )
-    #print(q_authors_published)
-    #print(json.dumps(usernames_all, indent=4))
-    #print("<--- SQL")
-    #print(q_authors_published.query)
-    #print("SQL --->")
     assert usernames_all == [
         {'username': 'donald', 'articles__language': 'en'},
         {'username': 'flairsou', 'articles__language': 'fr'},
@@ -90,19 +79,13 @@ def test_author_manager_active(db):
     ]
 
     # Check for author which have published articles for english only
-    #print()
-    #print("# usernames_en:")
     q_authors_published = Author.lotus_objects.get_active(language="en")
     usernames_en = queryset_values(
         q_authors_published,
         names=["username", "articles__language"],
         orders=["username"],
     )
-    #print(q_authors_published)
-    #print(json.dumps(usernames_en, indent=4))
-    #print("<--- SQL")
-    #print(q_authors_published.query)
-    #print("SQL --->")
+
     assert usernames_en == [
         {"username": "donald", "articles__language": "en"},
         {"username": "picsou", "articles__language": "en"},
@@ -116,7 +99,6 @@ def test_author_manager_published(db):
     """
     default_tz = pytz.timezone("UTC")
 
-    now = timezone.now()
     tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
     # Today 5min sooner
     today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))

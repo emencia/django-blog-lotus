@@ -7,9 +7,8 @@ from freezegun import freeze_time
 from django.conf import settings
 from django.urls import reverse
 
-from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
 from lotus.choices import STATUS_DRAFT
-
+from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
 from lotus.utils.tests import html_pyquery
 
 
@@ -293,12 +292,12 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
     View list should respect publication criterias (dates and state, private article and
     order.
 
-    Tested again profiles:
+    Tested against profiles:
 
     * non authenticated;
-    * non authenticated trying to user admin mode;
-    * authenticated user lambda;
-    * authenticated user lambda trying to user admin mode;
+    * non authenticated trying to use admin mode;
+    * authenticated basic user;
+    * authenticated basic user trying to use admin mode;
     * admin without admin mode;
     * admin with admin mode;
     """

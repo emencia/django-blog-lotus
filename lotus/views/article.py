@@ -18,6 +18,10 @@ class ArticleFilterMixin:
         Also this will set a ``self.target_date`` attribute to store the date checked
         against as a reference for further usage (like in ``get_context_data``).
 
+        Note than admin request mode require user to be staff and an URL argument
+        ``?admin`` to be set. Staff user without this argument still see the default
+        request mode because the admin request mode is explicit.
+
         Arguments:
             queryset (django.db.models.QuerySet): Base queryset to start on.
             language (string): Language code to filter on.
@@ -28,6 +32,7 @@ class ArticleFilterMixin:
         """
         self.target_date = timezone.now()
 
+        # Default request for common user
         if (
             not self.request.GET.get("admin") or
             not self.request.user.is_staff
@@ -36,9 +41,12 @@ class ArticleFilterMixin:
                 target_date=self.target_date,
                 language=language,
             )
+        # Admin request have no restriction on date so it can return draft or future
+        # publications
         else:
             queryset = queryset.get_for_lang(language=language)
 
+        # Avoid anonymous to see private content
         if not self.request.user.is_authenticated:
             queryset = queryset.filter(private=False)
 

@@ -63,18 +63,7 @@ class FixturesSettingsTestMixin(object):
             TESTS=self.tests_path,
             FIXTURES=self.fixtures_path,
             VERSION=lotus.__version__,
-            USER_AGENT=lotus.USER_AGENT,
         )
-
-
-@pytest.fixture(scope="session")
-def temp_builds_dir(tmpdir_factory):
-    """
-    Shortand to prepare a temporary build directory where to create temporary
-    content from tests.
-    """
-    fn = tmpdir_factory.mktemp("builds")
-    return fn
 
 
 @pytest.fixture(scope="module")

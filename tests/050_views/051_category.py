@@ -3,9 +3,8 @@ import pytest
 from django.conf import settings
 from django.urls import reverse
 
-from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
 from lotus.choices import STATUS_DRAFT
-
+from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
 from lotus.utils.tests import html_pyquery
 
 

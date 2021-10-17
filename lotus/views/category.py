@@ -40,15 +40,13 @@ class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
         """
         Build queryset base with language filtering to get Category.
         """
-        q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
-
-        return q
+        return self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
 
     def get_queryset(self):
         """
         Build queryset base to list Category articles.
 
-        Depend on "self.object" to list Category related objects filtered on its
+        Depend on "self.object" to list the Category related objects filtered on its
         language.
         """
         q = self.apply_article_lookups(

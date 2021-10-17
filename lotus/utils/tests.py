@@ -228,14 +228,23 @@ def build_post_data_from_object(model, obj, ignore=["id"]):
     """
     Build a payload suitable to a POST request from given object data.
 
+    This helps to quickly post something from a factory object.
+
+    Sample usage (omit most Article fields and care only about ones specified in
+    following build): ::
+
+        foo = ArticleFactory.build(name="Foo", language="fr", relations="whatever")
+        data = build_post_data_from_object(Article, foo, ignore=["id", "relations"])
+        >>> {"name": "Foo", "language": "fr"}
+
     Arguments:
         model (django.db.models.Model): A model object used to find object
             attributes to extract values.
         obj (object): A instance of given model or a dict (like the one returned
             by a factory ``build()`` method.
-        ignore (list): List of field name to ignore for value
-            extraction. Default to "id" but will not be enough for any field
-            with foreign keys, automatic primary keys, etc..
+        ignore (list): List of field name to ignore for value extraction. Default to
+            "id" but it will not be enough for any field with foreign keys, automatic
+            primary keys, etc.. so you will have to specify them yourself.
 
     Returns:
         dict: Payload data to use in POST request.

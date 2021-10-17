@@ -6,9 +6,7 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
 
-from lotus.factories import (
-    CategoryFactory, multilingual_category, multilingual_article,
-)
+from lotus.factories import CategoryFactory, multilingual_category
 from lotus.models import Category
 from lotus.utils.imaging import create_image_file
 from lotus.utils.tests import queryset_values

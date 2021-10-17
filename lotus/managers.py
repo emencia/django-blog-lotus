@@ -35,7 +35,6 @@ class BasePublishedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
-        print("   .. BasePublishedQuerySet.get_published:", target_date, prefix, language)
         prefix = prefix or ""
         target_date = target_date or timezone.now()
 
@@ -73,7 +72,6 @@ class BasePublishedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
-        print("   .. BasePublishedQuerySet.get_published:", target_date, prefix, language)
         prefix = prefix or ""
         target_date = target_date or timezone.now()
 
@@ -103,10 +101,6 @@ class BaseTranslatedQuerySet(models.QuerySet):
         """
         Return a queryset with unpublished entries selected.
 
-        TODO:
-            Maybe argument language should be required ? Keep it like this until
-            migration to NG manager is done.
-
         Arguments:
             language (string): Language code to filter on.
 
@@ -117,7 +111,6 @@ class BaseTranslatedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
-        print("   .. BaseTranslatedQuerySet.get_for_lang:", language, prefix)
         prefix = prefix or ""
         language = language or settings.LANGUAGE_CODE
 
@@ -136,11 +129,9 @@ class CategoryManager(models.Manager):
     Categroy objects manager.
     """
     def get_queryset(self):
-        print("   .. CategoryManager.get_queryset")
         return BaseTranslatedQuerySet(self.model, using=self._db)
 
     def get_for_lang(self, language):
-        print("   .. CategoryManager.get_for_lang:", language)
         return self.get_queryset().get_for_lang(language)
 
 
@@ -149,25 +140,21 @@ class ArticleManager(models.Manager):
     Article objects manager.
     """
     def get_queryset(self):
-        print("   .. ArticleManager.get_queryset")
         return ArticleQuerySet(self.model, using=self._db)
 
     def get_published(self, target_date=None, language=None):
-        print("   .. ArticleManager.get_published", target_date, language)
         return self.get_queryset().get_published(
             target_date=target_date,
             language=language,
         )
 
     def get_unpublished(self, target_date=None, language=None):
-        print("   .. ArticleManager.get_unpublished", target_date, language)
         return self.get_queryset().get_unpublished(
             target_date=target_date,
             language=language,
         )
 
     def get_for_lang(self, language):
-        print("   .. ArticleManager.get_for_lang:", language)
         return self.get_queryset().get_for_lang(language)
 
 
@@ -176,14 +163,12 @@ class AuthorManager(models.Manager):
     Author objects manager.
     """
     def get_queryset(self):
-        print("   .. AuthorManager.get_queryset")
         return ArticleQuerySet(self.model, using=self._db)
 
     def get_active(self, target_date=None, language=None):
         """
         Return distinct authors which have published articles.
         """
-        print("   .. AuthorManager.get_active", target_date, language)
         q = self.get_queryset()
 
         q = q.get_published(
