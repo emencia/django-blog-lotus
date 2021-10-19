@@ -116,6 +116,33 @@ class BaseTranslatedQuerySet(models.QuerySet):
 
         return self.filter(**{prefix + "language": language})
 
+    def get_siblings(self, source):
+        """
+        For given object, return the sibling objects which can be the original object
+        and translation objects.
+
+        Arguments:
+            source (object): Object to use for its id and original_id used in queryset
+                lookup.
+
+        Returns:
+            queryset: Queryset with sibling articles. For an original article it will
+                be all of its translations. For a translation article it will be its
+                original article and all other original's translation articles.
+        """
+        # Original has just translation relations
+        if source.original is None:
+            return self.filter(original=source)
+
+        # Translations use complex lookups to regroup original and translations.
+        return self.filter(
+            models.Q(**{"id": source.original_id}) |
+            models.Q(
+                models.Q(**{"original_id": source.original_id}),
+                ~models.Q(**{"id": source.id})
+            ),
+        )
+
 
 class ArticleQuerySet(BasePublishedQuerySet, BaseTranslatedQuerySet):
     """
@@ -133,6 +160,9 @@ class CategoryManager(models.Manager):
 
     def get_for_lang(self, language):
         return self.get_queryset().get_for_lang(language)
+
+    def get_siblings(self, source):
+        return self.get_queryset().get_siblings(source)
 
 
 class ArticleManager(models.Manager):
@@ -156,6 +186,9 @@ class ArticleManager(models.Manager):
 
     def get_for_lang(self, language):
         return self.get_queryset().get_for_lang(language)
+
+    def get_siblings(self, source):
+        return self.get_queryset().get_siblings(source)
 
 
 class AuthorManager(models.Manager):

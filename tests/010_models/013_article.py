@@ -40,7 +40,7 @@ def test_article_basic(db):
 
 def test_article_required_fields(db):
     """
-    Basic model validation with missing required files should fail
+    Basic model validation with missing required language should fail
     """
     article = Article(language="")
 

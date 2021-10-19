@@ -41,7 +41,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--articles",
             type=int,
-            default=(settings.LOTUS_ARTICLE_PAGINATION * 2)
+            default=(settings.LOTUS_ARTICLE_PAGINATION * 2),
             help="Number of Article object to create. Must be greater than 1.",
         )
         parser.add_argument(
@@ -52,7 +52,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--categories",
             type=int,
-            default=(settings.LOTUS_CATEGORY_PAGINATION * 2)
+            default=(settings.LOTUS_CATEGORY_PAGINATION * 2),
             help="Number of Category object to create. Must be greater than 1.",
         )
         parser.add_argument(

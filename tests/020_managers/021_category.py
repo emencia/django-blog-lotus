@@ -66,7 +66,7 @@ def test_category_managers(db):
 
 def test_category_get_articles(db):
     """
-    Demonstrate how to get category related articles correctly using Article manager.
+    Demonstrate how to get category related articles correctly using Category manager.
     """
     ping = CategoryFactory()
     pong = CategoryFactory()
@@ -145,4 +145,49 @@ def test_category_get_articles(db):
         ("bar", "en"),
         ("foo", "en"),
         ("moo", "en"),
+    ]
+
+
+def test_category_managers_get_siblings(db):
+    """
+    Manager method "get_siblings" should return all siblings category translations.
+    """
+    # Create cheese articles with published FR and DE translations
+    created_cheese = multilingual_category(
+        title="Cheese",
+        slug="cheese",
+        langs=["fr", "de"],
+        contents={
+            "fr": {
+                "title": "Fromage",
+                "slug": "fromage",
+            },
+            "de": {
+                "title": "Käse",
+                "slug": "kase",
+            }
+        },
+    )
+
+    # Get all siblings slugs ordered
+    cheese_siblings = Category.objects.get_siblings(
+        source=created_cheese["original"]
+    ).values_list('slug', flat=True).order_by("slug")
+
+    fromage_siblings = Category.objects.get_siblings(
+        source=created_cheese["translations"]["fr"]
+    ).values_list('slug', flat=True).order_by("slug")
+
+    kase_siblings = Category.objects.get_siblings(
+        source=created_cheese["translations"]["de"]
+    ).values_list('slug', flat=True).order_by("slug")
+
+    assert list(cheese_siblings) == [
+        "fromage", "kase",
+    ]
+    assert list(fromage_siblings) == [
+        "cheese", "kase",
+    ]
+    assert list(kase_siblings) == [
+        "cheese", "fromage",
     ]

@@ -352,6 +352,22 @@ class Article(Translated):
             self.publish_date, self.publish_time
         ).replace(tzinfo=timezone.utc)
 
+    def get_translations(self, publication=False):
+        """
+        TODO:
+
+        Return all translations.
+
+        Original article is included with other article if any.
+
+        Keywords Arguments:
+            publication (boolean): Enable or not to filter results on all publication
+                criterias. Default to False, so no filtering.
+
+        Returns:
+        """
+        return
+
     def get_states(self, now=None):
         """
         Computate every publication states.

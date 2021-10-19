@@ -38,7 +38,7 @@ class LanguageListFilter(admin.SimpleListFilter):
         return article queryset for all language (if ``all`` argument is given) or
         return article queryset filtered on given language code (from given argument).
         """
-        if self.value() and  self.value() == "all":
+        if self.value() and self.value() == "all":
             return queryset.filter()
         elif self.value():
             return queryset.filter(language=self.value())

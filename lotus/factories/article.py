@@ -129,7 +129,6 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         return fake_html_paragraphs()
 
     @factory.post_generation
-    # pylint: disable=unused-argument
     def fill_categories(self, create, extracted, **kwargs):
         """
         Add categories.
@@ -156,7 +155,6 @@ class ArticleFactory(factory.django.DjangoModelFactory):
             self.categories.add(category)
 
     @factory.post_generation
-    # pylint: disable=unused-argument
     def fill_authors(self, create, extracted, **kwargs):
         """
         Add authors.
@@ -183,7 +181,6 @@ class ArticleFactory(factory.django.DjangoModelFactory):
             self.authors.add(author)
 
     @factory.post_generation
-    # pylint: disable=unused-argument
     def fill_related(self, create, extracted, **kwargs):
         """
         Add related articles.
