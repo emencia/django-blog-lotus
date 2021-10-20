@@ -7,7 +7,8 @@ Category models
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import activate
+from django.utils.translation import activate as translation_activate
+from django.utils.translation import deactivate as translation_deactivate
 from django.urls import reverse
 
 from ..managers import CategoryManager
@@ -122,11 +123,15 @@ class Category(Translated):
         """
         # Force the category language to get the right url independently of the current
         # browser language
-        activate(self.language)
+        translation_activate(self.language)
 
-        return reverse("lotus:category-detail", kwargs={
+        url = reverse("lotus:category-detail", kwargs={
             "slug": self.slug,
         })
+
+        translation_deactivate()
+
+        return url
 
 
 # Connect some signals

@@ -10,7 +10,8 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import activate
+from django.utils.translation import activate as translation_activate
+from django.utils.translation import deactivate as translation_deactivate
 from django.urls import reverse
 from django.utils import timezone
 
@@ -303,14 +304,23 @@ class Article(Translated):
         """
         # Force the article language to get the right url independently of the current
         # browser language
-        activate(self.language)
+        """
+        NOTE:
+            This is causing insane bug between a templatetag test and a category list
+            view test. And so this may not been a very stable technic.
+        """
+        translation_activate(self.language)
 
-        return reverse("lotus:article-detail", kwargs={
+        url = reverse("lotus:article-detail", kwargs={
             "year": self.publish_date.year,
             "month": self.publish_date.month,
             "day": self.publish_date.day,
             "slug": self.slug,
         })
+
+        translation_deactivate()
+
+        return url
 
     def get_authors(self):
         """
