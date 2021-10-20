@@ -14,7 +14,7 @@ STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
 
 def test_tag_article_state_list_basic(db):
     """
-    Basic usage without context ``lotus_now`` variable on a simple available article
+    Basic usage without context variable ``lotus_now`` on a simple available article
     without any options should just return the "available" state.
     """
     article_object = ArticleFactory(title="dummy")
@@ -34,7 +34,7 @@ def test_tag_article_state_list_basic(db):
 
 def test_tag_article_state_list_mixed(db):
     """
-    Usage with context ``lotus_now`` variable on an article with some options should
+    Usage with context variable ``lotus_now`` on an article with some options should
     return all the right states.
     """
     # Date references
@@ -73,7 +73,7 @@ def test_tag_article_state_list_mixed(db):
 
 def test_tag_article_state_list_prefixed(db):
     """
-    Usage with context ``lotus_now`` variable on an article with some options should
+    Usage with context variable ``lotus_now`` on an article with some options should
     return all the right states prefixed.
     """
     # Date references
@@ -113,7 +113,7 @@ def test_tag_article_state_list_prefixed(db):
 
 def test_tag_article_states_mixed(db):
     """
-    Usage with context ``lotus_now`` variable on an article with some options should
+    Usage with context variable ``lotus_now`` on an article with some options should
     return all the right states.
     """
     # Date references
@@ -151,7 +151,7 @@ def test_tag_article_states_mixed(db):
 
 def test_tag_article_states_prefixed(db):
     """
-    Usage with context ``lotus_now`` variable on an article with some options should
+    Usage with context variable ``lotus_now`` on an article with some options should
     return all the right states prefixed.
     """
     # Date references

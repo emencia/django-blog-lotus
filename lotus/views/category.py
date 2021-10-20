@@ -3,7 +3,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 
 from ..models import Article, Category
-from .article import ArticleFilterMixin
+from .mixins import AdminModeMixin, ArticleFilterMixin
 
 
 class CategoryIndexView(ListView):
@@ -24,7 +24,8 @@ class CategoryIndexView(ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class CategoryDetailView(ArticleFilterMixin, SingleObjectMixin, ListView):
+class CategoryDetailView(ArticleFilterMixin, AdminModeMixin, SingleObjectMixin,
+                         ListView):
     """
     Category detail and its related article list.
     """

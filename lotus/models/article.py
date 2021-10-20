@@ -352,22 +352,6 @@ class Article(Translated):
             self.publish_date, self.publish_time
         ).replace(tzinfo=timezone.utc)
 
-    def get_translations(self, publication=False):
-        """
-        TODO:
-
-        Return all translations.
-
-        Original article is included with other article if any.
-
-        Keywords Arguments:
-            publication (boolean): Enable or not to filter results on all publication
-                criterias. Default to False, so no filtering.
-
-        Returns:
-        """
-        return
-
     def get_states(self, now=None):
         """
         Computate every publication states.
@@ -381,7 +365,7 @@ class Article(Translated):
                 which have been used in queryset lookup to check for publication
                 availability. It is used to determine if article publish start date is
                 to come next or if article publish end date is over the current date.
-                Empty by default, there will be no state against start/end dates.
+                Empty by default, there will be no state about start/end dates.
 
         Returns:
             datetime.datetime: Publish datetime.

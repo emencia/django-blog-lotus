@@ -10,6 +10,11 @@ from django.urls import reverse
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import ArticleFactory, AuthorFactory
 from lotus.utils.tests import html_pyquery
+from lotus.views import AdminModeMixin
+
+
+# Shortcuts for shorter variable names
+ADMINMODE_ARG = AdminModeMixin.adminmode_argument_name
 
 
 def test_author_view_list(db, client):
@@ -112,6 +117,44 @@ def test_author_view_detail_for_empty(db, client):
 
     response = client.get(url)
     assert response.status_code == 200
+
+
+def test_author_view_detail_admin_mode(db, admin_client, client):
+    """
+    Detail view should have context variable "admin_mode" with correct value according
+    to the user and possible URL argument.
+    """
+    ping = AuthorFactory()
+
+    # Anonymous are never allowed for admin mode
+    response = client.get(ping.get_absolute_url())
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    # Basic authenticated users are never allowed for admin mode
+    user = AuthorFactory()
+    client.force_login(user)
+    response = client.get(ping.get_absolute_url())
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    # Staff user is only allowed for admin mode if it request for it with correct URL
+    # argument
+    response = admin_client.get(ping.get_absolute_url())
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    response = admin_client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is True
 
 
 @freeze_time("2012-10-15 10:00:00")

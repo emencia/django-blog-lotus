@@ -2,66 +2,12 @@ from django.conf import settings
 from django.http import Http404
 from django.views.generic import DetailView, ListView
 from django.utils.translation import gettext as _
-from django.utils import timezone
 
 from ..models import Article
+from .mixins import AdminModeMixin, ArticleFilterMixin
 
 
-class ArticleFilterMixin:
-    """
-    A mixin to share Article filtering.
-    """
-    def apply_article_lookups(self, queryset, language):
-        """
-        Apply publication and language lookups to given queryset.
-
-        Also this will set a ``self.target_date`` attribute to store the date checked
-        against as a reference for further usage (like in ``get_context_data``).
-
-        Note than admin request mode require user to be staff and an URL argument
-        ``?admin`` to be set. Staff user without this argument still see the default
-        request mode because the admin request mode is explicit.
-
-        Arguments:
-            queryset (django.db.models.QuerySet): Base queryset to start on.
-            language (string): Language code to filter on.
-
-        Returns:
-            django.db.models.QuerySet: Improved queryset with required filtering
-            lookups.
-        """
-        self.target_date = timezone.now()
-
-        # Default request for common user
-        if (
-            not self.request.GET.get("admin") or
-            not self.request.user.is_staff
-        ):
-            queryset = queryset.get_published(
-                target_date=self.target_date,
-                language=language,
-            )
-        # Admin request have no restriction on date so it can return draft or future
-        # publications
-        else:
-            queryset = queryset.get_for_lang(language=language)
-
-        # Avoid anonymous to see private content
-        if not self.request.user.is_authenticated:
-            queryset = queryset.filter(private=False)
-
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        """
-        Expose the date "now" used for publication filter.
-        """
-        context = super().get_context_data(**kwargs)
-        context["lotus_now"] = self.target_date
-        return context
-
-
-class ArticleIndexView(ArticleFilterMixin, ListView):
+class ArticleIndexView(ArticleFilterMixin, AdminModeMixin, ListView):
     """
     Paginated list of articles.
     """
@@ -76,7 +22,7 @@ class ArticleIndexView(ArticleFilterMixin, ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class ArticleDetailView(ArticleFilterMixin, DetailView):
+class ArticleDetailView(ArticleFilterMixin, AdminModeMixin, DetailView):
     """
     Article detail.
     """

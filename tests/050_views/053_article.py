@@ -10,83 +10,55 @@ from django.urls import reverse
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
 from lotus.utils.tests import html_pyquery
+from lotus.views import AdminModeMixin
 
 
-# Shortcut for a shorter variable name
+# Shortcuts for shorter variable names
 STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
+ADMINMODE_ARG = AdminModeMixin.adminmode_argument_name
 
 
-def test_article_view_detail_published(db, admin_client, client):
+def test_article_view_list_admin_mode(db, admin_client, client):
     """
-    Published article is reachable from anyone.
-    """
-    instance = ArticleFactory()
+    List view should have context variable "admin_mode" with correct value according
+    to the user and possible URL argument.
 
-    response = client.get(instance.get_absolute_url())
+    TODO:
+        Make the same for detail view
+    """
+    urlname = "lotus:article-index"
+
+    ArticleFactory()
+
+    # Anonymous are never allowed for admin mode
+    response = client.get(reverse(urlname))
     assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
 
-    response = admin_client.get(instance.get_absolute_url())
+    response = client.get(reverse(urlname), {ADMINMODE_ARG: 1})
     assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
 
-
-def test_article_view_detail_draft(db, admin_client, client):
-    """
-    Draft article is only reachable for admin in 'admin mode'.
-    """
+    # Basic authenticated users are never allowed for admin mode
     user = AuthorFactory()
-    instance = ArticleFactory(status=STATUS_DRAFT)
-
-    # With default behavior a draft is not available no matter it's for an admin or not
-    response = client.get(instance.get_absolute_url())
-    assert response.status_code == 404
-
-    response = admin_client.get(instance.get_absolute_url())
-    assert response.status_code == 404
-
-    # Admin mode behavior do not work for non admin users
-    response = client.get(instance.get_absolute_url(), {"admin": 1})
-    assert response.status_code == 404
-
     client.force_login(user)
-    response = client.get(instance.get_absolute_url(), {"admin": 1})
-    assert response.status_code == 404
-
-    # Admin mode behavior only work for admin users
-    response = admin_client.get(instance.get_absolute_url(), {"admin": 1})
+    response = client.get(reverse(urlname))
     assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
 
-
-def test_article_view_detail_private(db, client):
-    """
-    Private article is reachable only for authenticated users.
-    """
-    user = AuthorFactory()
-    instance = ArticleFactory(private=True)
-
-    response = client.get(instance.get_absolute_url())
-    assert response.status_code == 404
-
-    client.force_login(user)
-    response = client.get(instance.get_absolute_url())
+    response = client.get(reverse(urlname), {ADMINMODE_ARG: 1})
     assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
 
-
-@freeze_time("2012-10-15 10:00:00")
-def test_article_view_detail_publication(db, admin_client, client):
-    """
-    Publication criteria should be respected to view an Article, excepted for admin
-    mode.
-    """
-    default_tz = pytz.timezone("UTC")
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
-
-    instance = ArticleFactory(publish_end=past_hour)
-
-    response = client.get(instance.get_absolute_url())
-    assert response.status_code == 404
-
-    response = admin_client.get(instance.get_absolute_url(), {"admin": 1})
+    # Staff user is only allowed for admin mode if it request for it with correct URL
+    # argument
+    response = admin_client.get(reverse(urlname))
     assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    response = admin_client.get(reverse(urlname), {ADMINMODE_ARG: 1})
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is True
 
 
 @freeze_time("2012-10-15 10:00:00")
@@ -120,7 +92,7 @@ def test_article_view_detail_publication(db, admin_client, client):
     ),
     (
         "anonymous",
-        {"admin": 1},
+        {ADMINMODE_ARG: 1},
         [
             # Expected title and CSS classes
             [
@@ -178,7 +150,7 @@ def test_article_view_detail_publication(db, admin_client, client):
     ),
     (
         "user",
-        {"admin": 1},
+        {ADMINMODE_ARG: 1},
         [
             # Expected title and CSS classes
             [
@@ -240,7 +212,7 @@ def test_article_view_detail_publication(db, admin_client, client):
     ),
     (
         "admin",
-        {"admin": 1},
+        {ADMINMODE_ARG: 1},
         [
             # Expected title and CSS classes
             [
@@ -414,6 +386,117 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
     assert content == expected
 
 
+def test_article_view_detail_published(db, admin_client, client):
+    """
+    Published article is reachable from anyone.
+    """
+    instance = ArticleFactory()
+
+    response = client.get(instance.get_absolute_url())
+    assert response.status_code == 200
+
+    response = admin_client.get(instance.get_absolute_url())
+    assert response.status_code == 200
+
+
+def test_article_view_detail_draft(db, admin_client, client):
+    """
+    Draft article is only reachable for admin in 'admin mode'.
+    """
+    user = AuthorFactory()
+    instance = ArticleFactory(status=STATUS_DRAFT)
+
+    # With default behavior a draft is not available no matter it's for an admin or not
+    response = client.get(instance.get_absolute_url())
+    assert response.status_code == 404
+
+    response = admin_client.get(instance.get_absolute_url())
+    assert response.status_code == 404
+
+    # Admin mode behavior do not work for non admin users
+    response = client.get(instance.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 404
+
+    client.force_login(user)
+    response = client.get(instance.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 404
+
+    # Admin mode behavior only work for admin users
+    response = admin_client.get(instance.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 200
+
+
+def test_article_view_detail_private(db, client):
+    """
+    Private article is reachable only for authenticated users.
+    """
+    user = AuthorFactory()
+    instance = ArticleFactory(private=True)
+
+    response = client.get(instance.get_absolute_url())
+    assert response.status_code == 404
+
+    client.force_login(user)
+    response = client.get(instance.get_absolute_url())
+    assert response.status_code == 200
+
+
+@freeze_time("2012-10-15 10:00:00")
+def test_article_view_detail_publication(db, admin_client, client):
+    """
+    Publication criteria should be respected to view an Article, excepted for admin
+    mode.
+    """
+    default_tz = pytz.timezone("UTC")
+    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+
+    instance = ArticleFactory(publish_end=past_hour)
+
+    response = client.get(instance.get_absolute_url())
+    assert response.status_code == 404
+
+    response = admin_client.get(instance.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 200
+
+
+def test_article_view_detail_admin_mode(db, admin_client, client):
+    """
+    Detail view should have context variable "admin_mode" with correct value according
+    to the user and possible URL argument.
+    """
+    ping = ArticleFactory()
+
+    # Anonymous are never allowed for admin mode
+    response = client.get(ping.get_absolute_url())
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    # Basic authenticated users are never allowed for admin mode
+    user = AuthorFactory()
+    client.force_login(user)
+    response = client.get(ping.get_absolute_url())
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    # Staff user is only allowed for admin mode if it request for it with correct URL
+    # argument
+    response = admin_client.get(ping.get_absolute_url())
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is False
+
+    response = admin_client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    assert response.status_code == 200
+    assert response.context[AdminModeMixin.adminmode_context_name] is True
+
+
 def test_article_view_detail_content(db, admin_client):
     """
     Detail view should contain all expected content and relations.
@@ -444,7 +527,7 @@ def test_article_view_detail_content(db, admin_client):
     )
 
     # Get detail HTML page
-    response = admin_client.get(article_3.get_absolute_url(), {"admin": 1})
+    response = admin_client.get(article_3.get_absolute_url(), {ADMINMODE_ARG: 1})
     assert response.status_code == 200
 
     # Parse HTML response to get content and relations
