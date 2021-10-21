@@ -24,13 +24,6 @@ Author per page limit for pagination, set it to ``None`` to disable
 pagination.
 """
 
-LOTUS_TRANSLATE_CONTENT = True
-"""
-Determine if your project enable content translation or not.
-
-TODO: Not used yet, lotus is always in translated mode.
-"""
-
 LOTUS_ARTICLE_PUBLICATION_STATE_NAMES = {
     "pinned": "article--pinned",
     "featured": "article--featured",
@@ -57,5 +50,12 @@ only be visible for admin in preview mode.
 
 LOTUS_ARTICLE_SIBLING_TEMPLATE = "lotus/article/partials/siblings.html"
 """
-Default template to use for template tag ``get_article_languages``.
+Default template to use for template tag ``get_translation_siblings`` with an Article
+object.
+"""
+
+LOTUS_CATEGORY_SIBLING_TEMPLATE = "lotus/category/partials/siblings.html"
+"""
+Default template to use for template tag ``get_translation_siblings`` with an Category
+object.
 """

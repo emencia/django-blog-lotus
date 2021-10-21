@@ -1,0 +1,7 @@
+<ul class="category-siblings">
+{% for category in siblings %}
+    <li class="sibling">
+        <a href="{{ category.get_absolute_url }}">{{ category.language }}</a>
+    </li>
+{% endfor %}
+</ul>

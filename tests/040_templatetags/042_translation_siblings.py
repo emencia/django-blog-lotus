@@ -5,7 +5,9 @@ import pytz
 
 from django.template import Context, Template, TemplateSyntaxError, TemplateDoesNotExist
 
-from lotus.factories import multilingual_article, CategoryFactory
+from lotus.factories import (
+    CategoryFactory, multilingual_article, multilingual_category,
+)
 from lotus.utils.tests import html_pyquery
 from lotus.views import AdminModeMixin
 
@@ -14,9 +16,32 @@ from lotus.views import AdminModeMixin
 ADMINMODE_CONTEXTVAR = AdminModeMixin.adminmode_context_name
 
 
-def test_tag_get_article_languages_missing_now(db):
+def test_tag_translation_siblings_allowed_models(db):
     """
-    Tag "get_article_languages" requires an article object and context variable
+    Tag "translation_siblings" is only implemented for Article and Category.
+    """
+    foo = object()
+
+    template = Template(
+        "{% load lotus %}{% translation_siblings article_object %}"
+    )
+
+    context = Context({
+        "article_object": foo,
+    })
+
+    with pytest.raises(TemplateSyntaxError) as excinfo:
+        template.render(context)
+
+    assert str(excinfo.value) == (
+        "'translation_siblings' only accepts a Category or Article object for "
+        "'source' argument."
+    )
+
+
+def test_tag_translation_siblings_missing_now(db):
+    """
+    Tag "translation_siblings" requires an article object and context variable
     'lotus_now' or a tag argument 'now'.
     """
     ping = CategoryFactory(slug="ping")
@@ -42,7 +67,7 @@ def test_tag_get_article_languages_missing_now(db):
     )
 
     template = Template(
-        "{% load lotus %}{% get_article_languages article_object %}"
+        "{% load lotus %}{% translation_siblings article_object %}"
     )
 
     context = Context({
@@ -53,21 +78,20 @@ def test_tag_get_article_languages_missing_now(db):
         template.render(context)
 
     assert str(excinfo.value) == (
-        "'get_article_languages' require either a context variable 'lotus_now' "
+        "'translation_siblings' require either a context variable 'lotus_now' "
         "to be set or a tag argument named 'now'."
     )
 
 
-def test_tag_get_article_languages_basic(db):
+def test_tag_translation_siblings_article(db):
     """
-    Tag "get_article_languages" should correctly build HTML with all article
+    Tag "translation_siblings" should correctly build HTML with all article
     translations depending arguments given and template context.
     """
     default_tz = pytz.timezone("UTC")
     now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 0))
     today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
     tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
-
 
     # Create cheese articles with published FR and DE translations
     created_cheese = multilingual_article(
@@ -91,7 +115,7 @@ def test_tag_get_article_languages_basic(db):
     )
 
     template = Template(
-        "{% load lotus %}{% get_article_languages article_object %}"
+        "{% load lotus %}{% translation_siblings article_object %}"
     )
 
     # Without admin mode, results are filtered on publication criterias
@@ -133,7 +157,7 @@ def test_tag_get_article_languages_basic(db):
     # Tag argument "now" can be passed to override context var "lotus_now" and use
     # another date
     template = Template(
-        "{% load lotus %}{% get_article_languages article_object now=custom_now %}"
+        "{% load lotus %}{% translation_siblings article_object now=custom_now %}"
     )
     rendered = template.render(
         Context({
@@ -151,7 +175,7 @@ def test_tag_get_article_languages_basic(db):
     # cannot be found
     template = Template(
         "{% load lotus %}"
-        "{% get_article_languages article_object template='foo/bar/nope.html' %}"
+        "{% translation_siblings article_object template='foo/bar/nope.html' %}"
     )
 
     with pytest.raises(TemplateDoesNotExist):
@@ -162,3 +186,40 @@ def test_tag_get_article_languages_basic(db):
                 ADMINMODE_CONTEXTVAR: False,
             })
         )
+
+
+def test_tag_translation_siblings_category(db):
+    """
+    Tag "translation_siblings" should correctly build HTML with all category
+    translations without needing of lotus_now/now or context variable for admin mode.
+    """
+    # Create cheese articles with published FR and DE translations
+    created_cheese = multilingual_category(
+        title="Cheese",
+        slug="cheese",
+        langs=["fr", "de"],
+        contents={
+            "fr": {
+                "title": "Fromage",
+                "slug": "fromage",
+            },
+            "de": {
+                "title": "Käse",
+                "slug": "kase",
+            }
+        },
+    )
+
+    template = Template(
+        "{% load lotus %}{% translation_siblings category_object %}"
+    )
+
+    # Without admin mode, results are filtered on publication criterias
+    rendered = template.render(
+        Context({
+            "category_object": created_cheese["original"],
+        })
+    )
+    dom = html_pyquery(rendered)
+    items = dom.find(".sibling a")
+    assert [item.text for item in items] == ["de", "fr"]

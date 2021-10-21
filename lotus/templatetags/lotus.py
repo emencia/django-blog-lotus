@@ -1,7 +1,3 @@
-"""
-TODO:
-    Template tags need better documentation strings with at least a sample usage.
-"""
 from django.conf import settings
 from django.template import TemplateSyntaxError, Library, loader
 
@@ -19,7 +15,14 @@ def article_state_list(context, article, **kwargs):
     This is a shortcut around ``Article.get_states`` to be able to use the ``lotus_now``
     context variable or force another value.
 
+    Usage: ::
+
+        {% load lotus %}
+        {% article_state_list article [now=custom_now] [prefix="foo_"] %}
+
     Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included.
         article (lotus.models.article.Article): Article object to compute states.
 
     Keywords Arguments:
@@ -49,7 +52,14 @@ def article_states(context, article, **kwargs):
 
     Identical to ``article_state_list`` but return a string instead of list.
 
+    Usage: ::
+
+        {% load lotus %}
+        {% article_states article [now=custom_now] [prefix="foo_"] %}
+
     Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included.
         article (lotus.models.article.Article): Article object to compute states.
 
     Keywords Arguments:
@@ -73,29 +83,74 @@ def article_states(context, article, **kwargs):
 
 
 @register.simple_tag(takes_context=True)
-def get_article_languages(context, source, **kwargs):
+def translation_siblings(context, source, **kwargs):
     """
-    TODO:
-    A tag to get source siblings (related original and translations).
+    A tag to get translation siblings for given source object.
 
-    To work, this tag depends from template context variable ``lotus_now`` which is
-    implemented from ``ArticleFilterMixin`` view mixin OR pass this date as keyword
-    argument ``now`` to the tag.
+    This tag can work for an Article or a Category object to retrieve every translation
+    siblings, like all translation children for an original source or translation
+    children and original for a translation.
 
-    TODO:
-    (Then do another one for category, no need of now/lotus_now)
+    Note than for an Article the tag will require a datetime it may refer to for
+    filtering results with publication criterias. Either the datetime is set as a
+    template context variable ``lotus_now`` as implemented in ``ArticleFilterMixin`` or
+    it can be given through the tag argument ``now``.
+
+    Usage: ::
+
+        {% load lotus %}
+        {% translation_siblings article [now=custom_now] [template="foo/bar.html"] %}
+
+    Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included. This is only used
+            with an Article object, so it should be safe to be empty for a Category.
+        source (object): Either a ``lotus.models.Article`` or ``lotus.models.Category``
+            to retrieve its translation siblings.
+
+    Keywords Arguments:
+        now (datetime.datetime): A datetime to use to compare against publish
+            start and end dates to check for some publication criterias. Only used
+            for Article object.
+        template (string): A path to a custom template to use instead of the default
+            one. If not given, the default one will be used, each model have its own
+            default template, see settings.
+
+    Returns:
+        string: Rendered template tag fragment.
+
     """
-    template_path = kwargs.get("template") or settings.LOTUS_ARTICLE_SIBLING_TEMPLATE
+    model = type(source)
 
-    siblings = Article.objects.get_siblings(source=source)
+    # Use the right template depending model
+    if isinstance(source, Article):
+        template_path = (
+            kwargs.get("template") or settings.LOTUS_ARTICLE_SIBLING_TEMPLATE
+        )
+    elif isinstance(source, Category):
+        template_path = (
+            kwargs.get("template") or settings.LOTUS_CATEGORY_SIBLING_TEMPLATE
+        )
+    # If unsupported model has been given
+    else:
+        raise TemplateSyntaxError(
+            "'translation_siblings' only accepts a Category or Article object for "
+            "'source' argument."
+        )
 
-    # If context variable for admin mode is not set or not True, the user are restricted
-    # to view published siblings only
-    if not context.get(AdminModeMixin.adminmode_context_name, False):
+    # Get the base queryset for siblings
+    siblings = model.objects.get_siblings(source=source)
+
+    # Article model make additional filtering on publication criteria if not in admin
+    # mode
+    if (
+        isinstance(source, Article) and
+        not context.get(AdminModeMixin.adminmode_context_name, False)
+    ):
         lotus_now = kwargs.get("now") or context.get("lotus_now")
         if lotus_now is None:
             raise TemplateSyntaxError(
-                "'get_article_languages' require either a context variable 'lotus_now' "
+                "'translation_siblings' require either a context variable 'lotus_now' "
                 "to be set or a tag argument named 'now'."
             )
 
