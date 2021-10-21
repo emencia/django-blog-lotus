@@ -194,6 +194,8 @@ class ArticleManager(models.Manager):
 class AuthorManager(models.Manager):
     """
     Author objects manager.
+
+    Use the ArticleQuerySet class to inherit article queryset behaviors.
     """
     def get_queryset(self):
         return ArticleQuerySet(self.model, using=self._db)

@@ -303,12 +303,8 @@ class Article(Translated):
             string: An URL.
         """
         # Force the article language to get the right url independently of the current
-        # browser language
-        """
-        NOTE:
-            This is causing insane bug between a templatetag test and a category list
-            view test. And so this may not been a very stable technic.
-        """
+        # browser language. This is not thread safe, deactivate must be called once
+        # rendering is finished.
         translation_activate(self.language)
 
         url = reverse("lotus:article-detail", kwargs={

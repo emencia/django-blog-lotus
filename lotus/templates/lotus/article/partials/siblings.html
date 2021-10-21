@@ -1,0 +1,7 @@
+<ul class="article-siblings">
+{% for article in siblings %}
+    <li class="sibling">
+        <a href="{{ article.get_absolute_url }}">{{ article.language }}</a>
+    </li>
+{% endfor %}
+</ul>

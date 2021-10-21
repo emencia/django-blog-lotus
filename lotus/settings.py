@@ -54,3 +54,8 @@ only be visible for admin in preview mode.
 
 ``private`` state will only be visible to authenticated users.
 """
+
+LOTUS_ARTICLE_SIBLING_TEMPLATE = "lotus/article/partials/siblings.html"
+"""
+Default template to use for template tag ``get_article_languages``.
+"""

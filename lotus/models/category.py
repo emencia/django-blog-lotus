@@ -122,7 +122,8 @@ class Category(Translated):
             string: An URL.
         """
         # Force the category language to get the right url independently of the current
-        # browser language
+        # browser language. This is not thread safe, deactivate must be called once
+        # rendering is finished.
         translation_activate(self.language)
 
         url = reverse("lotus:category-detail", kwargs={
