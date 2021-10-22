@@ -29,6 +29,13 @@
                     <img src="{{ article_object.cover.url }}" class="rounded" alt="">
                 {% endif %}</div>
 
+                <div class="siblings card mb-4">
+                    <div class="card-header">
+                        <strong>Siblings</strong>
+                    </div>
+                    {% translation_siblings article_object %}
+                </div>
+
                 <div class="categories card mb-4">
                     <div class="card-header">
                         <strong>Categories</strong>

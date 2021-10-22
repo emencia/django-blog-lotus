@@ -1,6 +1,6 @@
-<ul class="category-siblings">
+<ul class="category-siblings list-group list-group-flush">
 {% for category in siblings %}
-    <li class="sibling">
+    <li class="sibling list-group-item">
         <a href="{{ category.get_absolute_url }}">{{ category.language }}</a>
     </li>
 {% endfor %}

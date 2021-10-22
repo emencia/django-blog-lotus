@@ -1,6 +1,6 @@
-<ul class="article-siblings">
+<ul class="article-siblings list-group list-group-flush">
 {% for article in siblings %}
-    <li class="sibling">
+    <li class="sibling list-group-item">
         <a href="{{ article.get_absolute_url }}">{{ article.language }}</a>
     </li>
 {% endfor %}
