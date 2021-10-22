@@ -104,14 +104,17 @@ def test_article_admin_original_choices(db, admin_client):
     """
     Choices should be limited to some constraints:
 
-    * 'original' field should not list items in same language and not the
-      article itself;
+    * 'original' field should not list items in same language, not the
+      article itself and only original articles;
     * 'related' field should not list items in different language and not the
       article itself;
     * 'categories' field should not list items in different language;
     """
     # Create new object to check
     obj = ArticleFactory(language="en")
+    # Create new object as a translation
+    ArticleFactory(language="fr", original=obj)
+
     # Create some objects in same language
     fillers_en = [
         ArticleFactory(language="en"),

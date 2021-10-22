@@ -32,11 +32,11 @@ class CategoryAdminForm(forms.ModelForm):
         # Model choices querysets for create form get all objects since there is no
         # data yet to constraint
         if not self.instance.pk:
-            original_queryset = Category.objects.all()
+            original_queryset = Category.objects.filter(original__isnull=True)
         # Model choices querysets for change form filter objects against constraints
         else:
-            # Avoid selecting itself or object with the same language
-            original_queryset = Category.objects.exclude(
+            # Avoid selecting itself, a translation or object with the same language
+            original_queryset = Category.objects.filter(original__isnull=True).exclude(
                 models.Q(id=self.instance.id) |
                 models.Q(language=self.instance.language)
             )

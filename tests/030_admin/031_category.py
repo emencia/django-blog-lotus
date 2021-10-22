@@ -78,11 +78,13 @@ def test_category_admin_change_form(db, admin_client):
 
 def test_category_admin_original_choices(db, admin_client):
     """
-    Choices for 'original' should not list item in same language and not the
-    category itself.
+    Choices for 'original' should not list item in same language, not the
+    category itself and only original articles.
     """
     # Create new object to check
     obj = CategoryFactory(language="en")
+    # Create new object as a translation
+    CategoryFactory(language="fr", original=obj)
     # Create some objects in same language
     CategoryFactory(language="en")
     CategoryFactory(language="en")
