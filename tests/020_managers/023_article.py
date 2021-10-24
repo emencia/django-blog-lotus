@@ -16,6 +16,10 @@ def test_article_managers(db):
     """
     Article manager should be able to correctly filter on language and
     publication.
+
+    TODO: Create a single author and use it in common kwargs to avoid factory to
+    create a new one for each article, this should speed up the tests. This is possibly
+    to port on other tests which create many articles.
     """
     default_tz = pytz.timezone("UTC")
 

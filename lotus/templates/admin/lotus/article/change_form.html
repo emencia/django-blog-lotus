@@ -1,0 +1,25 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls lotus %}
+
+{% block object-tools-items %}
+    <li>
+        <a class="historylink" href="{% url "admin:lotus_article_translate_original" id=original.id %}">{% trans "Translate" %}</a>
+    </li>
+    {{ block.super }}
+{% endblock %}
+
+{% block object-tools %}
+    {{ block.super }}
+    {% if change %}
+        {% translation_siblings original admin_mode=True as sibling_output %}
+        {% if sibling_output.siblings %}
+        <p><em>
+            Existing language(s) for this article:
+            {% for sibling in sibling_output.siblings %}
+                {% get_language_info for sibling.language as lang %}
+                <a href="{% url opts|admin_urlname:'change' sibling.pk %}">{{ lang.name_translated }}</a>{% if not forloop.last %} |{% endif %}
+            {% endfor %}
+        </em></p>
+        {% endif %}
+    {% endif %}
+{% endblock %}

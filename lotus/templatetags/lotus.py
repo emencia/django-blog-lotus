@@ -83,7 +83,7 @@ def article_states(context, article, **kwargs):
 
 
 @register.simple_tag(takes_context=True)
-def translation_siblings(context, source, **kwargs):
+def translation_siblings(context, source, tag_name=None, **kwargs):
     """
     A tag to get translation siblings for given source object.
 
@@ -99,7 +99,82 @@ def translation_siblings(context, source, **kwargs):
     Usage: ::
 
         {% load lotus %}
-        {% translation_siblings article [now=custom_now] [template="foo/bar.html"] %}
+        {% translation_siblings_html article [now=custom_now] [admin_mode=True|False] %}
+
+    Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included. This is only used
+            with an Article object, so it should be safe to be empty for a Category.
+        source (object): Either a ``lotus.models.Article`` or ``lotus.models.Category``
+            to retrieve its translation siblings.
+
+    Keywords Arguments:
+        now (datetime.datetime): A datetime to use to compare against publish
+            start and end dates to check for some publication criterias. Only used
+            for Article object.
+        admin_mode (boolean): Option to bypass checking admin mode from context and
+            force it to a value, either True to enable it, False to disable it or None
+            to let the basic behavior to determine it from its template context
+            variable. Default to None.
+        tag_name (string): Template tag name to use in error messages. This is
+            something used in template tags which inherit from ``translation_siblings``,
+            avoid it in template tag usage from your templates.
+
+    Returns:
+        dict: A dictionnary with item ``source`` for the given source object and item
+            ``siblings`` for retrieved translation sibling objects.
+
+    """
+    model = type(source)
+
+    tag_name = tag_name or "translation_siblings"
+
+    admin_mode = context.get(AdminModeMixin.adminmode_context_name, False)
+    if kwargs.get("admin_mode", None) is not None:
+        admin_mode = kwargs.get("admin_mode")
+
+    # If unsupported model has been given
+    if not isinstance(source, Article) and not isinstance(source, Category):
+        source_name = type(source).__name__
+        raise TemplateSyntaxError(
+            (
+                "'{tag_name}' only accepts a Category or Article object "
+                "for 'source' argument. Object type '{source_name}' was given."
+            ).format(tag_name=tag_name, source_name=source_name)
+        )
+
+    # Get the base queryset for siblings
+    siblings = model.objects.get_siblings(source=source)
+
+    # Article model make additional filtering on publication criteria if not in admin
+    # mode
+    if isinstance(source, Article) and not admin_mode:
+        lotus_now = kwargs.get("now") or context.get("lotus_now")
+        if lotus_now is None:
+            raise TemplateSyntaxError(
+                (
+                    "'{tag_name}' require either a context variable 'lotus_now' to be "
+                    "set or a tag argument named 'now'."
+                ).format(tag_name=tag_name)
+            )
+
+        siblings = siblings.get_published(target_date=lotus_now)
+
+    return {
+        "source": source,
+        "siblings": siblings.order_by("language"),
+    }
+
+
+@register.simple_tag(takes_context=True)
+def translation_siblings_html(context, source, **kwargs):
+    """
+    Work like ``translation_siblings`` but render HTML from a template instead.
+
+    Usage: ::
+
+        {% load lotus %}
+        {% translation_siblings_html article [now=custom_now] [template="foo/bar.html"] [admin_mode=True|False] %}
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
@@ -115,13 +190,15 @@ def translation_siblings(context, source, **kwargs):
         template (string): A path to a custom template to use instead of the default
             one. If not given, the default one will be used, each model have its own
             default template, see settings.
+        admin_mode (boolean): Option to bypass checking admin mode from context and
+            force it to a value, either True to enable it, False to disable it or None
+            to let the basic behavior to determine it from its template context
+            variable. Default to None.
 
     Returns:
         string: Rendered template tag fragment.
 
-    """
-    model = type(source)
-
+    """  # noqa: E501
     # Use the right template depending model
     if isinstance(source, Article):
         template_path = (
@@ -131,32 +208,12 @@ def translation_siblings(context, source, **kwargs):
         template_path = (
             kwargs.get("template") or settings.LOTUS_CATEGORY_SIBLING_TEMPLATE
         )
-    # If unsupported model has been given
-    else:
-        raise TemplateSyntaxError(
-            "'translation_siblings' only accepts a Category or Article object for "
-            "'source' argument."
-        )
 
-    # Get the base queryset for siblings
-    siblings = model.objects.get_siblings(source=source)
+    render_context = translation_siblings(
+        context,
+        source,
+        tag_name="translation_siblings_html",
+        **kwargs
+    )
 
-    # Article model make additional filtering on publication criteria if not in admin
-    # mode
-    if (
-        isinstance(source, Article) and
-        not context.get(AdminModeMixin.adminmode_context_name, False)
-    ):
-        lotus_now = kwargs.get("now") or context.get("lotus_now")
-        if lotus_now is None:
-            raise TemplateSyntaxError(
-                "'translation_siblings' require either a context variable 'lotus_now' "
-                "to be set or a tag argument named 'now'."
-            )
-
-        siblings = siblings.get_published(target_date=lotus_now)
-
-    return loader.get_template(template_path).render({
-        "source": source,
-        "siblings": siblings.order_by("language"),
-    })
+    return loader.get_template(template_path).render(render_context)
