@@ -1,25 +1,38 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_urls lotus %}
+{% load i18n admin_urls admin_modify lotus %}
 
-{% block object-tools-items %}
-    <li>
-        <a class="historylink" href="{% url "admin:lotus_article_translate_original" id=original.id %}">{% trans "Translate" %}</a>
-    </li>
-    {{ block.super }}
-{% endblock %}
-
+{% comment %}
+NOTE:
+    We override the whole object-tools block since we add stuff in and around
+    "object-tools-items", also this enable us to share results from tag
+    "translation_siblings" instead of executing it twice.
+{% endcomment %}
 {% block object-tools %}
-    {{ block.super }}
     {% if change %}
-        {% translation_siblings original admin_mode=True as sibling_output %}
-        {% if sibling_output.siblings %}
-        <p><em>
-            Existing language(s) for this article:
-            {% for sibling in sibling_output.siblings %}
-                {% get_language_info for sibling.language as lang %}
-                <a href="{% url opts|admin_urlname:'change' sibling.pk %}">{{ lang.name_translated }}</a>{% if not forloop.last %} |{% endif %}
-            {% endfor %}
-        </em></p>
+        {% if not is_popup %}
+            {% translation_siblings original admin_mode=True as sibling_stats %}
+
+            <ul class="object-tools">
+                {% block object-tools-items %}
+                    {% if sibling_stats.available_languages %}
+                    <li>
+                        <a class="lotus-translate-link" href="{% url "admin:lotus_article_translate_original" id=original.id %}">{% trans "Translate" %}</a>
+                    </li>
+                    {% endif %}
+                    {% change_form_object_tools %}
+                {% endblock %}
+            </ul>
+
+            {% if sibling_stats.siblings %}
+            <p class="lotus-siblings-resume"><em>
+                {% blocktranslate %}Existing language(s) for this article:{% endblocktranslate %}
+                {% for sibling in sibling_stats.siblings %}
+                    {% get_language_info for sibling.language as lang %}
+                    <a href="{% url opts|admin_urlname:'change' sibling.pk %}" data-lotus-langcode="{{ sibling.language }}">{{ lang.name_translated }}</a>
+                    {% if not forloop.last %} |{% endif %}
+                {% endfor %}
+            </em></p>
+            {% endif %}
         {% endif %}
     {% endif %}
 {% endblock %}

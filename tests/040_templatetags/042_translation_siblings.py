@@ -133,6 +133,8 @@ def test_tag_translation_siblings_article(db):
     assert list(output["siblings"]) == [
         created_cheese["translations"]["fr"],
     ]
+    assert sorted(output["existing_languages"]) == ["en", "fr"]
+    assert sorted(output["available_languages"]) == ["de"]
 
     # In admin mode, no filter on publication criterias
     context = Context({
@@ -145,6 +147,8 @@ def test_tag_translation_siblings_article(db):
         created_cheese["translations"]["de"],
         created_cheese["translations"]["fr"],
     ]
+    assert sorted(output["existing_languages"]) == ["de", "en", "fr"]
+    assert sorted(output["available_languages"]) == []
 
     # Alike previous but on a translation instead of original
     context = Context({
@@ -157,6 +161,8 @@ def test_tag_translation_siblings_article(db):
         created_cheese["translations"]["de"],
         created_cheese["original"],
     ]
+    assert sorted(output["existing_languages"]) == ["de", "en", "fr"]
+    assert sorted(output["available_languages"]) == []
 
     # Tag argument "now" can be passed to override context var "lotus_now" and use
     # another date
@@ -170,6 +176,8 @@ def test_tag_translation_siblings_article(db):
         created_cheese["translations"]["de"],
         created_cheese["translations"]["fr"],
     ]
+    assert sorted(output["existing_languages"]) == ["de", "en", "fr"]
+    assert sorted(output["available_languages"]) == []
 
 
 def test_tag_translation_siblings_html_article(db):
@@ -335,6 +343,8 @@ def test_tag_translation_siblings_category(db):
         created_cheese["translations"]["de"],
         created_cheese["translations"]["fr"],
     ]
+    assert sorted(output["existing_languages"]) == ["de", "en", "fr"]
+    assert sorted(output["available_languages"]) == []
 
 
 def test_tag_translation_siblings_html_category(db):

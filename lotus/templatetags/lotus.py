@@ -91,7 +91,7 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
     siblings, like all translation children for an original source or translation
     children and original for a translation.
 
-    Note than for an Article the tag will require a datetime it may refer to for
+    Note than for an Article object the tag will require a datetime it may refer to for
     filtering results with publication criterias. Either the datetime is set as a
     template context variable ``lotus_now`` as implemented in ``ArticleFilterMixin`` or
     it can be given through the tag argument ``now``.
@@ -160,9 +160,22 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
 
         siblings = siblings.get_published(target_date=lotus_now)
 
+    # Enforce order on language code
+    siblings = siblings.order_by("language")
+
+    # All available language names and codes
+    existing_languages = [item.language for item in [source] + list(siblings)]
+    available_languages = [
+        code
+        for code, name in settings.LANGUAGES
+        if (code not in existing_languages)
+    ]
+
     return {
         "source": source,
-        "siblings": siblings.order_by("language"),
+        "siblings": siblings,
+        "existing_languages": existing_languages,
+        "available_languages": available_languages,
     }
 
 

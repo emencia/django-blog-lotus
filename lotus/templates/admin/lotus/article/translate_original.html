@@ -15,17 +15,17 @@
 {% block content %}
 
 {% if not form %}
-    <h2>No available languages for this article.</h2>
+    <h2>{% blocktranslate %}No available languages for this article.{% endblocktranslate %}</h2>
 {% else %}
     {% if is_original %}
-        <p>You requested to translate an article original, this will sent you to a create form to translate it.</p>
+        <h2>{% blocktranslate %}You requested to translate an original article, this will send you to a create form to translate it.{% endblocktranslate %}</h2>
     {% else %}
-        <p>You requested to translate a article translation, this will sent you to a create form to translate the original article '{{ original_article.title }}' instead.</p>
+        <h2>{% blocktranslate with title=original_article.title %}You requested to translate a translation article, this will send you to a create form to translate the original article '{{ title }}' instead.{% endblocktranslate %}</h2>
     {% endif %}
 
     <hr>
 
-    <form method="get" action="{% url opts|admin_urlname:'add' %}">
+    <form method="get" action="{% url opts|admin_urlname:'add' %}" id="lotus-translate-original-form">
         <div>
             {{ form.as_p }}
             <input type="hidden" name="original" value="{{ original_article.id }}">
