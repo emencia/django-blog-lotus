@@ -635,3 +635,8 @@ def test_article_admin_translate_button_expected(db, admin_client):
     options = dom.find("#lotus-translate-original-form #id_language option")
     option_ids = [item.get("value") for item in options if item.get("value")]
     assert sorted(option_ids) == ["fr"]
+
+    # Ensure the original id is correctly set into hidden input
+    original_id = dom.find("#lotus-translate-original-form input[name='original']")
+    assert len(original_id) == 1
+    assert int(original_id[0].get("value")) == created_beef["original"].id

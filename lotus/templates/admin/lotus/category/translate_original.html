@@ -15,12 +15,12 @@
 {% block content %}
 
 {% if not form %}
-    <h2>{% blocktranslate %}No available languages for this article.{% endblocktranslate %}</h2>
+    <h2>{% blocktranslate %}No available languages for this category.{% endblocktranslate %}</h2>
 {% else %}
     {% if is_original %}
-        <h2>{% blocktranslate %}You requested to translate an original article, this will send you to a create form to translate it.{% endblocktranslate %}</h2>
+        <h2>{% blocktranslate %}You requested to translate an original category, this will send you to a create form to translate it.{% endblocktranslate %}</h2>
     {% else %}
-        <h2>{% blocktranslate with title=original_object.title %}You requested to translate a translation article, this will send you to a create form to translate the original article '{{ title }}' instead.{% endblocktranslate %}</h2>
+        <h2>{% blocktranslate with title=original_object.title %}You requested to translate a translation category, this will send you to a create form to translate the original category '{{ title }}' instead.{% endblocktranslate %}</h2>
     {% endif %}
 
     <hr>

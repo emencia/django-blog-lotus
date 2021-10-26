@@ -3,10 +3,12 @@ Category admin interface
 """
 from django.conf import settings
 from django.contrib import admin
+from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from ..forms import CategoryAdminForm
 from ..models import Category
+from ..views.admin import CategoryAdminTranslateView
 
 from .translated import LanguageListFilter
 
@@ -21,6 +23,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "language_name",
+        "is_original",
         "article_count",
     )
     list_filter = (
@@ -72,6 +75,33 @@ class CategoryAdmin(admin.ModelAdmin):
     language_name.short_description = _("language")
     language_name.admin_order_field = "language"
 
+    def is_original(self, obj):
+        """
+        Check article is an original or a translation.
+        """
+        return obj.original is None
+    is_original.short_description = _("original")
+    is_original.boolean = True
+
     def article_count(self, obj):
         return obj.articles.count()
     article_count.short_description = _("articles")
+
+    def get_urls(self):
+        """
+        Set some additional custom admin views
+        """
+        urls = super().get_urls()
+
+        extra_urls = [
+            path(
+                "translate/<int:id>/",
+                self.admin_site.admin_view(
+                    CategoryAdminTranslateView.as_view(),
+                ),
+                {"model_admin": self},
+                name="lotus_category_translate_original",
+            )
+        ]
+
+        return extra_urls + urls

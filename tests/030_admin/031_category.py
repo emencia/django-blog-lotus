@@ -1,8 +1,9 @@
 import os
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.urls import reverse
 
-from lotus.factories import ArticleFactory, CategoryFactory
+from lotus.factories import multilingual_category, ArticleFactory, CategoryFactory
 from lotus.forms import CategoryAdminForm
 from lotus.models import Category
 from lotus.utils.tests import (
@@ -221,3 +222,109 @@ def test_category_admin_modelchoice_change_labels(db, admin_client):
         f.fields["original"].empty_label,
         "egg [English]",
     ]
+
+
+def test_category_admin_translate_button_empty(db, admin_client):
+    """
+    Translate button should not be in detail if there is no available language for
+    translation and finally the translate page should not contain form since there is
+    language available.
+    """
+    # Create cheese categories with published FR and DE translations
+    created_cheese = multilingual_category(
+        title="Cheese",
+        slug="cheese",
+        langs=["fr", "de"],
+        contents={
+            "fr": {
+                "title": "Fromage",
+                "slug": "fromage",
+            },
+            "de": {
+                "title": "Käse",
+                "slug": "kase",
+            }
+        },
+    )
+
+    # No translate button expected since all possible languages have been used
+    url = get_admin_change_url(created_cheese["original"])
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    links = dom.find(".lotus-translate-link")
+    assert len(links) == 0
+
+    # Expected existing translation languages (without the original language)
+    existings = dom.find(".lotus-siblings-resume a")
+    assert len(existings) == 2
+
+    existing_languages = [item.get("data-lotus-langcode") for item in existings]
+    assert sorted(existing_languages) == ["de", "fr"]
+
+    # No form expected since there is no available languages
+    url = reverse(
+        "admin:lotus_category_translate_original",
+        args=(created_cheese["original"].id,),
+    )
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    forms = dom.find("#lotus-translate-original-form")
+    assert len(forms) == 0
+
+
+def test_category_admin_translate_button_expected(db, admin_client):
+    """
+    Translate button should be in detail page with the right URL and lead to the
+    "Translate" form with the right available languages.
+    """
+    # Create meat categories with a single DE translation
+    created_beef = multilingual_category(
+        title="Beef",
+        slug="beef",
+        langs=["de"],
+        contents={
+            "de": {
+                "title": "Rindfleisch",
+                "slug": "rindfleisch",
+            }
+        },
+    )
+
+    # Translate button is expected since there is an available language to translate to
+    url = get_admin_change_url(created_beef["original"])
+    response = admin_client.get(url)
+    assert response.status_code == 200
+    dom = html_pyquery(response)
+
+    existings = dom.find(".lotus-siblings-resume a")
+    assert len(existings) == 1
+
+    links = dom.find(".lotus-translate-link")
+    assert len(links) == 1
+
+    # Expected existing translation languages (without the original language)
+    existing_languages = [item.get("data-lotus-langcode") for item in existings]
+    assert sorted(existing_languages) == ["de"]
+
+    response = admin_client.get(links[0].get("href"))
+    assert response.status_code == 200
+
+    # Form is expected since there is an available language. Directly use the URL from
+    # translate button
+    dom = html_pyquery(response)
+    forms = dom.find("#lotus-translate-original-form")
+    assert len(forms) == 1
+
+    # Check expected available language is correct
+    options = dom.find("#lotus-translate-original-form #id_language option")
+    option_ids = [item.get("value") for item in options if item.get("value")]
+    assert sorted(option_ids) == ["fr"]
+
+    # Ensure the original id is correctly set into hidden input
+    original_id = dom.find("#lotus-translate-original-form input[name='original']")
+    assert len(original_id) == 1
+    assert int(original_id[0].get("value")) == created_beef["original"].id

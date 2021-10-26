@@ -1,9 +1,10 @@
-from .article import ArticleAdminForm, TranslateToLangForm
+from .article import ArticleAdminForm
 from .category import CategoryAdminForm
+from .translated import TranslateToLangForm
 
 
 __all__ = [
     "ArticleAdminForm",
-    "TranslateToLangForm",
     "CategoryAdminForm",
+    "TranslateToLangForm",
 ]
