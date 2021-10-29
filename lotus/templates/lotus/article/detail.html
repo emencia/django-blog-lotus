@@ -11,9 +11,9 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-9">
-                <div class="image bg-light rounded text-center mb-2 p-2">{% if article_object.image %}
+                {% if article_object.image %}<div class="image bg-light rounded text-center mb-2 p-2">
                     <img src="{{ article_object.image.url }}" class="rounded" alt="">
-                {% endif %}</div>
+                </div>{% endif %}
 
                 <h1 class="title">{{ article_object.title }}</h1>
 
@@ -29,47 +29,62 @@
                     <img src="{{ article_object.cover.url }}" class="rounded" alt="">
                 {% endif %}</div>
 
+                {% translation_siblings article_object as sibling_stats %}
+                {% if sibling_stats.siblings %}
                 <div class="siblings card mb-4">
                     <div class="card-header">
                         <strong>Siblings</strong>
                     </div>
-                    {% translation_siblings article_object %}
+                    {% include "lotus/article/partials/siblings.html" with siblings=sibling_stats.siblings %}
                 </div>
+                {% endif %}
 
+                {% with categories=article_object.get_categories %}
+                {% if categories %}
                 <div class="categories card mb-4">
                     <div class="card-header">
                         <strong>Categories</strong>
                     </div>
                     <ul class="list-group list-group-flush">
-                        {% for category in article_object.get_categories %}
+                        {% for category in categories %}
                         <li class="list-group-item">
                             <a href="{{ category.get_absolute_url }}">{{ category.title }}</a>
                         </li>
                         {% endfor %}
                     </ul>
                 </div>
+                {% endif %}
+                {% endwith %}
 
+                {% with authors=article_object.get_authors %}
+                {% if authors %}
                 <div class="authors card mb-4">
                     <div class="card-header">
                         <strong>Authors</strong>
                     </div>
                     <ul class="list-group list-group-flush">
-                        {% for author in article_object.get_authors %}
+                        {% for author in authors %}
                         <li class="list-group-item"><a href="{{ author.get_absolute_url }}">{{ author.get_full_name }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
+                {% endif %}
+                {% endwith %}
 
+                {% with relateds=article_object.get_related %}
+                {% if relateds %}
                 <div class="relateds card mb-4">
                     <div class="card-header">
                         <strong>Related articles</strong>
                     </div>
                     <ul class="list-group list-group-flush">
-                        {% for related in article_object.get_related %}
+                        {% for related in relateds %}
                         <li class="list-group-item"><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>
+                {% endif %}
+                {% endwith %}
             </div>
         </div>
     </div>
