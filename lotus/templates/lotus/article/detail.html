@@ -25,9 +25,9 @@
             </div>
 
             <div class="col-12 col-lg-3">
-                <div class="cover text-center mb-4">{% if article_object.cover %}
+                {% if article_object.cover %}<div class="cover text-center mb-4">
                     <img src="{{ article_object.cover.url }}" class="rounded" alt="">
-                {% endif %}</div>
+                </div>{% endif %}
 
                 {% translation_siblings article_object as sibling_stats %}
                 {% if sibling_stats.siblings %}

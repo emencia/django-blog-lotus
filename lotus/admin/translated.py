@@ -4,9 +4,14 @@ from django.utils.translation import gettext_lazy as _
 from ..choices import get_language_choices, get_language_default
 
 
-class LanguageListFilter(admin.SimpleListFilter):
+class DeprecatedLanguageListFilter(admin.SimpleListFilter):
     """
     Add Human-readable language title as defined in LANGUAGES setting.
+
+    The behavior of this filter have been largely tested and was feeling awful, default
+    listing on default language is not very obvious.
+
+    It is keeped for now as it implement a way to hack the choices.
     """
     title = _("language")
 
@@ -44,3 +49,49 @@ class LanguageListFilter(admin.SimpleListFilter):
             return queryset.filter(language=self.value())
         else:
             return queryset.filter(language=get_language_default())
+
+
+class LanguageListFilter(admin.SimpleListFilter):
+    """
+    Add Human-readable language title as defined in LANGUAGES setting.
+    """
+    title = _("language")
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = "lang"
+
+    def lookups(self, request, model_admin):
+        """
+        Build choices from available languages.
+        """
+        return get_language_choices()
+
+    def queryset(self, request, queryset):
+        """
+        Use given language if any
+        """
+        if self.value():
+            return queryset.filter(language=self.value())
+
+
+class TranslationStateListFilter(admin.SimpleListFilter):
+    """
+    Filtering original article and translations.
+    """
+    title = _("translation state")
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = "translation_state"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("original", _("Is an original")),
+            ("translation", _("Is a translation")),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "original":
+            return queryset.filter(original__isnull=True)
+
+        if self.value() == "translation":
+            return queryset.exclude(original__isnull=True)

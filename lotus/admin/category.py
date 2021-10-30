@@ -10,7 +10,7 @@ from ..forms import CategoryAdminForm
 from ..models import Category
 from ..views.admin import CategoryAdminTranslateView
 
-from .translated import LanguageListFilter
+from .translated import LanguageListFilter, TranslationStateListFilter
 
 
 # Shortcut to get setting as a dict
@@ -28,6 +28,7 @@ class CategoryAdmin(admin.ModelAdmin):
     )
     list_filter = (
         LanguageListFilter,
+        TranslationStateListFilter,
     )
     list_per_page = 50
     prepopulated_fields = {

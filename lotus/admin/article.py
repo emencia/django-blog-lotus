@@ -12,7 +12,7 @@ from ..models import Article
 from ..choices import STATUS_PUBLISHED
 from ..views.admin import ArticleAdminTranslateView
 
-from .translated import LanguageListFilter
+from .translated import LanguageListFilter, TranslationStateListFilter
 
 
 # Shortcut to get setting as a dict
@@ -23,8 +23,8 @@ class ArticleAdmin(admin.ModelAdmin):
     form = ArticleAdminForm
     list_display = (
         "title",
-        "language_name",
         "is_published",
+        "language_name",
         "is_original",
         "pinned",
         "private",
@@ -33,6 +33,9 @@ class ArticleAdmin(admin.ModelAdmin):
     )
     list_filter = (
         LanguageListFilter,
+        TranslationStateListFilter,
+        "pinned",
+        "private",
     )
     prepopulated_fields = {
         "slug": ("title",),
