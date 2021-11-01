@@ -1,4 +1,4 @@
-{% load i18n %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
+{% load i18n view_breadcrumbs %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
 <head>{% spaceless %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,6 +47,9 @@
     </nav>
 
     <div class="main-content container-xxl">
+        {% block breadcrumbs %}
+            {% render_breadcrumbs "view_breadcrumbs/bootstrap5.html" %}
+        {% endblock %}
         {% block content %}Sandbox skeleton{% endblock %}
     </div>
 </div>

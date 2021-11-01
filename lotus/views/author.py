@@ -1,12 +1,19 @@
 from django.conf import settings
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
+
+try:
+    from view_breadcrumbs import BaseBreadcrumbMixin
+except ImportError:
+    from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 from ..models import Article, Author
 from .mixins import AdminModeMixin, ArticleFilterMixin
 
 
-class AuthorIndexView(ListView):
+class AuthorIndexView(BaseBreadcrumbMixin, ListView):
     """
     List of authors which have contributed at least to one article.
     """
@@ -14,6 +21,14 @@ class AuthorIndexView(ListView):
     template_name = "lotus/author/list.html"
     paginate_by = settings.LOTUS_AUTHOR_PAGINATION
     context_object_name = "author_list"
+    crumb_title = _("Authors")
+    crumb_urlname = "lotus:author-index"
+
+    @property
+    def crumbs(self):
+        return [
+            (self.crumb_title, reverse(self.crumb_urlname)),
+        ]
 
     def get_queryset(self):
         q = self.model.lotus_objects.get_active(language=self.request.LANGUAGE_CODE)
@@ -21,7 +36,8 @@ class AuthorIndexView(ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class AuthorDetailView(ArticleFilterMixin, AdminModeMixin, SingleObjectMixin, ListView):
+class AuthorDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
+                       SingleObjectMixin, ListView):
     """
     Author detail and its related article list.
 
@@ -36,6 +52,21 @@ class AuthorDetailView(ArticleFilterMixin, AdminModeMixin, SingleObjectMixin, Li
     slug_field = "username"
     slug_url_kwarg = "username"
     pk_url_kwarg = None
+    crumb_title = None  # No usage since title depends from object
+    crumb_urlname = "lotus:author-detail"
+
+    @property
+    def crumbs(self):
+        details_kwargs = {
+            "username": self.object.username,
+        }
+
+        return [
+            (AuthorIndexView.crumb_title, reverse(
+                AuthorIndexView.crumb_urlname
+            )),
+            (str(self.object), reverse(self.crumb_urlname, kwargs=details_kwargs)),
+        ]
 
     def get_queryset_for_object(self):
         """

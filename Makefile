@@ -7,6 +7,7 @@ DJANGO_MANAGE=$(VENV_PATH)/bin/python sandbox/manage.py
 FLAKE=$(VENV_PATH)/bin/flake8
 PYTEST=$(VENV_PATH)/bin/pytest
 TWINE=$(VENV_PATH)/bin/twine
+TOX=$(VENV_PATH)/bin/tox
 SPHINX_RELOAD=$(VENV_PATH)/bin/python sphinx_reload.py
 
 DEMO_DJANGO_SECRET_KEY=samplesecretfordev
@@ -30,10 +31,11 @@ help:
 	@echo "  migrate             -- to apply demo database migrations"
 	@echo "  migrations          -- to create new migrations for application after changes"
 	@echo "  superuser           -- to create a superuser for Django admin"
+	@echo "  demo                -- to fill database with demo datas (this removes every existing Author, Article and Category objects)"
 	@echo
-	@echo "  css                  -- to build uncompressed CSS from Sass sources"
-	@echo "  watch-css            -- to watch for Sass changes to rebuild CSS"
-	@echo "  css-prod             -- to build compressed and minified CSS from Sass sources"
+	@echo "  css                 -- to build uncompressed CSS from Sass sources"
+	@echo "  watch-css           -- to watch for Sass changes to rebuild CSS"
+	@echo "  css-prod            -- to build compressed and minified CSS from Sass sources"
 	@echo
 	@echo "  docs                -- to build documentation"
 	@echo "  livedocs            -- to run livereload server to rebuild documentation on source changes"
@@ -41,6 +43,7 @@ help:
 	@echo "  flake               -- to launch Flake8 checking"
 	@echo "  test                -- to launch base test suite using Pytest"
 	@echo "  test-initial        -- to launch tests with pytest and re-initialized database (for after new application or model changes)"
+	@echo "  tox                 -- to launch tests for every Tox environments"
 	@echo "  quality             -- to launch Flake8 checking and every tests suites"
 	@echo
 	@echo "  check-release	     -- to check package release before uploading it to PyPi"
@@ -103,7 +106,7 @@ install: venv create-var-dirs
 	@echo ""
 	@echo "==== Install everything for development ===="
 	@echo ""
-	$(PIP) install -e .[dev]
+	$(PIP) install -e .[breadcrumbs,dev]
 	${MAKE} migrate
 	npm install
 .PHONY: install
@@ -131,6 +134,14 @@ superuser:
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
 	$(DJANGO_MANAGE) createsuperuser
 .PHONY: superuser
+
+demo:
+	@echo ""
+	@echo "==== Filling with demo datas ===="
+	@echo ""
+	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
+	$(DJANGO_MANAGE) lotus_demo --flush-all --translation=fr --translation=de
+.PHONY: demo
 
 run:
 	@echo ""
@@ -195,6 +206,13 @@ test-initial:
 	$(PYTEST) -vv --reuse-db --create-db tests/
 	rm -Rf var/media-tests/
 .PHONY: test-initial
+
+tox:
+	@echo ""
+	@echo "==== Launch all Tox environments ===="
+	@echo ""
+	$(TOX)
+.PHONY: tox
 
 freeze-dependencies:
 	@echo ""

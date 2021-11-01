@@ -1,13 +1,20 @@
 from django.conf import settings
 from django.http import Http404
 from django.views.generic import DetailView, ListView
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
+
+try:
+    from view_breadcrumbs import BaseBreadcrumbMixin
+except ImportError:
+    from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 from ..models import Article
 from .mixins import AdminModeMixin, ArticleFilterMixin
 
 
-class ArticleIndexView(ArticleFilterMixin, AdminModeMixin, ListView):
+class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
+                       ListView):
     """
     Paginated list of articles.
     """
@@ -15,6 +22,14 @@ class ArticleIndexView(ArticleFilterMixin, AdminModeMixin, ListView):
     template_name = "lotus/article/list.html"
     paginate_by = settings.LOTUS_ARTICLE_PAGINATION
     context_object_name = "article_list"
+    crumb_title = _("Articles")
+    crumb_urlname = "lotus:article-index"
+
+    @property
+    def crumbs(self):
+        return [
+            (self.crumb_title, reverse(self.crumb_urlname)),
+        ]
 
     def get_queryset(self):
         q = self.apply_article_lookups(self.model.objects, self.request.LANGUAGE_CODE)
@@ -22,7 +37,8 @@ class ArticleIndexView(ArticleFilterMixin, AdminModeMixin, ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class ArticleDetailView(ArticleFilterMixin, AdminModeMixin, DetailView):
+class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
+                        DetailView):
     """
     Article detail.
     """
@@ -30,6 +46,24 @@ class ArticleDetailView(ArticleFilterMixin, AdminModeMixin, DetailView):
     pk_url_kwarg = "article_pk"
     template_name = "lotus/article/detail.html"
     context_object_name = "article_object"
+    crumb_title = None  # No usage since title depends from object
+    crumb_urlname = "lotus:article-detail"
+
+    @property
+    def crumbs(self):
+        details_kwargs = {
+            "year": self.object.publish_date.year,
+            "month": self.object.publish_date.month,
+            "day": self.object.publish_date.day,
+            "slug": self.object.slug,
+        }
+
+        return [
+            (ArticleIndexView.crumb_title, reverse(
+                ArticleIndexView.crumb_urlname
+            )),
+            (self.object.title, reverse(self.crumb_urlname, kwargs=details_kwargs)),
+        ]
 
     def get_queryset(self):
         """

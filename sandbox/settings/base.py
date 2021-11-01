@@ -201,6 +201,18 @@ CKEDITOR_CONFIGS = {
     },
 }
 
+"""
+django-view-breadcrumbs optional part
+"""
+try:
+    import view_breadcrumbs
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS[0:0] = [
+        "view_breadcrumbs",
+    ]
+
 
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW

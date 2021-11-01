@@ -1,12 +1,19 @@
 from django.conf import settings
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
+
+try:
+    from view_breadcrumbs import BaseBreadcrumbMixin
+except ImportError:
+    from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 from ..models import Article, Category
 from .mixins import AdminModeMixin, ArticleFilterMixin
 
 
-class CategoryIndexView(ListView):
+class CategoryIndexView(BaseBreadcrumbMixin, ListView):
     """
     List of categories
     """
@@ -14,6 +21,14 @@ class CategoryIndexView(ListView):
     template_name = "lotus/category/list.html"
     paginate_by = settings.LOTUS_CATEGORY_PAGINATION
     context_object_name = "category_list"
+    crumb_title = _("Categories")
+    crumb_urlname = "lotus:category-index"
+
+    @property
+    def crumbs(self):
+        return [
+            (self.crumb_title, reverse(self.crumb_urlname)),
+        ]
 
     def get_queryset(self):
         """
@@ -24,8 +39,8 @@ class CategoryIndexView(ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class CategoryDetailView(ArticleFilterMixin, AdminModeMixin, SingleObjectMixin,
-                         ListView):
+class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
+                         SingleObjectMixin, ListView):
     """
     Category detail and its related article list.
     """
@@ -36,6 +51,21 @@ class CategoryDetailView(ArticleFilterMixin, AdminModeMixin, SingleObjectMixin,
     context_object_name = "category_object"
     slug_url_kwarg = "slug"
     pk_url_kwarg = None
+    crumb_title = None  # No usage since title depends from object
+    crumb_urlname = "lotus:category-detail"
+
+    @property
+    def crumbs(self):
+        details_kwargs = {
+            "slug": self.object.slug,
+        }
+
+        return [
+            (CategoryIndexView.crumb_title, reverse(
+                CategoryIndexView.crumb_urlname
+            )),
+            (self.object.title, reverse(self.crumb_urlname, kwargs=details_kwargs)),
+        ]
 
     def get_queryset_for_object(self):
         """

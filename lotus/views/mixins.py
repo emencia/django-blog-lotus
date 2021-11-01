@@ -1,6 +1,13 @@
 from django.utils import timezone
 
 
+class NoOperationBreadcrumMixin:
+    """
+    A dummy and empty mixin to use when 'view_breadcrumbs' is not available.
+    """
+    pass
+
+
 class AdminModeMixin:
     """
     A mixin to contain the logic for admin mode and add a context variable

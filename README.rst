@@ -1,6 +1,7 @@
 .. _Python: https://www.python.org/
 .. _Django: https://www.djangoproject.com/
 .. _django-ckeditor: https://github.com/django-ckeditor/django-ckeditor
+.. _django-view-breadcrumbs: https://github.com/tj-django/django-view-breadcrumbs
 
 =================
 Django Blog Lotus
@@ -8,7 +9,8 @@ Django Blog Lotus
 
 A weblog application with Django.
 
-This is a currently an ongoing work, don't expect anything ready for any usage.
+This is on alpha stage, everything is working but expected basic behaviors may not be
+finished yet. Full documentation is yet to be done.
 
 Dependancies
 ************
@@ -16,6 +18,7 @@ Dependancies
 * `Python`_>=3.6;
 * `Django`_>=3.1;
 * `django-ckeditor`_>=6.0.0;
+* `django-view-breadcrumbs`_>=2.2.1 (optional);
 
 Links
 *****
@@ -51,6 +54,7 @@ Additional features:
 * Article pinning;
 * Lead text for Category;
 * Private article (for authenticated users only);
+* Optional breadcrumbs;
 
 On hold features:
 
