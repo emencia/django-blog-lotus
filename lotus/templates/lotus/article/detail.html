@@ -7,7 +7,7 @@
 {% endblock head_metas %}
 
 {% block lotus_content %}{% spaceless %}
-<div class="article-detail {% article_states article_object %}">
+<div class="article-detail {% article_states article_object prefix="article--" %}">
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-9">
@@ -25,9 +25,57 @@
             </div>
 
             <div class="col-12 col-lg-3">
-                {% if article_object.cover %}<div class="cover text-center mb-4">
-                    <img src="{{ article_object.cover.url }}" class="rounded" alt="">
-                </div>{% endif %}
+                {% if user.is_authenticated and user.is_staff %}
+                    <div class="d-grid mb-4">
+                        <a class="btn btn-primary" href="{{ article_object.get_edit_url }}" target="_blank">
+                            {% trans "Edit" %}
+                        </a>
+                    </div>
+
+                    {% if article_object.cover %}
+                    <div class="cover card mb-4">
+                        <div class="card-header">
+                            <strong>Cover</strong>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item text-center">
+                                <img src="{{ article_object.cover.url }}" class="rounded img-fluid" alt="">
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% article_state_list article_object as article_states %}
+                    {% if "pinned" in article_states or "draft" in article_states or "private" in article_states %}
+                    <div class="states card mb-4">
+                        <div class="card-header">
+                            <strong>States</strong>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% if "pinned" in article_states %}
+                                <li class="list-group-item">
+                                    <i class="bi bi-pin-angle" title="{% trans "Pinned" %}"></i> {% trans "Pinned" %}
+                                </li>
+                            {% endif %}
+                            {% if "draft" in article_states %}
+                                <li class="list-group-item">
+                                    <i class="bi bi-pen" title="{% trans "Draft" %}"></i> {% trans "Draft" %}
+                                </li>
+                            {% endif %}
+                            {% if "private" in article_states %}
+                                <li class="list-group-item">
+                                    <i class="bi bi-key" title="{% trans "Private" %}"></i> {% trans "Private" %}
+                                </li>
+                            {% endif %}
+                            {% if "not-yet" in article_states %}
+                                <li class="list-group-item">
+                                    <i class="bi bi-calendar-event" title="{% trans "Scheduled publication" %}"></i> {% trans "Scheduled publication" %}
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                {% endif %}
 
                 {% translation_siblings article_object as sibling_stats %}
                 {% if sibling_stats.siblings %}

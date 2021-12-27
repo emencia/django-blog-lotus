@@ -25,13 +25,13 @@ pagination.
 """
 
 LOTUS_ARTICLE_PUBLICATION_STATE_NAMES = {
-    "pinned": "article--pinned",
-    "featured": "article--featured",
-    "private": "article--private",
-    "status_draft": "article--draft",
-    "status_available": "article--available",
-    "publish_start_below": "article--not-yet",
-    "publish_end_passed": "article--passed",
+    "pinned": "pinned",
+    "featured": "featured",
+    "private": "private",
+    "status_draft": "draft",
+    "status_available": "available",
+    "publish_start_below": "not-yet",
+    "publish_end_passed": "passed",
 }
 """
 Available article state names.
@@ -40,12 +40,13 @@ You can remove an entry to ignore some states and they won't be returned in arti
 states.
 
 Note than ``publish_start_below`` and ``publish_end_passed`` are only elligible with
-``available`` state, never for ``draft``.
+``available`` state enabled and never if ``draft`` state is enabled.
 
 In practice ``draft``, ``publish_start_below`` and ``publish_end_passed`` states will
-only be visible for admin in preview mode.
+only be visible for admin in preview mode, since other users can not view this kind
+of articles.
 
-``private`` state will only be visible to authenticated users.
+In the same way the ``private`` state will only be visible to authenticated users.
 """
 
 LOTUS_ARTICLE_SIBLING_TEMPLATE = "lotus/article/partials/siblings.html"

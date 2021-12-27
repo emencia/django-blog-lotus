@@ -16,6 +16,7 @@ from lotus.views import AdminModeMixin
 # Shortcuts for shorter variable names
 STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
 ADMINMODE_ARG = AdminModeMixin.adminmode_argument_name
+STATE_PREFIX = "article--"
 
 
 def test_article_view_list_admin_mode(db, admin_client, client):
@@ -377,9 +378,9 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
         title = item.cssselect(".title > a")[0].text
         # Drop item class since it's useless for test
         classes = [
-            v
+            v.replace(STATE_PREFIX, "")
             for v in item.get("class").split()
-            if v in available_state_classes
+            if v.replace(STATE_PREFIX, "") in available_state_classes
         ]
         content.append([title, classes])
 
@@ -539,7 +540,7 @@ def test_article_view_detail_content(db, admin_client):
     cover = dom.find("#lotus-content .cover img")[0].get("src")
     large_img = dom.find("#lotus-content .image img")[0].get("src")
     classes = sorted([
-        v for v in container.get("class").split()
+        v.replace(STATE_PREFIX, "") for v in container.get("class").split()
         if v != "article-detail"
     ])
 

@@ -24,17 +24,19 @@ class ArticleAdmin(admin.ModelAdmin):
     list_display = (
         "title",
         "is_published",
+        "publish_datetime",
         "language_name",
         "is_original",
         "pinned",
-        "private",
-        "publish_datetime",
+        "featured",
         "last_update",
+        "private",
     )
     list_filter = (
         LanguageListFilter,
         TranslationStateListFilter,
         "pinned",
+        "featured",
         "private",
     )
     prepopulated_fields = {

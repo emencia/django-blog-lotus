@@ -1,0 +1,34 @@
+///
+/// Icon utilities
+///
+/// Depends on:
+///
+/// - Bootstrap Icons
+///
+
+
+///
+/// Shortcut to set icon base styles and glyph from Bootstrap Icons.
+///
+/// @arg {String} $code [null]
+///   Optionnal character to use as content. You can avoid it if you just want to set
+///     icon base style on a global selector and just define the icon manually for
+///     each icon glyph class.
+///     If given, the name must exists in '$bootstrap-icons-map'.
+///
+@mixin bi-icon($code: null) {
+    display: inline-block;
+    font-family: $bootstrap-icons-font !important;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    vertical-align: -.125em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    @if $code != null {
+        content: map-get($bootstrap-icons-map, $code);
+    }
+}

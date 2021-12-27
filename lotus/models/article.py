@@ -318,6 +318,15 @@ class Article(Translated):
 
         return url
 
+    def get_edit_url(self):
+        """
+        Return absolute URL to edit article from admin.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("admin:lotus_article_change", args=(self.id,))
+
     def get_authors(self):
         """
         Return article authors.
@@ -363,7 +372,7 @@ class Article(Translated):
         Computate every publication states.
 
         State names depend from ``settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES`` and
-        each state name can be disabled (never raised in states) if their name key have
+        each state name can be disabled (never raised in states) if its key name have
         been removed from setting.
 
         Keywords Arguments:
@@ -394,8 +403,8 @@ class Article(Translated):
         if "status_available" in state_names and self.status == 10:
             states.append(state_names["status_available"])
 
-        # Available article can describe if it is below the publish start or over the
-        # publish end
+        # Available article describes if it is below the publish start or over the
+        # publish end, but only if "now" have been given
         if now and self.status == 10:
             if (
                 "publish_start_below" in state_names and

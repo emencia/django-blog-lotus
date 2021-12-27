@@ -8,17 +8,20 @@
 
 {% block lotus_content %}{% spaceless %}
 <div class="category-detail">
-    <h1 class="title">{{ category_object.title }}</h1>
+    <div class="detail mb-4">
+        <h1 class="title">{{ category_object.title }}</h1>
 
-    <div class="cover bg-light rounded text-center mb-2 p-2">{% if category_object.cover %}
-        <img src="{{ category_object.cover.url }}" class="rounded" alt="">
-    {% endif %}</div>
+        <div class="cover bg-light rounded text-center mb-2 p-2">{% if category_object.cover %}
+            <img src="{{ category_object.cover.url }}" class="rounded" alt="">
+        {% endif %}</div>
 
-    <div class="description">{{ category_object.description|safe }}</div>
+        <div class="description p-2 fs-5">{{ category_object.description|safe }}</div>
+    </div>
 
-    <p>Articles</p>
     <div class="articles container">
-        <div class="row row-cols-2 g-4">
+        <h2>Articles</h2>
+
+        <div class="row row-cols-3 g-4">
             {% for article in object_list %}
             <div class="col">
                 {% include "lotus/article/item.html" with article_object=article %}

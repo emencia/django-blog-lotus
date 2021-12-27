@@ -1,24 +1,40 @@
 {% load i18n lotus %}{% spaceless %}
-<div class="article card h-100 mb-3 {% article_states article_object %}">
-    <div class="row g-0">
-        <div class="cover col-md-4">{% if article_object.cover %}
-            <img src="{{ article_object.cover.url }}" class="img-fluid rounded-start" alt="">
-        {% endif %}</div>
+<div class="article card h-100 mb-3 {% article_states article_object prefix="article--" %}">
+    {% if article_object.cover %}
+        <img src="{{ article_object.cover.url }}" class="cover card-img-top" alt="">
+    {% endif %}
 
-        <div class="col-md-8">
-            <div class="card-body">
-                <h2 class="title">
-                    <a href="{{ article_object.get_absolute_url }}">{{ article_object.title }}</a>
-                </h2>
-                <div class="introduction card-text">{{ article_object.introduction|safe }}</div>
-                <div class="card-text mb-2">
-                    {% for category in article_object.get_categories %}
-                    <span class="badge rounded-pill bg-light text-dark">{{ category.title }}</span>
-                    {% endfor %}
-                </div>
-                <p class="card-text"><small class="publish text-muted">{{ article_object.publish_datetime }}</small></p>
-            </div>
+    <div class="card-body">
+        <h2 class="title">
+            <a href="{{ article_object.get_absolute_url }}">{{ article_object.title }}</a>
+        </h2>
+        <div class="introduction card-text">{{ article_object.introduction|safe }}</div>
+        <div class="card-text mb-2">
+            {% for category in article_object.get_categories %}
+            <span class="badge rounded-pill bg-light text-dark">{{ category.title }}</span>
+            {% endfor %}
         </div>
+        <p class="card-text"><small class="publish text-muted">{{ article_object.publish_datetime }}</small></p>
     </div>
+
+    {% if user.is_authenticated and user.is_staff %}
+        {% article_state_list article as article_states %}
+        {% if "pinned" in article_states or "draft" in article_states or "private" in article_states %}
+        <p class="states">
+            {% if "pinned" in article_states %}
+                <i class="bi bi-pin-angle" title="{% trans "Pinned" %}" role="img" aria-label="{% trans "Pinned" %}"></i>
+            {% endif %}
+            {% if "draft" in article_states %}
+                <i class="bi bi-pen" title="{% trans "Draft" %}" role="img" aria-label="{% trans "Draft" %}"></i>
+            {% endif %}
+            {% if "private" in article_states %}
+                <i class="bi bi-key" title="{% trans "Private" %}" role="img" aria-label="{% trans "Private" %}"></i>
+            {% endif %}
+            {% if "not-yet" in article_states %}
+                <i class="bi bi-calendar-event" title="{% trans "Scheduled publication" %}" role="img" aria-label="{% trans "Scheduled publication" %}"></i>
+            {% endif %}
+        </p>
+        {% endif %}
+    {% endif %}
 </div>
 {% endspaceless %}

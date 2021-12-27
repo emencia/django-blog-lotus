@@ -30,10 +30,12 @@ help:
 	@echo "  run                 -- to run Django development server"
 	@echo "  migrate             -- to apply demo database migrations"
 	@echo "  migrations          -- to create new migrations for application after changes"
+	@echo "  check-migrations    -- to check for pending migrations (do not write anything)"
 	@echo "  superuser           -- to create a superuser for Django admin"
 	@echo "  demo                -- to fill database with demo datas (this removes every existing Author, Article and Category objects)"
 	@echo
 	@echo "  css                 -- to build uncompressed CSS from Sass sources"
+	@echo "  icon-font           -- to copy bootstrap-icons font to static"
 	@echo "  watch-css           -- to watch for Sass changes to rebuild CSS"
 	@echo "  css-prod            -- to build compressed and minified CSS from Sass sources"
 	@echo
@@ -46,7 +48,7 @@ help:
 	@echo "  tox                 -- to launch tests for every Tox environments"
 	@echo "  quality             -- to launch Flake8 checking and every tests suites"
 	@echo
-	@echo "  check-release	     -- to check package release before uploading it to PyPi"
+	@echo "  check-release       -- to check package release before uploading it to PyPi"
 	@echo "  release             -- to release package for latest version on PyPi (once release has been pushed to repository)"
 	@echo
 
@@ -109,15 +111,8 @@ install: venv create-var-dirs
 	$(PIP) install -e .[breadcrumbs,dev]
 	${MAKE} migrate
 	npm install
+	${MAKE} icon-font
 .PHONY: install
-
-migrations:
-	@echo ""
-	@echo "==== Making application migrations ===="
-	@echo ""
-	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(DJANGO_MANAGE) makemigrations $(APPLICATION_NAME)
-.PHONY: migrations
 
 migrate:
 	@echo ""
@@ -126,6 +121,21 @@ migrate:
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
 	$(DJANGO_MANAGE) migrate
 .PHONY: migrate
+
+migrations:
+	@echo ""
+	@echo "==== Make application migrations ===="
+	@echo ""
+	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
+	$(DJANGO_MANAGE) makemigrations $(APPLICATION_NAME)
+.PHONY: migrations
+
+check-migrations:
+	@echo ""
+	@echo "==== Check for pending migrations ===="
+	@echo ""
+	$(DJANGO_MANAGE) makemigrations --dry-run -v 3
+.PHONY: check-migrations
 
 superuser:
 	@echo ""
@@ -168,6 +178,14 @@ watch-sass:
 css-prod:
 	npm run-script css-prod
 .PHONY: css-prod
+
+icon-font:
+	@echo ""
+	@echo "==== Copying bootstrap-icons to static ===="
+	@echo ""
+	rm -Rf sandbox/static/fonts
+	cp -r node_modules/bootstrap-icons/font/fonts/ sandbox/static/
+.PHONY: css
 
 docs:
 	@echo ""
@@ -244,7 +262,7 @@ check-release: build-package
 .PHONY: check-release
 
 
-quality: test-initial flake docs check-release freeze-dependencies
+quality: test-initial flake docs check-release check-migrations freeze-dependencies
 	@echo ""
 	@echo "♥ ♥ Everything should be fine ♥ ♥"
 	@echo ""

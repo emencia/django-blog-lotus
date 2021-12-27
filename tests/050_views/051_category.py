@@ -229,6 +229,7 @@ def test_category_view_detail_content(db, admin_client, client, user_kind,
     Category detail page should have category contents and related articles following
     publication rules (as described in article list view tests).
     """
+    STATE_PREFIX = "article--"
     # Available Django clients as a dict to be able to switch on
     client_for = {
         "anonymous": client,
@@ -291,10 +292,11 @@ def test_category_view_detail_content(db, admin_client, client, user_kind,
     for item in items:
         title = item.cssselect(".title > a")[0].text
         # Drop item class since it's useless for test
+        # NOTE: We clean out the state prefix which is defined on templatetag
         classes = [
-            v
+            v.replace(STATE_PREFIX, "")
             for v in item.get("class").split()
-            if v in available_state_classes
+            if v.replace(STATE_PREFIX, "") in available_state_classes
         ]
         content.append([title, classes])
 

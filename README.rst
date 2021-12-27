@@ -33,7 +33,7 @@ Differences with Zinnia
 Some of Zinnia features have been dropped:
 
 * Category have no more "tree" levels feature;
-* All feature related to "discussion" (pingback, comments, etc..);
+* All features related to "discussion" (pingback, comments, etc..);
 * Custom templates for each Article;
 * Multi-sites (Django Site framework) article support;
 * There is no more a distinct publication date and publication start. Now

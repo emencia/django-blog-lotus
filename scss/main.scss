@@ -13,12 +13,16 @@
 @import "bootstrap/scss/bootstrap";
 // Icon maps, not ready yet since a problem with icon font path hardcoded, it seems ?
 // https://github.com/twbs/icons/issues/563
-//@import "bootstrap-icons/font/bootstrap-icons";
+@import "bootstrap-icons/font/bootstrap-icons.scss";
 
 // Internal addons (import order does matter due to some mixin usage from
 // deeper mixins)
+@import "./tools/icons";
 @import "./tools/flexbox";
 @import "./tools/spacing";
+
+// HTML elements and generic rules
+@import "./elements/image";
 
 // Applications components
 @import "./components/article";

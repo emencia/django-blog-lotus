@@ -1,24 +1,32 @@
 #lotus-content {
-    /* Old implementation to mark article item from their states */
-    /*
-    .item.pinned h3::after,
-    .article-detail.pinned h2::after {
-        content: " (pinned)";
-    }
+    .article {
+        &.article--featured {
+            border-color: $black;
+            border-width: 2px;
+        }
 
-    .item.draft h3::after,
-    .article-detail.draft h2::before {
-        content: " [draft]";
-    }
+        &.article--not-yet,
+        &.article--draft {
+            opacity: 0.6;
+        }
 
-    .item.featured h3::after,
-    .article-detail.featured h2::after {
-        content: " (featured)";
-    }
+        .states {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 0.1rem;
 
-    .item.pinned.featured h3::after,
-    .article-detail.pinned.featured h2::after {
-        content: " (pinned,featured)";
+            .bi {
+                @include bi-icon();
+                background: $white;
+                padding: 0.2rem;
+                border-radius: $border-radius;
+
+                & + .bi {
+                    margin-left: 0.2rem;
+                }
+            }
+        }
     }
-    */
 }
