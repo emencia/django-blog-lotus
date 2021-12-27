@@ -1,7 +1,8 @@
 """
 Pytest fixtures
 """
-import os
+from pathlib import Path
+
 import pytest
 
 import lotus
@@ -22,29 +23,17 @@ class FixturesSettingsTestMixin(object):
     """
     def __init__(self):
         # Base fixture datas directory
-        self.application_path = os.path.abspath(
-            os.path.dirname(lotus.__file__)
-        )
-        self.package_path = os.path.normpath(
-            os.path.join(
-                os.path.abspath(
-                    os.path.dirname(lotus.__file__)
-                ),
-                "..",
-            )
-        )
+        self.application_path = Path(
+            lotus.__file__
+        ).parents[0].resolve()
+
+        self.package_path = self.application_path.parent
 
         self.tests_dir = "tests"
-        self.tests_path = os.path.join(
-            self.package_path,
-            self.tests_dir,
-        )
+        self.tests_path = self.package_path / self.tests_dir
 
         self.fixtures_dir = "data_fixtures"
-        self.fixtures_path = os.path.join(
-            self.tests_path,
-            self.fixtures_dir
-        )
+        self.fixtures_path = self.tests_path / self.fixtures_dir
 
     def format(self, content):
         """
@@ -57,11 +46,11 @@ class FixturesSettingsTestMixin(object):
             str: Given string formatted with possible values.
         """
         return content.format(
-            HOMEDIR=os.path.expanduser("~"),
-            PACKAGE=self.package_path,
-            APPLICATION=self.application_path,
-            TESTS=self.tests_path,
-            FIXTURES=self.fixtures_path,
+            HOMEDIR=Path.home(),
+            PACKAGE=str(self.package_path),
+            APPLICATION=str(self.application_path),
+            TESTS=str(self.tests_path),
+            FIXTURES=str(self.fixtures_path),
             VERSION=lotus.__version__,
         )
 
