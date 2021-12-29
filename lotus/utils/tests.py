@@ -4,6 +4,8 @@ Test utilities
 ==============
 
 """
+import hashlib
+
 from django.contrib.sites.models import Site
 from django.template.response import TemplateResponse
 from django.test.html import parse_html
@@ -263,3 +265,27 @@ def build_post_data_from_object(model, obj, ignore=["id"]):
             data[name] = getattr(obj, name)
 
     return data
+
+
+def sum_file_object(fileobj):
+    """
+    Return a hash checksum for given file object using " Black2b" algorithm.
+
+    Arguments:
+        fileobj (object): Any file valid object with ``getvalue`` or ``read`` method.
+
+    Returns:
+        string: Checksum for file object.
+    """
+    algorithm = hashlib.blake2b()
+
+    # Some file object alike like BytesIO does not return correct content from "read()"
+    # method
+    if hasattr(fileobj, "getvalue"):
+        content = fileobj.getvalue()
+    else:
+        content = fileobj.read()
+
+    algorithm.update(content)
+
+    return algorithm.hexdigest()

@@ -10,7 +10,7 @@ import factory
 
 from ..models import Category
 from ..utils.factory import fake_html_paragraphs
-from ..utils.imaging import create_image_file
+from ..utils.imaging import DjangoSampleImageCrafter
 
 
 class CategoryFactory(factory.django.DjangoModelFactory):
@@ -48,7 +48,8 @@ class CategoryFactory(factory.django.DjangoModelFactory):
         Returns:
             django.core.files.File: File object.
         """
-        return create_image_file()
+        crafter = DjangoSampleImageCrafter()
+        return crafter.create()
 
 
 def multilingual_category(**kwargs):

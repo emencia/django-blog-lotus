@@ -14,7 +14,7 @@ import factory
 from ..models import Article
 from ..choices import STATUS_PUBLISHED
 from ..utils.factory import fake_html_paragraphs
-from ..utils.imaging import create_image_file
+from ..utils.imaging import DjangoSampleImageCrafter
 
 from .author import AuthorFactory
 from .category import CategoryFactory
@@ -79,7 +79,8 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         Returns:
             django.core.files.File: File object.
         """
-        return create_image_file()
+        crafter = DjangoSampleImageCrafter()
+        return crafter.create()
 
     @factory.lazy_attribute
     def image(self):
@@ -89,7 +90,8 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         Returns:
             django.core.files.File: File object.
         """
-        return create_image_file()
+        crafter = DjangoSampleImageCrafter()
+        return crafter.create()
 
     @factory.lazy_attribute
     def lead(self):

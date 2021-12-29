@@ -15,7 +15,7 @@ from lotus.factories import (
     ArticleFactory, CategoryFactory, multilingual_article,
 )
 from lotus.models import Article
-from lotus.utils.imaging import create_image_file
+from lotus.utils.imaging import DjangoSampleImageCrafter
 from lotus.utils.tests import queryset_values
 
 
@@ -380,13 +380,15 @@ def test_article_model_file_purge(db):
     * When changing file from an object, its previous files (if any) should be
       deleted;
     """
+    crafter = DjangoSampleImageCrafter()
+
     ping = ArticleFactory(
-        cover=create_image_file(filename="machin.png"),
-        image=create_image_file(filename="ping_image.png"),
+        cover=crafter.create(filename="machin.png"),
+        image=crafter.create(filename="ping_image.png"),
     )
     pong = ArticleFactory(
-        cover=create_image_file(filename="machin.png"),
-        image=create_image_file(filename="pong_image.png"),
+        cover=crafter.create(filename="machin.png"),
+        image=crafter.create(filename="pong_image.png"),
     )
 
     # Memorize some data to use after deletion
@@ -407,8 +409,8 @@ def test_article_model_file_purge(db):
     assert os.path.exists(pong_cover_path) is True
 
     # Change object file to a new one
-    pong.cover = create_image_file(filename="new_cover.png")
-    pong.image = create_image_file(filename="new_image.png")
+    pong.cover = crafter.create(filename="new_cover.png")
+    pong.image = crafter.create(filename="new_image.png")
     pong.save()
 
     # During pre save signal, old file is removed from FS and new one is left

@@ -12,98 +12,192 @@ from PIL import ImageDraw as PILdrawer
 from django.core.files import File
 
 
-def create_image_file(filename=None, size=(100, 100), bg_color="blue",
-                      text_color="white", text=None, format_name="PNG"):
+class SampleImageCrafter:
     """
-    Return a File object with a dummy generated image on the fly by PIL or
-    possibly a SVG file.
-
-    With default argument values the generated image will be a simple blue
-    square in PNG with no text.
-
-    Optionally, you can have any other supported format (JPEG, GIF, SVG), a custom
-    background color and a text.
-
-    Keyword Arguments:
-        filename (string): Filename for created file, default to ``bg_color``
-            value joined to extension with ``format`` value in lowercase (or
-            ``jpg`` if format is ``JPEG``).
-            Note than final filename may be different if all tests use the same
-            one since Django will append a hash for uniqueness.
-        format_name (string): Format name as available from PIL: ``JPEG``,
-            ``PNG`` or ``GIF``. ``SVG`` format is also possible to create a
-            dummy SVG file.
-        size (tuple): A tuple of two integers respectively for width and height.
-        bg_color (string): Color value to fill image, this should be a valid value
-            for ``PIL.ImageColor``:
-            https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
-            or a valid HTML color name for SVG format. Default to "blue". WARNING: If
-            you don't use named color (like "white" or "yellow"), you should give a
-            custom filename to ``filename`` argument else the filename may be weird
-            (like ``#111111.png``) or even fail (like with rgb color tuple).
-        text_color (string): Color value for text. This should be a valid value
-            for ``PIL.ImageColor``:
-            https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
-            Default to "white".
-        text (string or boolean): ``True`` for automatic image size like
-            320x240 (for ``320 `` width value and ``240`` height value). ``None`` or
-            ``False`` to disable text drawing (this is the default value). A string for
-            custom text, this should be a short text else it is not guaranteed to fit.
-
-    Returns:
-        django.core.files.File: File object.
+    Craft a basic sample image, either a bitmap or a SVG.
     """
-    file_extension = format_name.lower()
-    # Enforce correct file extension depending format
-    if file_extension == "jpeg":
-        file_extension = "jpg"
+    def get_text_content(self, text, width, height):
+        """
+        Return possible text content depending its enabled or not.
 
-    # NOTE: May validate if automatic formated filename from color only contains
-    # alphanumeric characters to avoid failures with rgb(a) colors.
-    filename = filename or "{}.{}".format(bg_color, file_extension)
+        Arguments:
+            text (string or boolean): ``True`` for automatic image name using size like
+                "320x240" (for ``320 `` width value and ``240`` height value). ``None``
+                or ``False`` to disable text drawing (this is the default value). A
+                string for custom text, this should be a short text else it is not
+                guaranteed to fit.
 
-    # Split given size
-    width, height = size
+        Keyword Arguments:
+            bar (object):
 
-    text_content = None
-    # Format default text
-    if text is True:
-        # width x height
-        text_content = "{}x{}".format(width, height)
-    # Or just use possible given custom string
-    elif isinstance(text, str):
-        text_content = text
+        Returns:
+            string:
+        """
+        text_content = ""
 
-    # Manage correct mode depending format
-    mode = "RGB"
-    if format_name == "PNG":
-        mode = "RGBA"
+        # Format default text
+        if text is True:
+            # width x height
+            text_content = "{}x{}".format(width, height)
+        # Or just use possible given custom string
+        elif isinstance(text, str):
+            text_content = text
 
-    # Create a SVG file
-    if format_name == "SVG":
+        return text_content
+
+    def get_file_extension(self, format_name):
+        """
+        Enforce correct file extension depending format
+
+        Arguments:
+            foo (object):
+
+        Keyword Arguments:
+            bar (object):
+
+        Returns:
+            string:
+        """
+        file_extension = format_name.lower()
+
+        # "jpeg" is an allowed alias for "jpg"
+        if file_extension == "jpeg":
+            file_extension = "jpg"
+
+        return file_extension
+
+    def get_mode(self, format_name):
+        """
+        Manage correct mode depending format
+
+        Arguments:
+            foo (object):
+
+        Keyword Arguments:
+            bar (object):
+
+        Returns:
+            string:
+        """
+        if format_name == "PNG":
+            return "RGBA"
+
+        return "RGB"
+
+    def get_filename(self, file_extension, filename=None, bg_color=None):
+        """
+        Get filename.
+
+        NOTE: Bg color should be validated for non alphanumeric character
+
+        Arguments:
+            foo (object):
+
+        Keyword Arguments:
+            bar (object):
+
+        Returns:
+            string:
+        """
+        if not filename:
+            return "{}.{}".format(bg_color, file_extension)
+
+        return filename
+
+    def build(self, filename=None, size=(100, 100), bg_color="blue", text_color="white",
+              text=None, format_name="PNG"):
+        """
+        Build config for content creation
+
+        Arguments:
+            foo (object):
+
+        Keyword Arguments:
+            bar (object):
+
+        Returns:
+            string:
+        """
+        # Split given size
+        width, height = size
+
+        config = {
+            "size": size,
+            "width": width,
+            "height": height,
+            "format_name": format_name,
+            "mode": self.get_mode(format_name),
+            "file_extension": self.get_file_extension(format_name),
+            "bg_color": bg_color,
+            "text": text,
+            "text_color": text_color,
+            "text_content": self.get_text_content(text, width, height),
+        }
+
+        config["filename"] = self.get_filename(
+            config["file_extension"],
+            filename=filename,
+            bg_color=config["bg_color"],
+        )
+
+        return config
+
+    def create_vectorial(self, width, height, bg_color, text_content=None,
+                         text_color=None):
+        """
+        Create SVG content
+
+        Arguments:
+            foo (object):
+
+        Keyword Arguments:
+            bar (object):
+
+        Returns:
+            io.StringIO: The string buffer as a file object.
+        """
         svg = (
-            '<svg xmlns="http://www.w3.org/2000/svg"'
-            'role="img" aria-label="Placeholder"'
-            'preserveAspectRatio="xMidYMid slice" focusable="false"'
+            '<svg xmlns="http://www.w3.org/2000/svg" '
+            'role="img" aria-label="Placeholder" '
+            'preserveAspectRatio="xMidYMid slice" focusable="false" '
             'viewBox="0 0 {width} {height}" style="text-anchor: middle">'
             '<rect width="100%" height="100%" fill="{bg_color}"></rect>'
-            '<text x="50%" y="50%" fill="{text_color}" dy=".3em">{text}'
-            '</text>'
-            '</svg>'
-
         ).format(
             width=str(width),
             height=str(height),
             bg_color=bg_color,
-            text=text_content,
-            text_color=text_color,
         )
-        output = io.StringIO(svg)
-    # Create an image file for every other formats
-    else:
-        img = PILimage.new(mode, size, bg_color)
+
+        if text_color and text_content:
+            svg += (
+                '<text x="50%" y="50%" fill="{text_color}" dy=".3em">{text}</text>'
+            ).format(
+                text=text_content,
+                text_color=text_color,
+            )
+
+        svg += '</svg>'
+
+        return io.StringIO(svg)
+
+    def create_bitmap(self, mode, format_name, width, height, bg_color,
+                      text_content=None, text_color=None):
+        """
+        Create Bitmap content
+
+        Arguments:
+            foo (object):
+
+        Keyword Arguments:
+            bar (object):
+
+        Returns:
+            string:
+        """
+        img = PILimage.new(mode, (width, height), bg_color)
+
         # Optional text, always centered
-        if text_content:
+        if text_color and text_content:
             draw = PILdrawer.Draw(img)
             text_width, text_height = draw.textsize(text_content)
             draw.text(
@@ -118,4 +212,117 @@ def create_image_file(filename=None, size=(100, 100), bg_color="blue",
         output = io.BytesIO()
         img.save(output, format=format_name)
 
-    return File(output, name=filename)
+        return output
+
+    def create(self, filename=None, size=(100, 100), bg_color="blue",
+               text_color="white", text=None, format_name="PNG"):
+        """
+        Create an image inside a file object.
+
+        Return a File object with a dummy generated image on the fly by PIL or
+        possibly a SVG file.
+
+        With default argument values the generated image will be a simple blue
+        square in PNG with no text.
+
+        Optionally, you can have any other supported format (JPEG, GIF, SVG), a custom
+        background color and a text.
+
+        Keyword Arguments:
+            filename (string): Filename for created file, default to ``bg_color``
+                value joined to extension with ``format`` value in lowercase (or
+                ``jpg`` if format is ``JPEG``).
+                Note than final filename may be different if all tests use the same
+                one since Django will append a hash for uniqueness.
+            format_name (string): Format name as available from PIL: ``JPEG``,
+                ``PNG`` or ``GIF``. ``SVG`` format is also possible to create a
+                dummy SVG file.
+            size (tuple): A tuple of two integers respectively for width and height.
+            bg_color (string): Color value to fill image, this should be a valid value
+                for ``PIL.ImageColor``:
+                https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
+                or a valid HTML color name for SVG format. Default to "blue". WARNING:
+                If you don't use named color (like "white" or "yellow"), you should
+                give a custom filename to ``filename`` argument else the filename may
+                be weird (like ``#111111.png``).
+            text_color (string): Color value for text. This should be a valid value
+                for ``PIL.ImageColor``:
+                https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
+                Default to "white".
+            text (string or boolean): ``True`` for automatic image size like
+                320x240 (for ``320 `` width value and ``240`` height value). ``None``
+                or ``False`` to disable text drawing (this is the default value). A
+                string for custom text, this should be a short text else it is not
+                guaranteed to fit.
+
+        Returns:
+            object: File object.
+        """
+        config = self.build(
+            filename=filename,
+            size=size,
+            bg_color=bg_color,
+            text_color=text_color,
+            text=text,
+            format_name=format_name
+        )
+
+        if config["format_name"] == "SVG":
+            output = self.create_vectorial(
+                config["width"],
+                config["height"],
+                config["bg_color"],
+                text_content=config["text_content"],
+                text_color=config["text_color"],
+            )
+        else:
+            output = self.create_bitmap(
+                config["mode"],
+                config["format_name"],
+                config["width"],
+                config["height"],
+                config["bg_color"],
+                text_content=config["text_content"],
+                text_color=config["text_color"],
+            )
+
+        return output
+
+
+class DjangoSampleImageCrafter(SampleImageCrafter):
+    """
+    Alike SampleImageCrafter but return a Django File instead of a file object.
+    """
+    def create(self, *args, **kwargs):
+        """
+        Create an image inside a Django File object.
+
+        Arguments:
+            *args: The same positional arguments as from SampleImageCrafter.
+            **kwargs: The same keyword arguments as from SampleImageCrafter.
+
+        Returns:
+            django.core.files.File: File object.
+        """
+        config = self.build(*args, **kwargs)
+
+        if config["format_name"] == "SVG":
+            output = self.create_vectorial(
+                config["width"],
+                config["height"],
+                config["bg_color"],
+                text_content=config["text_content"],
+                text_color=config["text_color"],
+            )
+        else:
+            output = self.create_bitmap(
+                config["mode"],
+                config["format_name"],
+                config["width"],
+                config["height"],
+                config["bg_color"],
+                text_content=config["text_content"],
+                text_color=config["text_color"],
+            )
+
+        return File(output, name=config["filename"])

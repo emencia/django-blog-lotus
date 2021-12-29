@@ -8,7 +8,7 @@ from django.db import transaction
 
 from lotus.factories import CategoryFactory, multilingual_category
 from lotus.models import Category
-from lotus.utils.imaging import create_image_file
+from lotus.utils.imaging import DjangoSampleImageCrafter
 from lotus.utils.tests import queryset_values
 
 
@@ -214,11 +214,13 @@ def test_category_model_file_purge(db):
     * When changing file from an object, its previous files (if any) should be
       deleted;
     """
+    crafter = DjangoSampleImageCrafter()
+
     ping = CategoryFactory(
-        cover=create_image_file(filename="machin.png")
+        cover=crafter.create(filename="machin.png")
     )
     pong = CategoryFactory(
-        cover=create_image_file(filename="machin.png")
+        cover=crafter.create(filename="machin.png")
     )
 
     # Memorize some data to use after deletion
@@ -236,7 +238,7 @@ def test_category_model_file_purge(db):
     assert os.path.exists(pong_path) is True
 
     # Change object file to a new one
-    pong.cover = create_image_file(filename="new.png")
+    pong.cover = crafter.create(filename="new.png")
     pong.save()
 
     # During pre save signal, old file is removed from FS and new one is left
