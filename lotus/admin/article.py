@@ -154,6 +154,10 @@ class ArticleAdmin(admin.ModelAdmin):
         """
         Add request argument to enable admin mode (to bypass publication criteria on
         frontend querysets).
+
+        TODO: Use the argument name from a settings when it has been added #33
+              Also report this method on category ? (since category detail list
+              articles)
         """
         return obj.get_absolute_url() + "?admin=1"
 
