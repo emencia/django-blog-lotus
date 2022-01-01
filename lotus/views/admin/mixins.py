@@ -95,7 +95,7 @@ class AdminTranslateView(CustomLotusAdminContext, DetailView):
 
         context = super().get_context_data(**kwargs)
         context.update({
-            "title": _("Translate '%(title)s'") % {'title': self.object.title},
+            "title": _("Translate '%(title)s'") % {"title": self.object.title},
             "original_object": self.original,
             "is_original": (self.object == self.original),
             "existing_objects": existing,

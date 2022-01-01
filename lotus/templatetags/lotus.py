@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.template import TemplateSyntaxError, Library, loader
 
-from lotus.models import Article, Category
-from lotus.views import AdminModeMixin
+from ..models import Article, Category
+from ..views import AdminModeMixin
 
 register = Library()
 
@@ -91,10 +91,10 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
     siblings, like all translation children for an original source or translation
     children and original for a translation.
 
-    Note than for an Article object the tag will require a datetime it may refer to for
-    filtering results with publication criterias. Either the datetime is set as a
-    template context variable ``lotus_now`` as implemented in ``ArticleFilterMixin`` or
-    it can be given through the tag argument ``now``.
+    Note than for Article object the tag will require a datetime it may refer to for
+    filtering results with publication criterias. Either the datetime will be set as a
+    template context variable ``lotus_now`` (as implemented in ``ArticleFilterMixin``)
+    or it can be given through the tag argument ``now``.
 
     Usage: ::
 
@@ -116,9 +116,9 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
             force it to a value, either True to enable it, False to disable it or None
             to let the basic behavior to determine it from its template context
             variable. Default to None.
-        tag_name (string): Template tag name to use in error messages. This is
-            something used in template tags which inherit from ``translation_siblings``,
-            avoid it in template tag usage from your templates.
+        tag_name (string): Template tag name to display in error messages. This is
+            something used in template tags which inherit from ``translation_siblings``.
+            You don't have to care about it in your common template tag usage.
 
     Returns:
         dict: A dictionnary with item ``source`` for the given source object and item

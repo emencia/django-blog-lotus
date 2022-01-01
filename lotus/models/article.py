@@ -36,7 +36,7 @@ class Article(Translated):
         default=None,
         on_delete=models.CASCADE,
         help_text=_(
-            "Mark this article as a translation of original article."
+            "Mark this article as a translation of an original article."
         ),
     )
     """
@@ -151,7 +151,7 @@ class Article(Translated):
         _("slug"),
         max_length=255,
         help_text=_(
-            "Used to build the entry's URL."
+            "Used to build the article URL."
         ),
     )
     """
@@ -164,7 +164,7 @@ class Article(Translated):
         max_length=150,
         default="",
         help_text=_(
-            "This value Will be used as page meta title if not blank, else the "
+            "This value will be used as page meta title if not blank, else the "
             "article title is used."
         ),
     )
@@ -177,7 +177,7 @@ class Article(Translated):
         _("lead"),
         blank=True,
         help_text=_(
-            "Lead paragraph, mostly used for SEO purposes in page metas."
+            "Lead paragraph, commonly used for SEO purposes in page metas."
         ),
     )
     """

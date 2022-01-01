@@ -1,4 +1,5 @@
 from ...models import Article
+
 from .mixins import AdminTranslateView
 
 

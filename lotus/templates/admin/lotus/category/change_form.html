@@ -25,7 +25,7 @@ NOTE:
 
             {% if sibling_stats.siblings %}
             <p class="lotus-siblings-resume"><em>
-                {% blocktranslate %}Existing language(s) for this article:{% endblocktranslate %}
+                {% blocktrans %}Existing language(s) for this article:{% endblocktrans %}
                 {% for sibling in sibling_stats.siblings %}
                     {% get_language_info for sibling.language as lang %}
                     <a href="{% url opts|admin_urlname:'change' sibling.pk %}" data-lotus-langcode="{{ sibling.language }}">{{ lang.name_translated }}</a>

@@ -4,13 +4,13 @@ from django.views.generic import DetailView, ListView
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
+from ..models import Article
+from .mixins import AdminModeMixin, ArticleFilterMixin
+
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
 except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
-
-from ..models import Article
-from .mixins import AdminModeMixin, ArticleFilterMixin
 
 
 class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,

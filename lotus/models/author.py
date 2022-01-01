@@ -16,7 +16,7 @@ def safe_get_user_model():
     """
     Safe loading of the User model, customized or not.
     """
-    user_app, user_model = settings.AUTH_USER_MODEL.split('.')
+    user_app, user_model = settings.AUTH_USER_MODEL.split(".")
     return apps.get_registered_model(user_app, user_model)
 
 
@@ -52,7 +52,7 @@ class Author(safe_get_user_model(), AuthorManagerEnabled):
         try:
             return super().get_absolute_url()
         except AttributeError:
-            return reverse('lotus:author-detail', args=[self.get_username()])
+            return reverse("lotus:author-detail", args=[self.get_username()])
 
     COMMON_ORDER_BY = ["first_name", "last_name"]
     """

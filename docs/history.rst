@@ -13,6 +13,10 @@ improvements and minor features to come with Beta branch versions.
 
 * Improved image crafting for test and demo usage with new classes
   ``SampleImageCrafter`` and ``DjangoSampleImageCrafter``;
+* Improved demonstration layout and ergonomy;
+* Improved lotus_demo command to add some state variances on some articles;
+* Fixed every templates and code to use translation strings for texts;
+
 
 Version 0.4.3 - Unreleased
 --------------------------

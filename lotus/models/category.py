@@ -30,7 +30,7 @@ class Category(Translated):
         default=None,
         on_delete=models.CASCADE,
         help_text=_(
-            "Mark this article as a translation of original article."
+            "Mark this article as a translation of an original category."
         ),
     )
     """
@@ -48,7 +48,7 @@ class Category(Translated):
     """
 
     slug = models.SlugField(
-        _('slug'),
+        _("slug"),
         max_length=255,
     )
     """
@@ -59,7 +59,7 @@ class Category(Translated):
         _("lead"),
         blank=True,
         help_text=_(
-            "Lead paragraph, mostly used for SEO purposes in page metas."
+            "Lead paragraph, commonly used for SEO purposes in page meta tags."
         ),
     )
     """
@@ -67,7 +67,7 @@ class Category(Translated):
     """
 
     description = models.TextField(
-        _('description'),
+        _("description"),
         blank=True,
     )
     """
@@ -93,21 +93,21 @@ class Category(Translated):
     objects = CategoryManager()
 
     class Meta:
-        ordering = ['title']
-        verbose_name = _('Category')
-        verbose_name_plural = _('Categories')
+        ordering = ["title"]
+        verbose_name = _("Category")
+        verbose_name_plural = _("Categories")
         constraints = [
             models.UniqueConstraint(
                 fields=[
                     "slug", "language"
                 ],
-                name='lotus_unique_cat_slug_lang'
+                name="lotus_unique_cat_slug_lang"
             ),
             models.UniqueConstraint(
                 fields=[
                     "original", "language"
                 ],
-                name='lotus_unique_cat_original_lang'
+                name="lotus_unique_cat_original_lang"
             ),
         ]
 

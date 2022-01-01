@@ -3,7 +3,7 @@ Application URLs
 """
 from django.urls import path
 
-from lotus.views import (
+from .views import (
     ArticleIndexView, ArticleDetailView,
     AuthorIndexView, AuthorDetailView,
     CategoryIndexView, CategoryDetailView,

@@ -35,7 +35,7 @@
                     {% if article_object.cover %}
                     <div class="cover card mb-4">
                         <div class="card-header">
-                            <strong>Cover</strong>
+                            <strong>{% trans "Cover" %}</strong>
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item text-center">
@@ -49,7 +49,7 @@
                     {% if "featured" in article_states or "pinned" in article_states or "draft" in article_states or "private" in article_states or "passed" in article_states or "not-yet" in article_states %}
                     <div class="states card mb-4">
                         <div class="card-header">
-                            <strong>States</strong>
+                            <strong>{% trans "States" %}</strong>
                         </div>
                         <ul class="list-group list-group-flush">
                             {% if "featured" in article_states %}
@@ -91,7 +91,7 @@
                 {% if sibling_stats.siblings %}
                 <div class="siblings card mb-4">
                     <div class="card-header">
-                        <strong>Siblings</strong>
+                        <strong>{% trans "Available in languages" %}</strong>
                     </div>
                     {% include "lotus/article/partials/siblings.html" with siblings=sibling_stats.siblings %}
                 </div>
@@ -101,7 +101,7 @@
                 {% if categories %}
                 <div class="categories card mb-4">
                     <div class="card-header">
-                        <strong>Categories</strong>
+                        <strong>{% trans "Categories" %}</strong>
                     </div>
                     <ul class="list-group list-group-flush">
                         {% for category in categories %}
@@ -118,7 +118,7 @@
                 {% if authors %}
                 <div class="authors card mb-4">
                     <div class="card-header">
-                        <strong>Authors</strong>
+                        <strong>{% trans "Authors" %}</strong>
                     </div>
                     <ul class="list-group list-group-flush">
                         {% for author in authors %}
@@ -133,7 +133,7 @@
                 {% if relateds %}
                 <div class="relateds card mb-4">
                     <div class="card-header">
-                        <strong>Related articles</strong>
+                        <strong>{% trans "Related articles" %}</strong>
                     </div>
                     <ul class="list-group list-group-flush">
                         {% for related in relateds %}

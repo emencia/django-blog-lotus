@@ -4,7 +4,7 @@
 {% if not is_popup %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-<a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
 &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
 &rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
 &rsaquo; {{ title }}
@@ -13,14 +13,13 @@
 {% endif %}
 
 {% block content %}
-
 {% if not form %}
-    <h2>{% blocktranslate %}No available languages for this category.{% endblocktranslate %}</h2>
+    <h2>{% blocktrans %}No available languages for this category.{% endblocktrans %}</h2>
 {% else %}
     {% if is_original %}
-        <h2>{% blocktranslate %}You requested to translate an original category, this will send you to a create form to translate it.{% endblocktranslate %}</h2>
+        <h2>{% blocktrans %}You requested to translate an original category, this will send you to a create form to translate it.{% endblocktrans %}</h2>
     {% else %}
-        <h2>{% blocktranslate with title=original_object.title %}You requested to translate a translation category, this will send you to a create form to translate the original category '{{ title }}' instead.{% endblocktranslate %}</h2>
+        <h2>{% blocktrans with title=original_object.title %}You requested to translate a translation category, this will send you to a create form to translate the original category '{{ title }}' instead.{% endblocktrans %}</h2>
     {% endif %}
 
     <hr>
@@ -29,12 +28,10 @@
         <div>
             {{ form.as_p }}
             <input type="hidden" name="original" value="{{ original_object.id }}">
-            <input type="submit" value="{% translate "Confirm" %}">
+            <input type="submit" value="{% trans "Confirm" %}">
         </div>
     </form>
 
     <hr>
 {% endif %}
-
-
 {% endblock %}

@@ -2,7 +2,7 @@
 <head>{% spaceless %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block head_title %}Lotus{% endblock head_title %}</title>
+    <title>{% block head_title %}{% trans "Lotus weblog" %}{% endblock head_title %}</title>
     {% block head_metas %}{% endblock head_metas %}
     {% block head_styles %}
     <link href="/static/css/main.css" rel="stylesheet">
@@ -15,7 +15,7 @@
 <div class="d-grid gap-3 p-3">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/{{ LANGUAGE_CODE }}/">Django Blog Lotus</a>
+            <a class="navbar-brand" href="/{{ LANGUAGE_CODE }}/">{% trans "Lotus weblog" %}</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navbar-toggler" aria-controls="main-navbar-toggler" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -24,13 +24,13 @@
             <div class="collapse navbar-collapse" id="main-navbar-toggler">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url "lotus:article-index" %}">Articles</a>
+                        <a class="nav-link" href="{% url "lotus:article-index" %}">{% trans "Articles" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url "lotus:category-index" %}">Categories</a>
+                        <a class="nav-link" href="{% url "lotus:category-index" %}">{% trans "Categories" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url "lotus:author-index" %}">Authors</a>
+                        <a class="nav-link" href="{% url "lotus:author-index" %}">{% trans "Authors" %}</a>
                     </li>
                 </ul>
                 <div class="d-flex">
