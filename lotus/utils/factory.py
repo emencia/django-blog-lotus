@@ -11,28 +11,6 @@ import faker
 from django.conf import settings
 
 
-# A set of sample background colors mostly used to generate dummy images
-SAMPLE_BG_COLORS = getattr(settings, "DEMO_SAMPLE_BG_COLORS", [
-    "#3d8eb9",
-    "#eb6361",
-    "#71ba51",
-    "#ce86ed",
-    "#78c4fb",
-    "#fc6e51",
-    "#48cfad",
-    "#cab7f2",
-    "#ffdfa3",
-    "#eec374",
-    "#cbccce",
-    "#89888a",
-])
-
-
-# A sample text colors mostly used to generate dummy images, it should constrast with
-# background color set
-SAMPLE_TEXT_COLOR = getattr(settings, "DEMO_SAMPLE_TEXT_COLOR", "#cbccce")
-
-
 def fake_html_paragraphs(
     is_html=True,
     max_nb_chars=None,

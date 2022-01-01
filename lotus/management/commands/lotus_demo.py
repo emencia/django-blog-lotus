@@ -10,6 +10,36 @@ from lotus.factories import (
     ArticleFactory, AuthorFactory, CategoryFactory,
 )
 from lotus.models import Article, Author, Category
+from lotus.choices import STATUS_DRAFT
+from lotus.utils.imaging import DjangoSampleImageCrafter
+
+
+# Enabled Background colors (as item key) with their allowed text color (as item value)
+PLACEHOLDER_PALETTE = getattr(settings, "LOTUS_DEMO_PLACEHOLDER_PALETTE", {
+    "#3d8eb9": "#ffffff",
+    "#eb6361": "#ffffff",
+    "#71ba51": "#ffffff",
+    "#ce86ed": "#ffffff",
+    "#78c4fb": "#ffffff",
+    "#fc6e51": "#ffffff",
+    "#48cfad": "#ffffff",
+    "#cab7f2": "#ffffff",
+    "#ffdfa3": "#af8f53",
+    "#eec374": "#ffffff",
+    "#cbccce": "#ffffff",
+    "#89888a": "#ffffff",
+})
+
+
+# Available image format to randomly use to create a placeholder
+PLACEHOLDER_FORMATS = getattr(settings, "LOTUS_DEMO_PLACEHOLDER_FORMATS", [
+    "PNG", "SVG"
+])
+
+
+CATEGORY_COVER_SIZE = getattr(settings, "LOTUS_DEMO_CATEGORY_COVER_SIZE", (800, 500))
+ARTICLE_COVER_SIZE = getattr(settings, "LOTUS_DEMO_ARTICLE_COVER_SIZE", (300, 200))
+ARTICLE_LARGE_SIZE = getattr(settings, "LOTUS_DEMO_ARTICLE_LARGE_SIZE", (1280, 640))
 
 
 class Command(BaseCommand):
@@ -109,37 +139,27 @@ class Command(BaseCommand):
             )
             Category.objects.all().delete()
 
-    def create_authors(self):
+    def build_random_placeholder(self, slug, size, background=None, text_color=None):
         """
-        Create Author objects required length from factory.
-        """
-        created = []
+        Create a random placeholder image.
 
-        self.stdout.write(
-            self.style.SUCCESS("* Creating {length} authors".format(
-                length=self.author_length,
-            ))
+        Bg color and format (PNG or SVG) are randomized. Filename is built from slug.
+        """
+        background = background or random.choice(list(PLACEHOLDER_PALETTE.keys()))
+        text_color = text_color or PLACEHOLDER_PALETTE[background]
+        format_name = random.choice(PLACEHOLDER_FORMATS)
+        extension = format_name.lower()
+
+        built = self.image_crafter.create(
+            filename="{name}.{ext}".format(name=slug, ext=extension),
+            size=size,
+            bg_color=background,
+            text=True,
+            text_color=text_color,
+            format_name=format_name,
         )
 
-        for i in range(1, self.author_length + 1):
-            first_name = self.faker.unique.first_name()
-            last_name = self.faker.unique.last_name()
-            username = slugify("{} {}".format(first_name, last_name))
-
-            obj = AuthorFactory(
-                first_name=first_name,
-                last_name=last_name,
-                username=username,
-                flag_is_admin=True,
-            )
-
-            self.stdout.write("  {index}) Author: {username}".format(
-                index=str(i).zfill(2),
-                username=obj.username,
-            ))
-            created.append(obj)
-
-        return created
+        return built
 
     def random_reservation(self, length, choices):
         """
@@ -172,6 +192,38 @@ class Command(BaseCommand):
 
         return reserved
 
+    def create_authors(self):
+        """
+        Create Author objects required length from factory.
+        """
+        created = []
+
+        self.stdout.write(
+            self.style.SUCCESS("* Creating {length} authors".format(
+                length=self.author_length,
+            ))
+        )
+
+        for i in range(1, self.author_length + 1):
+            first_name = self.faker.unique.first_name()
+            last_name = self.faker.unique.last_name()
+            username = slugify("{} {}".format(first_name, last_name))
+
+            obj = AuthorFactory(
+                first_name=first_name,
+                last_name=last_name,
+                username=username,
+                flag_is_admin=True,
+            )
+
+            self.stdout.write("  {index}) Author: {username}".format(
+                index=str(i).zfill(2),
+                username=obj.username,
+            ))
+            created.append(obj)
+
+        return created
+
     def create_categories(self, language, originals=None):
         """
         Create Category objects required length from factory.
@@ -195,11 +247,20 @@ class Command(BaseCommand):
         for i in range(1, self.category_length + 1):
             title = self.faker.unique.company()
             slug = slugify(title)
+            # Choose color
+            background = random.choice(list(PLACEHOLDER_PALETTE.keys()))
+            text_color = PLACEHOLDER_PALETTE[background]
 
             context = {
                 "title": title,
                 "slug": slug,
                 "language": language,
+                "cover": self.build_random_placeholder(
+                    slug,
+                    CATEGORY_COVER_SIZE,
+                    background=background,
+                    text_color=text_color,
+                ),
             }
             # Use item from reserved originals according to the object index
             if originals:
@@ -218,6 +279,11 @@ class Command(BaseCommand):
     def create_articles(self, language, authors=[], categories=[], originals=None):
         """
         Create Article objects required length from factory.
+
+        TODO: We need to add some variance for some options. So we must have at least
+        an article with option featured, pinned, private, draft enabled. And another one
+        which mixes pinned and draft. Another one article which would be published in
+        a far futur would be nice too.
         """
         created = []
 
@@ -237,11 +303,14 @@ class Command(BaseCommand):
         for i in range(1, self.article_length + 1):
             title = self.faker.unique.sentence(nb_words=5)
             slug = slugify(title)
+            # Choose color
+            background = random.choice(list(PLACEHOLDER_PALETTE.keys()))
+            text_color = PLACEHOLDER_PALETTE[background]
 
             # Estimate how many authors exists to relate on, but never more than 5
             authors_count = 0
-            if self.author_length > 5:
-                authors_count = 5
+            if self.author_length > 3:
+                authors_count = 3
             elif self.author_length > 1:
                 authors_count = self.author_length
             elif self.author_length > 0:
@@ -249,8 +318,8 @@ class Command(BaseCommand):
 
             # Estimate how many categories exists to relate on, but never more than 5
             categories_count = 0
-            if self.category_length > 5:
-                categories_count = 5
+            if self.category_length > 3:
+                categories_count = 3
             elif self.category_length > 1:
                 categories_count = self.category_length
             elif self.category_length > 0:
@@ -258,8 +327,8 @@ class Command(BaseCommand):
 
             # Estimate how many article exists to relate on, but never more than 5
             relations_count = 0
-            if len(created) > 5:
-                relations_count = 5
+            if len(created) > 3:
+                relations_count = 3
             elif len(created) > 1:
                 relations_count = len(created)
             elif len(created) > 0:
@@ -269,6 +338,18 @@ class Command(BaseCommand):
                 "title": title,
                 "slug": slug,
                 "language": language,
+                "cover": self.build_random_placeholder(
+                    slug,
+                    ARTICLE_COVER_SIZE,
+                    background=background,
+                    text_color=text_color,
+                ),
+                "image": self.build_random_placeholder(
+                    slug,
+                    ARTICLE_LARGE_SIZE,
+                    background=background,
+                    text_color=text_color,
+                ),
                 "fill_authors": random.sample(
                     authors,
                     random.randint(1, authors_count),
@@ -294,6 +375,106 @@ class Command(BaseCommand):
             ))
             created.append(obj)
 
+        # Registry for already used article for states so they are never used twice.
+        # Also, we will ignore the first item and only use articles from first page.
+        # NOTE: This will probably fail if there is less than 7 articles.
+        used_in_variance = []
+        # Sort created article from last published to the first one
+        created_ordered = sorted(
+            created,
+            key=lambda item: item.publish_time
+        )
+
+        # Put draft state on random article
+        draft_article = random.choice(
+            [
+                item
+                for item in created_ordered[1:self.article_length]
+                if item not in used_in_variance
+            ]
+        )
+        draft_article.status = STATUS_DRAFT
+        draft_article.save()
+        used_in_variance.append(draft_article)
+
+        # Put pinned state on random article
+        pinned_article = random.choice(
+            [
+                item
+                for item in created_ordered[1:self.article_length]
+                if item not in used_in_variance
+            ]
+        )
+        pinned_article.pinned = True
+        pinned_article.save()
+        used_in_variance.append(pinned_article)
+
+        # Put featured state on random article
+        featured_article = random.choice(
+            [
+                item
+                for item in created_ordered[1:self.article_length]
+                if item not in used_in_variance
+            ]
+        )
+        featured_article.featured = True
+        featured_article.save()
+        used_in_variance.append(featured_article)
+
+        # Put private state on random article
+        private_article = random.choice(
+            [
+                item
+                for item in created_ordered[1:self.article_length]
+                if item not in used_in_variance
+            ]
+        )
+        private_article.private = True
+        private_article.save()
+        used_in_variance.append(private_article)
+
+        # Change date to make publication end from 2 years
+        passed_article = random.choice(
+            [
+                item
+                for item in created_ordered[1:self.article_length]
+                if item not in used_in_variance
+            ]
+        )
+        passed_article.publish_end = passed_article.publish_date.replace(
+            year=(passed_article.publish_date.year - 2)
+        )
+        passed_article.save()
+        used_in_variance.append(passed_article)
+
+        # Change date to schedule publication in 2 years
+        futur_article = random.choice(
+            [
+                item
+                for item in created_ordered[1:self.article_length]
+                if item not in used_in_variance
+            ]
+        )
+        futur_article.publish_date = futur_article.publish_date.replace(
+            year=(futur_article.publish_date.year + 2)
+        )
+        futur_article.save()
+        used_in_variance.append(futur_article)
+
+        # Put private mixed states on random article
+        mixed_article = random.choice(
+            [
+                item
+                for item in created_ordered[1:self.article_length]
+                if item not in used_in_variance
+            ]
+        )
+        mixed_article.pinned = True
+        mixed_article.private = True
+        mixed_article.featured = True
+        mixed_article.draft = True
+        mixed_article.save()
+
         return created
 
     def handle(self, *args, **options):
@@ -301,13 +482,16 @@ class Command(BaseCommand):
             self.style.SUCCESS("=== Starting creations ===")
         )
 
+        self.image_crafter = DjangoSampleImageCrafter()
+
         self.translation_languages = options["translation"]
 
-        self.stdout.write(
-            self.style.SUCCESS("Enabled translations: {}".format(
-                ",".join(self.translation_languages)
-            ))
-        )
+        if self.translation_languages:
+            self.stdout.write(
+                self.style.SUCCESS("Enabled translations: {}".format(
+                    ",".join(self.translation_languages)
+                ))
+            )
 
         # Should be validated there are greater than 1
         self.author_length = options["authors"]

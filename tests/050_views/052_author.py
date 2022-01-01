@@ -254,7 +254,7 @@ def test_author_view_detail_content(db, admin_client, client, user_kind,
     # Get useful content from list items
     content = []
     for item in items:
-        title = item.cssselect(".title > a")[0].text
+        title = item.cssselect(".title")[0].text
         content.append(title)
 
     assert content == expected

@@ -1,4 +1,4 @@
-# Frozen requirement versions from '0.4.3' installation
+# Frozen requirement versions from '0.4.4rc1' installation
 Django==3.2.9
 django-ckeditor==6.1.0
 django-view-breadcrumbs==2.2.4

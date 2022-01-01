@@ -1,4 +1,5 @@
 #lotus-content {
+    // Article list
     .article {
         &.article--featured {
             border-color: $black;
@@ -6,6 +7,7 @@
         }
 
         &.article--not-yet,
+        &.article--passed,
         &.article--draft {
             opacity: 0.6;
         }
@@ -26,6 +28,24 @@
                 & + .bi {
                     margin-left: 0.2rem;
                 }
+            }
+        }
+    }
+
+    // Article detail
+    .article-detail {
+        .image {
+            img {
+                max-width: rem-calc(800px);
+            }
+        }
+    }
+
+    // Category detail
+    .category-detail {
+        .cover {
+            img {
+                max-width: rem-calc(800px);
             }
         }
     }

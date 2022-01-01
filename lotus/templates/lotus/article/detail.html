@@ -46,12 +46,17 @@
                     {% endif %}
 
                     {% article_state_list article_object as article_states %}
-                    {% if "pinned" in article_states or "draft" in article_states or "private" in article_states %}
+                    {% if "featured" in article_states or "pinned" in article_states or "draft" in article_states or "private" in article_states or "passed" in article_states or "not-yet" in article_states %}
                     <div class="states card mb-4">
                         <div class="card-header">
                             <strong>States</strong>
                         </div>
                         <ul class="list-group list-group-flush">
+                            {% if "featured" in article_states %}
+                                <li class="list-group-item">
+                                    <i class="bi bi-star" title="{% trans "Featured" %}"></i> {% trans "Featured" %}
+                                </li>
+                            {% endif %}
                             {% if "pinned" in article_states %}
                                 <li class="list-group-item">
                                     <i class="bi bi-pin-angle" title="{% trans "Pinned" %}"></i> {% trans "Pinned" %}
@@ -70,6 +75,11 @@
                             {% if "not-yet" in article_states %}
                                 <li class="list-group-item">
                                     <i class="bi bi-calendar-event" title="{% trans "Scheduled publication" %}"></i> {% trans "Scheduled publication" %}
+                                </li>
+                            {% endif %}
+                            {% if "passed" in article_states %}
+                                <li class="list-group-item">
+                                    <i class="bi bi-calendar2-x" title="{% trans "Ended publication" %}"></i> {% trans "Ended publication" %}
                                 </li>
                             {% endif %}
                         </ul>

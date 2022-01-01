@@ -375,7 +375,7 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
     # Get useful content from list items
     content = []
     for item in items:
-        title = item.cssselect(".title > a")[0].text
+        title = item.cssselect(".title")[0].text
         # Drop item class since it's useless for test
         classes = [
             v.replace(STATE_PREFIX, "")

@@ -116,8 +116,8 @@ class ArticleFactory(factory.django.DjangoModelFactory):
             string: HTML content.
         """
         return fake_html_paragraphs(
-            max_nb_chars=100,
-            nb_paragraphs=2,
+            max_nb_chars=55,
+            nb_paragraphs=1,
         )
 
     @factory.lazy_attribute

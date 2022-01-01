@@ -15,6 +15,8 @@ from django.core.files import File
 class SampleImageCrafter:
     """
     Craft a basic sample image, either a bitmap or a SVG.
+
+    TODO: Lack of documentation on args/kwargs, please feed me!
     """
     def get_text_content(self, text, width, height):
         """

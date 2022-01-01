@@ -112,7 +112,7 @@ class Article(Translated):
         ),
     )
     """
-    Required publication date.
+    Required publication time.
     """
 
     publish_end = models.DateTimeField(

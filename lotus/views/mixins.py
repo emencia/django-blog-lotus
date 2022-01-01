@@ -23,6 +23,8 @@ class AdminModeMixin:
     The admin mode is essentially used to not filter queryset with publication
     criterias.
     """
+    # TODO: This should depend from a settings since they are pretty common words in
+    # the app world so it could be changed to avoid conflicts.
     adminmode_argument_name = "admin"
     adminmode_context_name = "admin_mode"
 
