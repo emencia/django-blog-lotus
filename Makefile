@@ -3,7 +3,7 @@ VENV_PATH=.venv
 
 PYTHON_BIN=$(VENV_PATH)/bin/python
 PIP=$(VENV_PATH)/bin/pip
-DJANGO_MANAGE=$(VENV_PATH)/bin/python sandbox/manage.py
+DJANGO_MANAGE=sandbox/manage.py
 FLAKE=$(VENV_PATH)/bin/flake8
 PYTEST=$(VENV_PATH)/bin/pytest
 TWINE=$(VENV_PATH)/bin/twine
@@ -33,6 +33,9 @@ help:
 	@echo "  check-migrations    -- to check for pending migrations (do not write anything)"
 	@echo "  superuser           -- to create a superuser for Django admin"
 	@echo "  demo                -- to fill database with demo datas (this removes every existing Author, Article and Category objects)"
+	@echo
+	@echo "  po                  -- to update every PO files from app and sandbox sources for enabled languages"
+	@echo "  mo                  -- to build MO files from app and sandbox PO files"
 	@echo
 	@echo "  css                 -- to build uncompressed CSS from Sass sources"
 	@echo "  icon-font           -- to copy bootstrap-icons font to static"
@@ -119,7 +122,7 @@ migrate:
 	@echo "==== Apply pending migrations ===="
 	@echo ""
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(DJANGO_MANAGE) migrate
+	$(PYTHON_BIN) $(DJANGO_MANAGE) migrate
 .PHONY: migrate
 
 migrations:
@@ -127,14 +130,14 @@ migrations:
 	@echo "==== Make application migrations ===="
 	@echo ""
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(DJANGO_MANAGE) makemigrations $(APPLICATION_NAME)
+	$(PYTHON_BIN) $(DJANGO_MANAGE) makemigrations $(APPLICATION_NAME)
 .PHONY: migrations
 
 check-migrations:
 	@echo ""
 	@echo "==== Check for pending migrations ===="
 	@echo ""
-	$(DJANGO_MANAGE) makemigrations --dry-run -v 3
+	$(PYTHON_BIN) $(DJANGO_MANAGE) makemigrations --dry-run -v 3
 .PHONY: check-migrations
 
 superuser:
@@ -142,7 +145,7 @@ superuser:
 	@echo "==== Create new superuser ===="
 	@echo ""
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(DJANGO_MANAGE) createsuperuser
+	$(PYTHON_BIN) $(DJANGO_MANAGE) createsuperuser
 .PHONY: superuser
 
 demo:
@@ -150,7 +153,7 @@ demo:
 	@echo "==== Filling with demo datas ===="
 	@echo ""
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(DJANGO_MANAGE) lotus_demo --flush-all --translation=fr --translation=de
+	$(PYTHON_BIN) $(DJANGO_MANAGE) lotus_demo --flush-all --translation=fr --translation=de
 .PHONY: demo
 
 run:
@@ -158,8 +161,30 @@ run:
 	@echo "==== Running development server ===="
 	@echo ""
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(DJANGO_MANAGE) runserver 0.0.0.0:8001
+	$(PYTHON_BIN) $(DJANGO_MANAGE) runserver 0.0.0.0:8001
 .PHONY: run
+
+po:
+	@echo ""
+	@echo "==== Update PO from 'lotus' app ===="
+	@echo ""
+	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot
+	@echo ""
+	@echo "==== Update PO from sandbox ===="
+	@echo ""
+	@cd sandbox; ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot
+.PHONY: po
+
+mo:
+	@echo ""
+	@echo "==== Build PO from 'lotus' app ===="
+	@echo ""
+	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages
+	@echo ""
+	@echo "==== Build PO from sandbox ===="
+	@echo ""
+	@cd sandbox; ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages
+.PHONY: mo
 
 css:
 	@echo ""
