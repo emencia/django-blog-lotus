@@ -46,7 +46,7 @@ class Migration(migrations.Migration):
                 ('lead', models.TextField(blank=True, help_text='Lead paragraph, commonly used for SEO purposes in page meta tags.', verbose_name='lead')),
                 ('description', models.TextField(blank=True, verbose_name='description')),
                 ('cover', models.ImageField(blank=True, default='', max_length=255, upload_to='lotus/category/cover/%y/%m', verbose_name='cover image')),
-                ('original', models.ForeignKey(blank=True, default=None, help_text='Mark this article as a translation of an original category.', null=True, on_delete=django.db.models.deletion.CASCADE, to='lotus.category')),
+                ('original', models.ForeignKey(blank=True, default=None, help_text='Mark this category as a translation of an original category.', null=True, on_delete=django.db.models.deletion.CASCADE, to='lotus.category')),
             ],
             options={
                 'verbose_name': 'Category',
@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(default='', max_length=150, verbose_name='title')),
                 ('slug', models.SlugField(help_text='Used to build the article URL.', max_length=255, verbose_name='slug')),
                 ('seo_title', models.CharField(blank=True, default='', help_text='This value will be used as page meta title if not blank, else the article title is used.', max_length=150, verbose_name='SEO title')),
-                ('lead', models.TextField(blank=True, help_text='Lead paragraph, commonly used for SEO purposes in page metas.', verbose_name='lead')),
+                ('lead', models.TextField(blank=True, help_text='Lead paragraph, commonly used for SEO purposes in page meta tags.', verbose_name='lead')),
                 ('introduction', models.TextField(blank=True, verbose_name='introduction')),
                 ('content', models.TextField(blank=True, default='', verbose_name='content')),
                 ('cover', models.ImageField(blank=True, default='', help_text='Article cover image.', max_length=255, upload_to='lotus/article/cover/%y/%m', verbose_name='cover image')),

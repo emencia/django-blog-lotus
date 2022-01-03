@@ -10,8 +10,8 @@ from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language
 from django.utils.translation import activate as translation_activate
-from django.utils.translation import deactivate as translation_deactivate
 from django.urls import reverse
 from django.utils import timezone
 
@@ -177,7 +177,7 @@ class Article(Translated):
         _("lead"),
         blank=True,
         help_text=_(
-            "Lead paragraph, commonly used for SEO purposes in page metas."
+            "Lead paragraph, commonly used for SEO purposes in page meta tags."
         ),
     )
     """
@@ -303,8 +303,9 @@ class Article(Translated):
             string: An URL.
         """
         # Force the article language to get the right url independently of the current
-        # browser language. This is not thread safe, deactivate must be called once
-        # rendering is finished.
+        # browser language. This is not thread safe and we need to active again the
+        # current session language after
+        initial_language = get_language()
         translation_activate(self.language)
 
         url = reverse("lotus:article-detail", kwargs={
@@ -314,7 +315,8 @@ class Article(Translated):
             "slug": self.slug,
         })
 
-        translation_deactivate()
+        # Re-activate the current language
+        translation_activate(initial_language)
 
         return url
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-02 01:09+0100\n"
+"POT-Creation-Date: 2022-01-03 01:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,23 +95,23 @@ msgstr ""
 msgid "available"
 msgstr ""
 
-#: forms/article.py:94 forms/category.py:65
+#: forms/article.py:95 forms/category.py:66
 msgid "You can't have a language identical to the original relation."
 msgstr ""
 
-#: forms/article.py:104 forms/category.py:75
+#: forms/article.py:105 forms/category.py:76
 msgid "You can't have an original relation in the same language."
 msgstr ""
 
-#: forms/article.py:120
+#: forms/article.py:121
 msgid "You can't have related articles in different language."
 msgstr ""
 
-#: forms/article.py:136
+#: forms/article.py:137
 msgid "You can't have categories in different language."
 msgstr ""
 
-#: forms/category.py:89
+#: forms/category.py:90
 msgid ""
 "Some article in different language relate to this category, you can't change "
 "language until those article are not related anymore."
@@ -215,8 +215,8 @@ msgstr ""
 msgid "lead"
 msgstr ""
 
-#: models/article.py:180
-msgid "Lead paragraph, commonly used for SEO purposes in page metas."
+#: models/article.py:180 models/category.py:62
+msgid "Lead paragraph, commonly used for SEO purposes in page meta tags."
 msgstr ""
 
 #: models/article.py:188
@@ -266,11 +266,7 @@ msgid "Articles"
 msgstr ""
 
 #: models/category.py:33
-msgid "Mark this article as a translation of an original category."
-msgstr ""
-
-#: models/category.py:62
-msgid "Lead paragraph, commonly used for SEO purposes in page meta tags."
+msgid "Mark this category as a translation of an original category."
 msgstr ""
 
 #: models/category.py:70
@@ -293,7 +289,6 @@ msgid "Translate"
 msgstr ""
 
 #: templates/admin/lotus/article/change_form.html:28
-#: templates/admin/lotus/category/change_form.html:28
 msgid "Existing language(s) for this article:"
 msgstr ""
 
@@ -322,6 +317,10 @@ msgstr ""
 #: templates/admin/lotus/article/translate_original.html:31
 #: templates/admin/lotus/category/translate_original.html:31
 msgid "Confirm"
+msgstr ""
+
+#: templates/admin/lotus/category/change_form.html:28
+msgid "Existing language(s) for this category:"
 msgstr ""
 
 #: templates/admin/lotus/category/translate_original.html:17

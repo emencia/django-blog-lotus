@@ -57,6 +57,7 @@ class ArticleAdminForm(forms.ModelForm):
             )
 
         # Use the right model choices fields for translated relations
+        # NOTE: This trick drop the help_text from model
         self.fields["original"] = TranslatedModelChoiceField(
             queryset=original_queryset,
             required=False,

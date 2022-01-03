@@ -43,6 +43,7 @@ class CategoryAdminForm(forms.ModelForm):
 
         # Apply choice limit on 'original' field queryset to avoid selecting
         # itself or object with the same language
+        # NOTE: This trick drop the help_text from model
         self.fields["original"] = TranslatedModelChoiceField(
             queryset=original_queryset,
             required=False,

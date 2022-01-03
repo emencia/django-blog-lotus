@@ -8,11 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-02 01:09+0100\n"
+"POT-Creation-Date: 2022-01-03 01:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,68 +20,68 @@ msgstr ""
 
 #: admin/article.py:64 admin/category.py:51
 msgid "Language"
-msgstr ""
+msgstr "Langue"
 
 #: admin/article.py:71
 msgid "Parameters"
-msgstr ""
+msgstr "Paramètres"
 
 #: admin/article.py:79
 msgid "Dates"
-msgstr ""
+msgstr "Dates"
 
 #: admin/article.py:87 admin/category.py:58
 msgid "Content"
-msgstr ""
+msgstr "Contenu"
 
 #: admin/article.py:97 admin/category.py:66
 msgid "SEO"
-msgstr ""
+msgstr "SEO"
 
 #: admin/article.py:105
 msgid "Relations"
-msgstr ""
+msgstr "Relations"
 
 #: admin/article.py:120 admin/category.py:76 admin/translated.py:16
 #: admin/translated.py:58 models/translated.py:18
 msgid "language"
-msgstr ""
+msgstr "langue"
 
 #: admin/article.py:128
 msgid "publish date"
-msgstr ""
+msgstr "date de publication"
 
 #: admin/article.py:142
 msgid "published"
-msgstr ""
+msgstr "publié"
 
 #: admin/article.py:150 admin/category.py:84
 msgid "original"
-msgstr ""
+msgstr "original"
 
 #: admin/category.py:89
 msgid "articles"
-msgstr ""
+msgstr "articles"
 
 #: admin/translated.py:27
 msgid "Default language"
-msgstr ""
+msgstr "Langue par défaut"
 
 #: admin/translated.py:38
 msgid "All"
-msgstr ""
+msgstr "Tout"
 
 #: admin/translated.py:81
 msgid "translation state"
-msgstr ""
+msgstr "état de traduction"
 
 #: admin/translated.py:88
 msgid "Is an original"
-msgstr ""
+msgstr "Est un original"
 
 #: admin/translated.py:89
 msgid "Is a translation"
-msgstr ""
+msgstr "Est une traduction"
 
 #: apps.py:7
 msgid "Lotus weblog"
@@ -89,213 +89,216 @@ msgstr ""
 
 #: choices.py:15
 msgid "draft"
-msgstr ""
+msgstr "brouillon"
 
 #: choices.py:16
 msgid "available"
-msgstr ""
+msgstr "disponible"
 
-#: forms/article.py:94 forms/category.py:65
+#: forms/article.py:95 forms/category.py:66
 msgid "You can't have a language identical to the original relation."
-msgstr ""
+msgstr "Vous ne pouvez avoir une langue identique à celle de l'original."
 
-#: forms/article.py:104 forms/category.py:75
+#: forms/article.py:105 forms/category.py:76
 msgid "You can't have an original relation in the same language."
-msgstr ""
+msgstr "Vous ne pouvez avoir une relation vers un original de la même langue."
 
-#: forms/article.py:120
+#: forms/article.py:121
 msgid "You can't have related articles in different language."
-msgstr ""
+msgstr "Vous ne pouvez avoir des articles reliés avec une langue différente."
 
-#: forms/article.py:136
+#: forms/article.py:137
 msgid "You can't have categories in different language."
-msgstr ""
+msgstr "Vous ne pouvez avoir de catégories avec une langue différente."
 
-#: forms/category.py:89
+#: forms/category.py:90
 msgid ""
 "Some article in different language relate to this category, you can't change "
 "language until those article are not related anymore."
 msgstr ""
+"Certains articles dans une autre langue sont reliés à cette catégorie, vous "
+"ne pouvez changer la langue tant que ces articles n'y sont plus reliés."
 
 #: forms/translated.py:34
 msgid "Available languages"
-msgstr ""
+msgstr "Langues disponibles"
 
 #: models/article.py:33
 msgid "original article"
-msgstr ""
+msgstr "article original"
 
 #: models/article.py:39
 msgid "Mark this article as a translation of an original article."
-msgstr ""
+msgstr "Marquez cette article comme une traduction d'un article original"
 
 #: models/article.py:47
 msgid "status"
-msgstr ""
+msgstr "état"
 
 #: models/article.py:52
 msgid "Publication status."
-msgstr ""
+msgstr "État de publication."
 
 #: models/article.py:60
 msgid "featured"
-msgstr ""
+msgstr "en une"
 
 #: models/article.py:64
 msgid "Mark this article as featured."
-msgstr ""
+msgstr "Marquez cet article comme en une."
 
 #: models/article.py:72
 msgid "pinned"
-msgstr ""
+msgstr "épinglé"
 
 #: models/article.py:76
 msgid "A pinned article is enforced at top of order results."
-msgstr ""
+msgstr "Un article épinglé est forcé vers le haut des résultats."
 
 #: models/article.py:84
 msgid "private"
-msgstr ""
+msgstr "privé"
 
 #: models/article.py:88
 msgid "Private article is only available for authenticated users."
 msgstr ""
+"Un articlé privé est seulement disponible aux utilisateurs authentifiés."
 
 #: models/article.py:96
 msgid "publication date"
-msgstr ""
+msgstr "date de publication"
 
 #: models/article.py:100
 msgid "Start date of publication."
-msgstr ""
+msgstr "Date de début de publication."
 
 #: models/article.py:108
 msgid "publication time"
-msgstr ""
+msgstr "heure de publication"
 
 #: models/article.py:111
 msgid "Start time of publication."
-msgstr ""
+msgstr "Heure de début de publication."
 
 #: models/article.py:119
 msgid "publication end"
-msgstr ""
+msgstr "fin de la publication"
 
 #: models/article.py:125
 msgid "End date of publication."
-msgstr ""
+msgstr "Date de fin de la publication."
 
 #: models/article.py:133
 msgid "last update"
-msgstr ""
+msgstr "dernière mise à jour"
 
 #: models/article.py:141 models/category.py:41
 msgid "title"
-msgstr ""
+msgstr "titre"
 
 #: models/article.py:151 models/category.py:51
 msgid "slug"
-msgstr ""
+msgstr "slug"
 
 #: models/article.py:154
 msgid "Used to build the article URL."
-msgstr ""
+msgstr "Utilisé pour construire l'URL de l'article."
 
 #: models/article.py:162
 msgid "SEO title"
-msgstr ""
+msgstr "Titre SEO"
 
 #: models/article.py:167
 msgid ""
 "This value will be used as page meta title if not blank, else the article "
 "title is used."
 msgstr ""
+"Cette valeur sera utilisé comme le titre de méta information de la page s'il "
+"n'est pas vide, sinon le titre de l'article est utilisé."
 
 #: models/article.py:177 models/category.py:59
 msgid "lead"
-msgstr ""
+msgstr "accroche"
 
-#: models/article.py:180
-msgid "Lead paragraph, commonly used for SEO purposes in page metas."
+#: models/article.py:180 models/category.py:62
+msgid "Lead paragraph, commonly used for SEO purposes in page meta tags."
 msgstr ""
+"Un paragraphe d'accroche, couramment utilisé à des fins de SEO dans les "
+"métas informations de la page."
 
 #: models/article.py:188
 msgid "introduction"
-msgstr ""
+msgstr "introduction"
 
 #: models/article.py:196
 msgid "content"
-msgstr ""
+msgstr "contenu"
 
 #: models/article.py:205 models/category.py:78
 msgid "cover image"
-msgstr ""
+msgstr "image de couverture"
 
 #: models/article.py:211
 msgid "Article cover image."
-msgstr ""
+msgstr "L'image de couverture de l'article."
 
 #: models/article.py:219
 msgid "main image"
-msgstr ""
+msgstr "image principale"
 
 #: models/article.py:225
 msgid "Article large image."
-msgstr ""
+msgstr "Une image large pour l'article."
 
 #: models/article.py:234
 msgid "categories"
-msgstr ""
+msgstr "catégories"
 
 #: models/article.py:244
 msgid "authors"
-msgstr ""
+msgstr "auteurs"
 
 #: models/article.py:254
 msgid "related articles"
-msgstr ""
+msgstr "articles reliés"
 
 #: models/article.py:276
 msgid "Article"
-msgstr ""
+msgstr "Article"
 
 #: models/article.py:277 templates/lotus/article/list.html:4
 #: templates/lotus/article/list.html:8 templates/lotus/author/detail.html:11
 #: templates/lotus/category/detail.html:22 views/article.py:25
 msgid "Articles"
-msgstr ""
+msgstr "Articles"
 
 #: models/category.py:33
-msgid "Mark this article as a translation of an original category."
+msgid "Mark this category as a translation of an original category."
 msgstr ""
-
-#: models/category.py:62
-msgid "Lead paragraph, commonly used for SEO purposes in page meta tags."
-msgstr ""
+"Marquez cette catégorie comme une traduction d'une catégorie originale."
 
 #: models/category.py:70
 msgid "description"
-msgstr ""
+msgstr "description"
 
 #: models/category.py:97
 msgid "Category"
-msgstr ""
+msgstr "Catégorie"
 
 #: models/category.py:98 templates/lotus/article/detail.html:104
 #: templates/lotus/category/list.html:4 templates/lotus/category/list.html:8
 #: views/category.py:25
 msgid "Categories"
-msgstr ""
+msgstr "Catégories"
 
 #: templates/admin/lotus/article/change_form.html:19
 #: templates/admin/lotus/category/change_form.html:19
 msgid "Translate"
-msgstr ""
+msgstr "Traduire"
 
 #: templates/admin/lotus/article/change_form.html:28
-#: templates/admin/lotus/category/change_form.html:28
 msgid "Existing language(s) for this article:"
-msgstr ""
+msgstr "Langue(s) existante(s) pour cet article:"
 
 #: templates/admin/lotus/article/translate_original.html:7
 #: templates/admin/lotus/category/translate_original.html:7
@@ -304,13 +307,15 @@ msgstr ""
 
 #: templates/admin/lotus/article/translate_original.html:17
 msgid "No available languages for this article."
-msgstr ""
+msgstr "Aucune langue disponible pour cet article."
 
 #: templates/admin/lotus/article/translate_original.html:20
 msgid ""
 "You requested to translate an original article, this will send you to a "
 "create form to translate it."
 msgstr ""
+"Vous avez requis une traduction pour cet article original, vous allez être "
+"conduit vers un formulaire pour le traduire."
 
 #: templates/admin/lotus/article/translate_original.html:22
 #, python-format
@@ -318,21 +323,30 @@ msgid ""
 "You requested to translate a translation article, this will send you to a "
 "create form to translate the original article '%(title)s' instead."
 msgstr ""
+"Vous avez requis une traduction pour cet article de traduction, vous allez "
+"être conduit vers un formulaire pour traduire l'article original '%(title)s' "
+"à la place."
 
 #: templates/admin/lotus/article/translate_original.html:31
 #: templates/admin/lotus/category/translate_original.html:31
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmez"
+
+#: templates/admin/lotus/category/change_form.html:28
+msgid "Existing language(s) for this category:"
+msgstr "Langue(s) existante(s) pour cette catégorie:"
 
 #: templates/admin/lotus/category/translate_original.html:17
 msgid "No available languages for this category."
-msgstr ""
+msgstr "Aucune langue disponible pour cette catégorie."
 
 #: templates/admin/lotus/category/translate_original.html:20
 msgid ""
 "You requested to translate an original category, this will send you to a "
 "create form to translate it."
 msgstr ""
+"Vous avez requis une traduction pour cette catégorie originale, vous allez "
+"être conduit vers un formulaire pour le traduire."
 
 #: templates/admin/lotus/category/translate_original.html:22
 #, python-format
@@ -340,64 +354,67 @@ msgid ""
 "You requested to translate a translation category, this will send you to a "
 "create form to translate the original category '%(title)s' instead."
 msgstr ""
+"Vous avez requis une traduction pour cette catégorie de traduction, vous "
+"allez être conduit vers un formulaire pour traduire la catégorie originale "
+"'%(title)s' à la place."
 
 #: templates/lotus/article/detail.html:31
 msgid "Edit"
-msgstr ""
+msgstr "Éditer"
 
 #: templates/lotus/article/detail.html:38
 msgid "Cover"
-msgstr ""
+msgstr "Couverture"
 
 #: templates/lotus/article/detail.html:52
 msgid "States"
-msgstr ""
+msgstr "États"
 
 #: templates/lotus/article/detail.html:57 templates/lotus/article/item.html:23
 msgid "Featured"
-msgstr ""
+msgstr "En une"
 
 #: templates/lotus/article/detail.html:62 templates/lotus/article/item.html:26
 msgid "Pinned"
-msgstr ""
+msgstr "Épinglé"
 
 #: templates/lotus/article/detail.html:67 templates/lotus/article/item.html:29
 msgid "Draft"
-msgstr ""
+msgstr "Brouillon"
 
 #: templates/lotus/article/detail.html:72 templates/lotus/article/item.html:32
 msgid "Private"
-msgstr ""
+msgstr "Privé"
 
 #: templates/lotus/article/detail.html:77 templates/lotus/article/item.html:35
 msgid "Scheduled publication"
-msgstr ""
+msgstr "Publication programmée"
 
 #: templates/lotus/article/detail.html:82 templates/lotus/article/item.html:38
 msgid "Ended publication"
-msgstr ""
+msgstr "Publication finie"
 
 #: templates/lotus/article/detail.html:94
 msgid "Available in languages"
-msgstr ""
+msgstr "Disponible dans les langues"
 
 #: templates/lotus/article/detail.html:121 templates/lotus/author/list.html:4
 #: templates/lotus/author/list.html:8 views/author.py:24
 msgid "Authors"
-msgstr ""
+msgstr "Auteurs"
 
 #: templates/lotus/article/detail.html:136
 msgid "Related articles"
-msgstr ""
+msgstr "Articles reliés"
 
 #: templates/lotus/pagination.html:4
 msgid "Pagination"
-msgstr ""
+msgstr "Pagination"
 
 #: views/admin/mixins.py:98
 #, python-format
 msgid "Translate '%(title)s'"
-msgstr ""
+msgstr "Traduire '%(title)s'"
 
 #: views/article.py:104
 #, python-format

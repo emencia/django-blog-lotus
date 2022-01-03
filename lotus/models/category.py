@@ -7,8 +7,8 @@ Category models
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language
 from django.utils.translation import activate as translation_activate
-from django.utils.translation import deactivate as translation_deactivate
 from django.urls import reverse
 
 from ..managers import CategoryManager
@@ -30,7 +30,7 @@ class Category(Translated):
         default=None,
         on_delete=models.CASCADE,
         help_text=_(
-            "Mark this article as a translation of an original category."
+            "Mark this category as a translation of an original category."
         ),
     )
     """
@@ -122,15 +122,17 @@ class Category(Translated):
             string: An URL.
         """
         # Force the category language to get the right url independently of the current
-        # browser language. This is not thread safe, deactivate must be called once
-        # rendering is finished.
+        # browser language. This is not thread safe and we need to active again the
+        # current session language after
+        initial_language = get_language()
         translation_activate(self.language)
 
         url = reverse("lotus:category-detail", kwargs={
             "slug": self.slug,
         })
 
-        translation_deactivate()
+        # Re-activate the current language
+        translation_activate(initial_language)
 
         return url
 

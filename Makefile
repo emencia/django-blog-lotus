@@ -168,22 +168,22 @@ po:
 	@echo ""
 	@echo "==== Update PO from 'lotus' app ===="
 	@echo ""
-	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot
+	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot --no-obsolete
 	@echo ""
 	@echo "==== Update PO from sandbox ===="
 	@echo ""
-	@cd sandbox; ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot
+	@cd sandbox; ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot --no-obsolete
 .PHONY: po
 
 mo:
 	@echo ""
 	@echo "==== Build PO from 'lotus' app ===="
 	@echo ""
-	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages
+	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages --verbosity 3
 	@echo ""
 	@echo "==== Build PO from sandbox ===="
 	@echo ""
-	@cd sandbox; ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages
+	@cd sandbox; ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages --verbosity 3
 .PHONY: mo
 
 css:

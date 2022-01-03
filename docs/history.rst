@@ -16,9 +16,16 @@ improvements and minor features to come with Beta branch versions.
 * Improved demonstration layout and ergonomy;
 * Improved lotus_demo command to add some state variances on some articles;
 * Fixed every templates and code to use translation strings for texts;
-* Add distinct PO files for application and sandbox in default enabled languages from
+* Added distinct PO files for application and sandbox in default enabled languages from
   base settings: en, fr, de. "en" is the default language, "fr" is the only one to be
   translated since i don't know german;
+* Added ``po`` and ``mo`` actions to Makefile to build PO and compile MO files;
+* Fixed ``get_absolute_url`` from models. They used translation activate and deactivate
+  methods which was wrong since once called it broke translation rendering in templates.
+  We switched back to another solution which activate the object language then activate
+  again the current session language just after URL resolution. Worth to notice, i
+  don't remember exactly which case this "activate" usage tried to cover (without it
+  the tests or front does not fail);
 
 
 Version 0.4.3 - Unreleased
