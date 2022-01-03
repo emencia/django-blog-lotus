@@ -5,6 +5,12 @@ History
 =======
 
 
+Version 0.5.0 - Unreleased
+--------------------------
+
+- Add github templates for bug report and feature request;
+
+
 Version 0.4.4 - 2022/01/03
 --------------------------
 
