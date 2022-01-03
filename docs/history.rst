@@ -5,8 +5,10 @@ History
 =======
 
 
-Version 0.4.4 - Unreleased
+Version 0.4.4 - 2022/01/03
 --------------------------
+
+**Not released to a package**
 
 This is the last Alpha branch version, it have everything working still needs some
 improvements and minor features to come with Beta branch versions.
@@ -28,8 +30,10 @@ improvements and minor features to come with Beta branch versions.
   the tests or front does not fail);
 
 
-Version 0.4.3 - Unreleased
+Version 0.4.3 - 2021/12/27
 --------------------------
+
+**Not released to a package**
 
 * Article, Category and Author models;
 * Article and Category translations;
