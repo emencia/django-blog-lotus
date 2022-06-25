@@ -117,6 +117,14 @@ install: venv create-var-dirs
 	${MAKE} icon-font
 .PHONY: install
 
+icon-font:
+	@echo ""
+	@echo "==== Copying bootstrap-icons to static ===="
+	@echo ""
+	rm -Rf sandbox/static/fonts
+	cp -r node_modules/bootstrap-icons/font/fonts/ sandbox/static/
+.PHONY: icon-font
+
 migrate:
 	@echo ""
 	@echo "==== Apply pending migrations ===="
@@ -203,14 +211,6 @@ watch-sass:
 css-prod:
 	npm run-script css-prod
 .PHONY: css-prod
-
-icon-font:
-	@echo ""
-	@echo "==== Copying bootstrap-icons to static ===="
-	@echo ""
-	rm -Rf sandbox/static/fonts
-	cp -r node_modules/bootstrap-icons/font/fonts/ sandbox/static/
-.PHONY: css
 
 docs:
 	@echo ""
