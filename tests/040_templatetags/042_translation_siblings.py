@@ -3,6 +3,7 @@ import datetime
 import pytest
 import pytz
 
+from django.conf import settings
 from django.template import Context, Template, TemplateSyntaxError, TemplateDoesNotExist
 
 from lotus.factories import (
@@ -10,11 +11,10 @@ from lotus.factories import (
     multilingual_article, multilingual_category
 )
 from lotus.utils.tests import html_pyquery
-from lotus.views import AdminModeMixin
 from lotus.templatetags.lotus import translation_siblings
 
 # Shortcuts for shorter variable names
-ADMINMODE_CONTEXTVAR = AdminModeMixin.adminmode_context_name
+ADMINMODE_CONTEXTVAR = settings.LOTUS_ADMINMODE_CONTEXTVAR
 
 
 def test_tag_translation_siblings_allowed_models(db):

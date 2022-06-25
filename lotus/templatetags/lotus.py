@@ -2,7 +2,6 @@ from django.conf import settings
 from django.template import TemplateSyntaxError, Library, loader
 
 from ..models import Article, Category
-from ..views import AdminModeMixin
 
 register = Library()
 
@@ -129,7 +128,7 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
 
     tag_name = tag_name or "translation_siblings"
 
-    admin_mode = context.get(AdminModeMixin.adminmode_context_name, False)
+    admin_mode = context.get(settings.LOTUS_ADMINMODE_CONTEXTVAR, False)
     if kwargs.get("admin_mode", None) is not None:
         admin_mode = kwargs.get("admin_mode")
 

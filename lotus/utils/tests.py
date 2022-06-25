@@ -269,7 +269,7 @@ def build_post_data_from_object(model, obj, ignore=["id"]):
 
 def sum_file_object(fileobj):
     """
-    Return a hash checksum for given file object using " Black2b" algorithm.
+    Return a hash checksum for given file object using "Black2b" algorithm.
 
     Arguments:
         fileobj (object): Any file valid object with ``getvalue`` or ``read`` method.

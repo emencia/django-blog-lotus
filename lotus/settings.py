@@ -60,3 +60,13 @@ LOTUS_CATEGORY_SIBLING_TEMPLATE = "lotus/category/partials/siblings.html"
 Default template to use for template tag ``get_translation_siblings`` with an Category
 object.
 """
+
+LOTUS_ADMINMODE_URLARG = "admin"
+"""
+URL argument name to enable admin mode like ``?admin=1``.
+"""
+
+LOTUS_ADMINMODE_CONTEXTVAR = "admin_mode"
+"""
+Template context variable name to use to set the admin mode in views.
+"""

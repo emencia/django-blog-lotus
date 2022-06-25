@@ -6,12 +6,12 @@ from django.urls import reverse
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
 from lotus.utils.tests import html_pyquery
-from lotus.views import AdminModeMixin
 
 
 # Shortcuts for shorter variable names
 STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
-ADMINMODE_ARG = AdminModeMixin.adminmode_argument_name
+ADMINMODE_ARG = settings.LOTUS_ADMINMODE_URLARG
+ADMINMODE_CONTEXTVAR = settings.LOTUS_ADMINMODE_CONTEXTVAR
 
 
 def test_category_view_list(db, client):
@@ -98,32 +98,32 @@ def test_category_view_detail_admin_mode(db, admin_client, client):
     # Anonymous are never allowed for admin mode
     response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[AdminModeMixin.adminmode_context_name] is False
+    assert response.context[ADMINMODE_CONTEXTVAR] is False
 
     response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
     assert response.status_code == 200
-    assert response.context[AdminModeMixin.adminmode_context_name] is False
+    assert response.context[ADMINMODE_CONTEXTVAR] is False
 
     # Basic authenticated users are never allowed for admin mode
     user = AuthorFactory()
     client.force_login(user)
     response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[AdminModeMixin.adminmode_context_name] is False
+    assert response.context[ADMINMODE_CONTEXTVAR] is False
 
     response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
     assert response.status_code == 200
-    assert response.context[AdminModeMixin.adminmode_context_name] is False
+    assert response.context[ADMINMODE_CONTEXTVAR] is False
 
     # Staff user is only allowed for admin mode if it request for it with correct URL
     # argument
     response = admin_client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[AdminModeMixin.adminmode_context_name] is False
+    assert response.context[ADMINMODE_CONTEXTVAR] is False
 
     response = admin_client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
     assert response.status_code == 200
-    assert response.context[AdminModeMixin.adminmode_context_name] is True
+    assert response.context[ADMINMODE_CONTEXTVAR] is True
 
 
 @pytest.mark.parametrize("user_kind,client_kwargs,expected", [

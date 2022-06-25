@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.utils import timezone
 
 
@@ -14,26 +15,21 @@ class AdminModeMixin:
     ``preview_mode``.
 
     Admin mode is only allowed for staff users which use URL with a specific argument
-    as defined in ``PreviewModeMixin.adminmode_argument_name``.
+    as defined in setting ``LOTUS_ADMINMODE_URLARG``.
 
-    Like a staff user can is allowed for admin mode if it use URL with argument
-    ``?admin=1`` but not without argument even if it's a superuser. Other user kind and
-    anonymous are never allowed for admin mode.
+    So a staff user is only allowed for admin mode if user use URL with admin mode
+    argument like ``?admin=1``. Other user kind and anonymous are never allowed for
+    admin mode.
 
     The admin mode is essentially used to not filter queryset with publication
     criterias.
     """
-    # TODO: This should depend from a settings since they are pretty common words in
-    # the app world so it could be changed to avoid conflicts.
-    adminmode_argument_name = "admin"
-    adminmode_context_name = "admin_mode"
-
     def allowed_preview_mode(self, request):
         """
         Return if admin mode is allowed or not.
         """
         return not(
-            not self.request.GET.get(self.adminmode_argument_name) or
+            not self.request.GET.get(settings.LOTUS_ADMINMODE_URLARG) or
             not self.request.user.is_staff
         )
 
