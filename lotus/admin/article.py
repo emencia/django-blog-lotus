@@ -4,12 +4,10 @@ Article admin interface
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from ..forms import ArticleAdminForm
 from ..models import Article
-from ..choices import STATUS_PUBLISHED
 from ..views.admin import ArticleAdminTranslateView
 
 from .translated import LanguageListFilter, TranslationStateListFilter
@@ -132,13 +130,7 @@ class ArticleAdmin(admin.ModelAdmin):
         """
         Check for all publication criterias.
         """
-        now = timezone.now()
-
-        return (
-            obj.status == STATUS_PUBLISHED and
-            obj.publish_datetime() <= now and
-            (obj.publish_end is None or obj.publish_end > now)
-        )
+        return obj.is_published()
     is_published.short_description = _("published")
     is_published.boolean = True
 
@@ -149,17 +141,6 @@ class ArticleAdmin(admin.ModelAdmin):
         return obj.original is None
     is_original.short_description = _("original")
     is_original.boolean = True
-
-    def view_on_site(self, obj):
-        """
-        Add request argument to enable admin mode (to bypass publication criteria on
-        frontend querysets).
-
-        TODO: Use the argument name from a settings when it has been added #33
-              Also report this method on category ? (since category detail list
-              articles)
-        """
-        return obj.get_absolute_url() + "?admin=1"
 
     def get_urls(self):
         """

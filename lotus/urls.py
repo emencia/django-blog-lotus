@@ -7,6 +7,7 @@ from .views import (
     ArticleIndexView, ArticleDetailView,
     AuthorIndexView, AuthorDetailView,
     CategoryIndexView, CategoryDetailView,
+    PreviewTogglerView, PreviewArticleDetailView,
 )
 
 
@@ -16,7 +17,7 @@ app_name = "lotus"
 urlpatterns = [
     path("", ArticleIndexView.as_view(), name="article-index"),
     path(
-        'articles/<int:year>/<int:month>/<int:day>/<slug:slug>/',
+        "articles/<int:year>/<int:month>/<int:day>/<slug:slug>/",
         ArticleDetailView.as_view(),
         name="article-detail"
     ),
@@ -33,5 +34,21 @@ urlpatterns = [
         "categories/<slug:slug>/",
         CategoryDetailView.as_view(),
         name="category-detail"
+    ),
+
+    path(
+        "preview/disable/",
+        PreviewTogglerView.as_view(mode="disable"),
+        name="preview-disable"
+    ),
+    path(
+        "preview/enable/",
+        PreviewTogglerView.as_view(mode="enable"),
+        name="preview-enable"
+    ),
+    path(
+        "preview/articles/<int:year>/<int:month>/<int:day>/<slug:slug>/",
+        PreviewArticleDetailView.as_view(),
+        name="preview-article-detail"
     ),
 ]

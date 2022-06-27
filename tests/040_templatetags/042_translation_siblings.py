@@ -3,8 +3,9 @@ import datetime
 import pytest
 import pytz
 
-from django.conf import settings
-from django.template import Context, Template, TemplateSyntaxError, TemplateDoesNotExist
+from django.template import (
+    Context, Template, TemplateSyntaxError, TemplateDoesNotExist,
+)
 
 from lotus.factories import (
     AuthorFactory, CategoryFactory,
@@ -12,9 +13,6 @@ from lotus.factories import (
 )
 from lotus.utils.tests import html_pyquery
 from lotus.templatetags.lotus import translation_siblings
-
-# Shortcuts for shorter variable names
-ADMINMODE_CONTEXTVAR = settings.LOTUS_ADMINMODE_CONTEXTVAR
 
 
 def test_tag_translation_siblings_allowed_models(db):
@@ -91,7 +89,7 @@ def test_tag_translation_siblings_missing_now(db):
     )
 
 
-def test_tag_translation_siblings_article(db):
+def test_tag_translation_siblings_article(db, settings):
     """
     Tag "translation_siblings" should correctly build HTML with all article
     translations depending arguments given and template context.
@@ -123,10 +121,10 @@ def test_tag_translation_siblings_article(db):
         },
     )
 
-    # Without admin mode, results are filtered on publication criterias
+    # Without preview mode, results are filtered on publication criterias
     context = Context({
         "lotus_now": now,
-        ADMINMODE_CONTEXTVAR: False,
+        settings.LOTUS_PREVIEW_VARNAME: False,
     })
     output = translation_siblings(context, created_cheese["original"])
     assert output["source"] == created_cheese["original"]
@@ -136,10 +134,10 @@ def test_tag_translation_siblings_article(db):
     assert sorted(output["existing_languages"]) == ["en", "fr"]
     assert sorted(output["available_languages"]) == ["de"]
 
-    # In admin mode, no filter on publication criterias
+    # In preview mode, no filter on publication criterias
     context = Context({
         "lotus_now": now,
-        ADMINMODE_CONTEXTVAR: True,
+        settings.LOTUS_PREVIEW_VARNAME: True,
     })
     output = translation_siblings(context, created_cheese["original"])
     assert output["source"] == created_cheese["original"]
@@ -153,7 +151,7 @@ def test_tag_translation_siblings_article(db):
     # Alike previous but on a translation instead of original
     context = Context({
         "lotus_now": now,
-        ADMINMODE_CONTEXTVAR: True,
+        settings.LOTUS_PREVIEW_VARNAME: True,
     })
     output = translation_siblings(context, created_cheese["translations"]["fr"])
     assert output["source"] == created_cheese["translations"]["fr"]
@@ -168,7 +166,7 @@ def test_tag_translation_siblings_article(db):
     # another date
     context = Context({
         "lotus_now": now,
-        ADMINMODE_CONTEXTVAR: False,
+        settings.LOTUS_PREVIEW_VARNAME: False,
     })
     output = translation_siblings(context, created_cheese["original"], now=tomorrow)
     assert output["source"] == created_cheese["original"]
@@ -180,7 +178,7 @@ def test_tag_translation_siblings_article(db):
     assert sorted(output["available_languages"]) == []
 
 
-def test_tag_translation_siblings_html_article(db):
+def test_tag_translation_siblings_html_article(db, settings):
     """
     Tag "translation_siblings_html" should correctly build HTML with all article
     translations depending arguments given and template context.
@@ -216,12 +214,12 @@ def test_tag_translation_siblings_html_article(db):
         "{% load lotus %}{% translation_siblings_html article_object %}"
     )
 
-    # Without admin mode, results are filtered on publication criterias
+    # Without preview mode, results are filtered on publication criterias
     rendered = template.render(
         Context({
             "article_object": created_cheese["original"],
             "lotus_now": now,
-            ADMINMODE_CONTEXTVAR: False,
+            settings.LOTUS_PREVIEW_VARNAME: False,
         })
     )
     dom = html_pyquery(rendered)
@@ -240,15 +238,15 @@ def test_tag_translation_siblings_html_article(db):
             Context({
                 "article_object": created_cheese["original"],
                 "lotus_now": now,
-                ADMINMODE_CONTEXTVAR: False,
+                settings.LOTUS_PREVIEW_VARNAME: False,
             })
         )
 
 
-def test_tag_translation_siblings_html_article_bypass(db):
+def test_tag_translation_siblings_html_article_bypass(db, settings):
     """
-    Tag optional argument "admin_mode" should bypass usage of context variable to
-    enable or disable the admin mode.
+    Tag optional argument "preview" should bypass usage of context variable to
+    enable or disable the preview mode.
     """
     default_tz = pytz.timezone("UTC")
     now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 0))
@@ -277,33 +275,33 @@ def test_tag_translation_siblings_html_article_bypass(db):
         },
     )
 
-    # Admin mode is disabled from context but are forced as enabled from tag argument
+    # Preview mode is disabled from context but are forced as enabled from tag argument
     template = Template(
-        "{% load lotus %}{% translation_siblings_html article_object admin_mode=True %}"
+        "{% load lotus %}{% translation_siblings_html article_object preview=True %}"
     )
 
     rendered = template.render(
         Context({
             "article_object": created_cheese["original"],
             "lotus_now": now,
-            ADMINMODE_CONTEXTVAR: False,
+            settings.LOTUS_PREVIEW_VARNAME: False,
         })
     )
     dom = html_pyquery(rendered)
     items = dom.find(".sibling a")
     assert [item.text for item in items] == ["de", "fr"]
 
-    # Admin mode is enabled from context but are forced as disabled from tag argument
+    # Preview mode is enabled from context but are forced as disabled from tag argument
     template = Template(
         "{% load lotus %}"
-        "{% translation_siblings_html article_object admin_mode=False %}"
+        "{% translation_siblings_html article_object preview=False %}"
     )
 
     rendered = template.render(
         Context({
             "article_object": created_cheese["original"],
             "lotus_now": now,
-            ADMINMODE_CONTEXTVAR: True,
+            settings.LOTUS_PREVIEW_VARNAME: True,
         })
     )
     dom = html_pyquery(rendered)
@@ -350,7 +348,7 @@ def test_tag_translation_siblings_category(db):
 def test_tag_translation_siblings_html_category(db):
     """
     Tag "translation_siblings_html" should correctly build HTML with all category
-    translations without needing of lotus_now/now or context variable for admin mode.
+    translations without needing of lotus_now/now or context variable for preview mode.
     """
     # Create cheese articles with published FR and DE translations
     created_cheese = multilingual_category(
@@ -373,7 +371,7 @@ def test_tag_translation_siblings_html_category(db):
         "{% load lotus %}{% translation_siblings_html category_object %}"
     )
 
-    # Without admin mode, results are filtered on publication criterias
+    # Without preview mode, results are filtered on publication criterias
     rendered = template.render(
         Context({
             "category_object": created_cheese["original"],

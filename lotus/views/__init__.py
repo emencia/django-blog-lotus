@@ -1,12 +1,11 @@
-from .article import ArticleIndexView, ArticleDetailView
+from .article import ArticleIndexView, ArticleDetailView, PreviewArticleDetailView
 from .author import AuthorIndexView, AuthorDetailView
 from .category import CategoryIndexView, CategoryDetailView
-
-from .mixins import AdminModeMixin, ArticleFilterMixin
+from .preview import PreviewTogglerView
+from .mixins import ArticleFilterMixin
 
 
 __all__ = [
-    "AdminModeMixin",
     "ArticleFilterMixin",
     "ArticleIndexView",
     "ArticleDetailView",
@@ -14,4 +13,6 @@ __all__ = [
     "AuthorDetailView",
     "CategoryIndexView",
     "CategoryDetailView",
+    "PreviewTogglerView",
+    "PreviewArticleDetailView",
 ]

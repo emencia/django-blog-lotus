@@ -15,7 +15,7 @@ from django.utils.translation import activate as translation_activate
 from django.urls import reverse
 from django.utils import timezone
 
-from ..choices import get_status_choices, get_status_default
+from ..choices import get_status_choices, get_status_default, STATUS_PUBLISHED
 from ..managers import ArticleManager
 from ..signals import (
     auto_purge_media_files_on_delete, auto_purge_media_files_on_change,
@@ -295,12 +295,15 @@ class Article(Translated):
     def __str__(self):
         return self.title
 
-    def get_absolute_url(self):
+    def build_absolute_url(self, urlname):
         """
-        Return absolute URL to the article detail view.
+        Build object absolute URL for url name.
+
+        Arguments:
+            urlname (string): The URL name to reverse with kwargs to get absolute URL.
 
         Returns:
-            string: An URL.
+            string: Object absolute URL.
         """
         # Force the article language to get the right url independently of the current
         # browser language. This is not thread safe and we need to active again the
@@ -308,7 +311,7 @@ class Article(Translated):
         initial_language = get_language()
         translation_activate(self.language)
 
-        url = reverse("lotus:article-detail", kwargs={
+        url = reverse(urlname, kwargs={
             "year": self.publish_date.year,
             "month": self.publish_date.month,
             "day": self.publish_date.day,
@@ -319,6 +322,24 @@ class Article(Translated):
         translation_activate(initial_language)
 
         return url
+
+    def get_absolute_url(self):
+        """
+        Return absolute URL to the article detail view.
+
+        Returns:
+            string: An URL.
+        """
+        return self.build_absolute_url("lotus:article-detail")
+
+    def get_absolute_preview_url(self):
+        """
+        Return absolute URL to the article detail view in forced preview mode.
+
+        Returns:
+            string: An URL.
+        """
+        return self.build_absolute_url("lotus:preview-article-detail")
 
     def get_edit_url(self):
         """
@@ -399,15 +420,15 @@ class Article(Translated):
         if "private" in state_names and self.private:
             states.append(state_names["private"])
 
-        if "status_draft" in state_names and self.status < 10:
+        if "status_draft" in state_names and self.status < STATUS_PUBLISHED:
             states.append(state_names["status_draft"])
 
-        if "status_available" in state_names and self.status == 10:
+        if "status_available" in state_names and self.status == STATUS_PUBLISHED:
             states.append(state_names["status_available"])
 
         # Available article describes if it is below the publish start or over the
         # publish end, but only if "now" have been given
-        if now and self.status == 10:
+        if now and self.status == STATUS_PUBLISHED:
             if (
                 "publish_start_below" in state_names and
                 self.publish_datetime() > now
@@ -423,8 +444,29 @@ class Article(Translated):
 
         return states
 
+    def is_published(self, now=None):
+        """
+        Check for all publication criterias for a datetime.
+
+        Keywords Arguments:
+            now (datetime.datetime): Datetime to match against for publication states.
+                Default to ``None`` so it will use current datetime.
+
+        Returns:
+            boolean: True if object is published else False.
+        """
+        state_names = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
+        states = self.get_states(now or timezone.now())
+
+        return (
+            state_names["status_available"] in states and
+            state_names["status_draft"] not in states and
+            state_names["publish_start_below"] not in states and
+            state_names["publish_end_passed"] not in states
+        )
+
     def save(self, *args, **kwargs):
-        # Auto update ``last_update`` value on each save
+        # Auto update 'last_update' value on each save
         self.last_update = timezone.now()
 
         super().save(*args, **kwargs)

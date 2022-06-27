@@ -16,24 +16,24 @@ class SampleImageCrafter:
     """
     Craft a basic sample image, either a bitmap or a SVG.
 
-    TODO: Lack of documentation on args/kwargs, please feed me!
+    Basically every supported format from PIL should work however this code only knows
+    about JPEG, GIF, PNG and SVG.
     """
     def get_text_content(self, text, width, height):
         """
-        Return possible text content depending its enabled or not.
+        Get the text content to include in image.
 
         Arguments:
-            text (string or boolean): ``True`` for automatic image name using size like
-                "320x240" (for ``320 `` width value and ``240`` height value). ``None``
-                or ``False`` to disable text drawing (this is the default value). A
-                string for custom text, this should be a short text else it is not
-                guaranteed to fit.
-
-        Keyword Arguments:
-            bar (object):
+            text (string or boolean): Either a string to use it as content or ``True``
+                to make automatic content from given sizes such as "320x240" for
+                ``320 `` width value and ``240`` height value). If string is given it
+                should be a short text else it is not guaranteed to fit. If you don't
+                want text content, just pass a empty string.
+            width (integer): Width value to display in automatic text content.
+            height (integer): Height value to display in automatic text content.
 
         Returns:
-            string:
+            string: Content to include in image.
         """
         text_content = ""
 
@@ -49,16 +49,15 @@ class SampleImageCrafter:
 
     def get_file_extension(self, format_name):
         """
-        Enforce correct file extension depending format
+        Get correct file extension depending format name.
 
         Arguments:
-            foo (object):
-
-        Keyword Arguments:
-            bar (object):
+            format_name (string): The format name to use to get the right file
+                extension. It could be any format supported. ``JPEG`` and ``JPG`` will
+                traduces to ``jpg`` file extension.
 
         Returns:
-            string:
+            string: File extension without leading dot.
         """
         file_extension = format_name.lower()
 
@@ -70,16 +69,15 @@ class SampleImageCrafter:
 
     def get_mode(self, format_name):
         """
-        Manage correct mode depending format
+        Get correct image color mode depending format name.
 
         Arguments:
-            foo (object):
-
-        Keyword Arguments:
-            bar (object):
+            format_name (string): The format name to use to get the right file
+                extension. It could be any format supported. ``PNG`` will be a ``RGBA``
+                mode, every other format will be ``RGB``.
 
         Returns:
-            string:
+            string: Image color mode name.
         """
         if format_name == "PNG":
             return "RGBA"
@@ -90,16 +88,18 @@ class SampleImageCrafter:
         """
         Get filename.
 
-        NOTE: Bg color should be validated for non alphanumeric character
-
         Arguments:
-            foo (object):
+            file_extension (string): File extension to use in automatic filename. Can
+                be anything if ``filename`` argument is given since it will be ignored.
 
         Keyword Arguments:
-            bar (object):
+            filename (string): Custom filename to use, every other arguments won't be
+                used to compute filename.
+            bg_color (string): A color name to use in automatic filename. For real, this
+                can be anything since it is not validated.
 
         Returns:
-            string:
+            string: File name.
         """
         if not filename:
             return "{}.{}".format(bg_color, file_extension)
@@ -111,14 +111,23 @@ class SampleImageCrafter:
         """
         Build config for content creation
 
-        Arguments:
-            foo (object):
-
         Keyword Arguments:
-            bar (object):
+            filename (string): Custom file name (with file extension) to override the
+                automatic file name (based on other given arguments). Default is
+                ``None`` which will produce an automatic file name.
+            size (tuple): A tuple of two integers respectively for width and height.
+                Default to ``(100, 100)`` which will produce a square of 100 pixels.
+            bg_color (string): Color name to use to paint image background. Default to
+                ``blue``.
+            text_color (string): Color name to use to draw possible content text.
+                Default to ``white``.
+            text (string): Custom content text to include in image. Default to ``None``
+                which will produce an automatic content based on size. Use an empty
+                string to avoid content text in image.
+            format_name (string): Image format name to use. Default to ``PNG``.
 
         Returns:
-            string:
+            dict: Configuration to use to create image file.
         """
         # Split given size
         width, height = size
@@ -147,16 +156,21 @@ class SampleImageCrafter:
     def create_vectorial(self, width, height, bg_color, text_content=None,
                          text_color=None):
         """
-        Create SVG content
+        Create SVG content.
 
         Arguments:
-            foo (object):
+            width (integer): Image width.
+            height (integer): Image height.
+            bg_color (object): Color name to paint image background.
 
         Keyword Arguments:
-            bar (object):
+            text_content (string): Content text to include instead of automatic content
+                text.
+            text_color (string): Color name to draw text instead of default one. It is
+                required if you want to use the custom context text.
 
         Returns:
-            io.StringIO: The string buffer as a file object.
+            io.StringIO: SVG content in a string buffer.
         """
         svg = (
             '<svg xmlns="http://www.w3.org/2000/svg" '
@@ -185,16 +199,23 @@ class SampleImageCrafter:
     def create_bitmap(self, mode, format_name, width, height, bg_color,
                       text_content=None, text_color=None):
         """
-        Create Bitmap content
+        Create Bitmap image object.
 
         Arguments:
-            foo (object):
+            mode (string): Image color mode to use.
+            format_name (string): Image format name to use.
+            width (integer): Image width.
+            height (integer): Image height.
+            bg_color (object): Color name to paint image background.
 
         Keyword Arguments:
-            bar (object):
+            text_content (string): Content text to include instead of automatic content
+                text.
+            text_color (string): Color name to draw text instead of default one. It is
+                required if you want to use the custom context text.
 
         Returns:
-            string:
+            io.BytesIO: Image object in a byte buffer.
         """
         img = PILimage.new(mode, (width, height), bg_color)
 
@@ -240,6 +261,7 @@ class SampleImageCrafter:
                 ``PNG`` or ``GIF``. ``SVG`` format is also possible to create a
                 dummy SVG file.
             size (tuple): A tuple of two integers respectively for width and height.
+                Default to ``(100, 100)`` which will produce a square of 100 pixels.
             bg_color (string): Color value to fill image, this should be a valid value
                 for ``PIL.ImageColor``:
                 https://pillow.readthedocs.io/en/stable/reference/ImageColor.html

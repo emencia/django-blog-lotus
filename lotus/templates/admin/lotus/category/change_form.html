@@ -10,7 +10,7 @@ NOTE:
 {% block object-tools %}
     {% if change %}
         {% if not is_popup %}
-            {% translation_siblings original admin_mode=True as sibling_stats %}
+            {% translation_siblings original preview=True as sibling_stats %}
 
             <ul class="object-tools">
                 {% block object-tools-items %}

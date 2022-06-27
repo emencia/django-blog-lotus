@@ -43,10 +43,13 @@ Note than ``publish_start_below`` and ``publish_end_passed`` are only elligible 
 ``available`` state enabled and never if ``draft`` state is enabled.
 
 In practice ``draft``, ``publish_start_below`` and ``publish_end_passed`` states will
-only be visible for admin in preview mode, since other users can not view this kind
+only be visible for admin in preview mode since other users can not view this kind
 of articles.
 
 In the same way the ``private`` state will only be visible to authenticated users.
+
+You may change state value since they are mostly label however it can break some
+default lotus templates which may use them so you will have to override these templates.
 """
 
 LOTUS_ARTICLE_SIBLING_TEMPLATE = "lotus/article/partials/siblings.html"
@@ -61,12 +64,17 @@ Default template to use for template tag ``get_translation_siblings`` with an Ca
 object.
 """
 
-LOTUS_ADMINMODE_URLARG = "admin"
+LOTUS_PREVIEW_KEYWORD = "preview"
 """
-URL argument name to enable admin mode like ``?admin=1``.
+Keyword name for preview mode in session
 """
 
-LOTUS_ADMINMODE_CONTEXTVAR = "admin_mode"
+LOTUS_PREVIEW_VARNAME = "preview_mode"
 """
-Template context variable name to use to set the admin mode in views.
+Template context variable name to set the preview mode in views.
+"""
+
+LOTUS_PREVIEW_SWITCH_TEMPLATE = "lotus/preview_switch.html"
+"""
+Template path to use to render template tag ``preview_switch``.
 """

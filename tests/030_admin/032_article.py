@@ -1,4 +1,8 @@
 import os
+import datetime
+
+import pytz
+from freezegun import freeze_time
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
@@ -31,6 +35,88 @@ def test_article_admin_list(db, admin_client):
     response = admin_client.get(url)
 
     assert response.status_code == 200
+
+
+@freeze_time("2012-10-15 10:00:00")
+def test_article_admin_list_is_published(db, admin_client):
+    """
+    Article model admin list view should have the right content for item column
+    "is_published" depending item is published or not (following publication criterias).
+    """
+    # Date references
+    default_tz = pytz.timezone("UTC")
+    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
+    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 00))
+
+    draft = ArticleFactory(
+        title="draft",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        status=STATUS_DRAFT,
+    )
+    basic = ArticleFactory(
+        title="basic published",
+        publish_date=today.date(),
+        publish_time=today.time(),
+    )
+    published_notyet = ArticleFactory(
+        title="not yet published",
+        publish_date=next_hour.date(),
+        publish_time=next_hour.time(),
+    )
+    published_passed = ArticleFactory(
+        title="published but ended one hour ago",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=past_hour,
+    )
+    published_private_passed = ArticleFactory(
+        title="published, private and ended one hour ago",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=past_hour,
+        private=True,
+    )
+    draft_passed = ArticleFactory(
+        title="draft and ended one hour ago",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=past_hour,
+        status=STATUS_DRAFT,
+    )
+
+    # Collect published and not published id apart
+    expected_published_ids = [basic.id]
+    expected_unpublished_ids = [
+        draft.id,
+        published_notyet.id,
+        published_passed.id,
+        published_private_passed.id,
+        draft_passed.id
+    ]
+
+    # Get list view response
+    url = get_admin_list_url(Article)
+    response = admin_client.get(url)
+    assert response.status_code == 200
+
+    # Parse table rows to get article ids and publication state
+    resulting_published_ids = []
+    resulting_unpublished_ids = []
+    dom = html_pyquery(response)
+    for row in dom.find("#result_list tbody tr"):
+        article_id = row.cssselect(
+            "td.action-checkbox input.action-select"
+        )[0].get("value")
+        article_published = row.cssselect("td.field-is_published img")[0].get("alt")
+        if article_published == "True":
+            resulting_published_ids.append(int(article_id))
+        else:
+            resulting_unpublished_ids.append(int(article_id))
+
+    assert sorted(resulting_published_ids) == sorted(expected_published_ids)
+    assert sorted(resulting_unpublished_ids) == sorted(expected_unpublished_ids)
 
 
 def test_article_admin_detail(db, admin_client):
@@ -456,7 +542,7 @@ def test_article_admin_category_change_validation(db, admin_client):
     }
 
 
-def test_article_admin_modelchoice_create_labels(db, admin_client):
+def test_article_preview_modelchoice_create_labels(db, admin_client):
     """
     Admin create form should have language names in model choices fields.
     """
@@ -492,7 +578,7 @@ def test_article_admin_modelchoice_create_labels(db, admin_client):
     ]
 
 
-def test_article_admin_modelchoice_change_labels(db, admin_client):
+def test_article_preview_modelchoice_change_labels(db, admin_client):
     """
     Admin change form should have language names in model choices fields.
     """

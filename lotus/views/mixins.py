@@ -9,36 +9,37 @@ class NoOperationBreadcrumMixin:
     pass
 
 
-class AdminModeMixin:
+class PreviewModeMixin:
     """
-    A mixin to contain the logic for admin mode and add a context variable
+    A mixin to contain the logic for preview mode and add a context variable
     ``preview_mode``.
 
-    Admin mode is only allowed for staff users which use URL with a specific argument
-    as defined in setting ``LOTUS_ADMINMODE_URLARG``.
+    Preview mode is only allowed for staff users which use URL with a specific argument
+    as defined in setting ``LOTUS_PREVIEW_KEYWORD``.
 
-    So a staff user is only allowed for admin mode if user use URL with admin mode
-    argument like ``?admin=1``. Other user kind and anonymous are never allowed for
-    admin mode.
+    A staff user is only allowed for preview mode if its session have the right item set
+    to ``True`` exactly.
 
-    The admin mode is essentially used to not filter queryset with publication
+    The preview mode is essentially used to not filter queryset with publication
     criterias.
     """
     def allowed_preview_mode(self, request):
         """
-        Return if admin mode is allowed or not.
+        Return if preview mode is enabled or not.
         """
-        return not(
-            not self.request.GET.get(settings.LOTUS_ADMINMODE_URLARG) or
-            not self.request.user.is_staff
-        )
+        if not self.request.user.is_staff:
+            return False
+
+        return self.request.session.get(settings.LOTUS_PREVIEW_KEYWORD, None) is True
 
     def get_context_data(self, **kwargs):
         """
-        Expose the date "now" used for publication filter.
+        Expose the preview mode state.
         """
         context = super().get_context_data(**kwargs)
-        context["admin_mode"] = self.allowed_preview_mode(self.request)
+        context[settings.LOTUS_PREVIEW_VARNAME] = self.allowed_preview_mode(
+            self.request
+        )
 
         return context
 
@@ -54,8 +55,8 @@ class ArticleFilterMixin:
         Also this will set a ``self.target_date`` attribute to store the date checked
         against as a reference for further usage (like in ``get_context_data``).
 
-        Depend on ``allowed_preview_mode`` method as implemented in ``AdminModeMixin``
-        which manage admin mode.
+        Depend on ``allowed_preview_mode`` method as implemented in ``PreviewModeMixin``
+        which manage preview mode.
 
         Arguments:
             queryset (django.db.models.QuerySet): Base queryset to start on.
@@ -67,11 +68,10 @@ class ArticleFilterMixin:
         """
         self.target_date = timezone.now()
 
-        # Admin request have no restriction on date so it can return draft or future
-        # publications
+        # Check for enabled preview mode
         if self.allowed_preview_mode(self.request):
             queryset = queryset.get_for_lang(language=language)
-        # Default request for common user
+        # Default request instead
         else:
             queryset = queryset.get_published(
                 target_date=self.target_date,

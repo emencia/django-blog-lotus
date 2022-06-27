@@ -98,7 +98,7 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
     Usage: ::
 
         {% load lotus %}
-        {% translation_siblings_html article [now=custom_now] [admin_mode=True|False] %}
+        {% translation_siblings_html article [now=custom_now] [preview=True|False] %}
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
@@ -111,7 +111,7 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
         now (datetime.datetime): A datetime to use to compare against publish
             start and end dates to check for some publication criterias. Only used
             for Article object.
-        admin_mode (boolean): Option to bypass checking admin mode from context and
+        preview (boolean): Option to bypass checking preview mode from context and
             force it to a value, either True to enable it, False to disable it or None
             to let the basic behavior to determine it from its template context
             variable. Default to None.
@@ -128,9 +128,9 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
 
     tag_name = tag_name or "translation_siblings"
 
-    admin_mode = context.get(settings.LOTUS_ADMINMODE_CONTEXTVAR, False)
-    if kwargs.get("admin_mode", None) is not None:
-        admin_mode = kwargs.get("admin_mode")
+    preview = context.get(settings.LOTUS_PREVIEW_VARNAME, False)
+    if kwargs.get("preview", None) is not None:
+        preview = kwargs.get("preview")
 
     # If unsupported model has been given
     if not isinstance(source, Article) and not isinstance(source, Category):
@@ -147,7 +147,7 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
 
     # Article model make additional filtering on publication criteria if not in admin
     # mode
-    if isinstance(source, Article) and not admin_mode:
+    if isinstance(source, Article) and not preview:
         lotus_now = kwargs.get("now") or context.get("lotus_now")
         if lotus_now is None:
             raise TemplateSyntaxError(
@@ -186,7 +186,7 @@ def translation_siblings_html(context, source, **kwargs):
     Usage: ::
 
         {% load lotus %}
-        {% translation_siblings_html article [now=custom_now] [template="foo/bar.html"] [admin_mode=True|False] %}
+        {% translation_siblings_html article [now=custom_now] [template="foo/bar.html"] [preview=True|False] %}
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
@@ -202,7 +202,7 @@ def translation_siblings_html(context, source, **kwargs):
         template (string): A path to a custom template to use instead of the default
             one. If not given, the default one will be used, each model have its own
             default template, see settings.
-        admin_mode (boolean): Option to bypass checking admin mode from context and
+        preview (boolean): Option to bypass checking preview mode from context and
             force it to a value, either True to enable it, False to disable it or None
             to let the basic behavior to determine it from its template context
             variable. Default to None.
@@ -229,3 +229,47 @@ def translation_siblings_html(context, source, **kwargs):
     )
 
     return loader.get_template(template_path).render(render_context)
+
+
+@register.inclusion_tag(settings.LOTUS_PREVIEW_SWITCH_TEMPLATE, takes_context=True)
+def preview_switch(context):
+    """
+    Display a button to enable or disable preview mode.
+
+    Usage: ::
+
+        {% load lotus %}
+        {% preview_switch %}
+
+    Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included. Note that context
+            requires the session and user objects to be present (when available for
+            authenticated users) so you need to enable the respective middleware/context
+            processors in your project settings.
+
+    Returns:
+        dict: ...
+    """
+    allowed = False
+    current_mode = None
+    redirection = None
+
+    request = context.get("request")
+    session = getattr(request, "session", None)
+    user = getattr(request, "user", None)
+
+    if user and user.is_staff:
+        allowed = True
+        redirection = request.get_full_path()
+        current_mode = "disabled"
+
+        if session.get(settings.LOTUS_PREVIEW_KEYWORD, None) is True:
+            current_mode = "enabled"
+
+    return {
+        "user": user,
+        "allowed": allowed,
+        "current_mode": current_mode,
+        "redirection": redirection,
+    }

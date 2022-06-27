@@ -182,7 +182,7 @@ def test_category_admin_article_relations_validation(db, admin_client):
     }
 
 
-def test_category_admin_modelchoice_create_labels(db, admin_client):
+def test_category_preview_modelchoice_create_labels(db, admin_client):
     """
     Admin create form should have language names in model choices fields.
     """
@@ -203,7 +203,7 @@ def test_category_admin_modelchoice_create_labels(db, admin_client):
     ]
 
 
-def test_category_admin_modelchoice_change_labels(db, admin_client):
+def test_category_preview_modelchoice_change_labels(db, admin_client):
     """
     Admin change form should have language names in model choices fields.
     """

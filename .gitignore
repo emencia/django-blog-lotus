@@ -1,5 +1,6 @@
 # virtualenv
 .venv
+.python-version
 
 # Packaging
 build

@@ -440,19 +440,19 @@ def test_article_model_get_states(db):
         status=STATUS_DRAFT,
     )
     article_pinned = ArticleFactory(
-        title=STATES["pinned"],
+        title="pinned",
         publish_date=today.date(),
         publish_time=today.time(),
         pinned=True,
     )
     article_featured = ArticleFactory(
-        title=STATES["featured"],
+        title="featured",
         publish_date=today.date(),
         publish_time=today.time(),
         featured=True,
     )
     article_private = ArticleFactory(
-        title=STATES["private"],
+        title="private",
         publish_date=today.date(),
         publish_time=today.time(),
         private=True,
@@ -461,12 +461,6 @@ def test_article_model_get_states(db):
         title="published yesterday",
         publish_date=yesterday.date(),
         publish_time=yesterday.time(),
-    )
-    ArticleFactory(
-        title="published but ended one hour ago",
-        publish_date=today.date(),
-        publish_time=today.time(),
-        publish_end=past_hour,
     )
     article_mixed_available = ArticleFactory(
         title="pinned, private and ended one hour ago",
@@ -508,3 +502,67 @@ def test_article_model_get_states(db):
         STATES["pinned"], STATES["private"], STATES["status_available"],
         STATES["publish_end_passed"],
     ]
+
+
+def test_article_model_is_published(db):
+    """
+    TODO:
+    Object method "is_published" should return a boolean for publication state.
+    """
+    # Date references
+    default_tz = pytz.timezone("UTC")
+    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 00))
+    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
+    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
+    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 00))
+
+    draft = ArticleFactory(
+        title="draft",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        status=STATUS_DRAFT,
+    )
+    basic = ArticleFactory(
+        title="basic published",
+        publish_date=today.date(),
+        publish_time=today.time(),
+    )
+    published_yesterday = ArticleFactory(
+        title="published yesterday",
+        publish_date=yesterday.date(),
+        publish_time=yesterday.time(),
+    )
+    published_notyet = ArticleFactory(
+        title="not yet published",
+        publish_date=next_hour.date(),
+        publish_time=next_hour.time(),
+    )
+    published_passed = ArticleFactory(
+        title="published but ended one hour ago",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=past_hour,
+    )
+    published_private_passed = ArticleFactory(
+        title="published, private and ended one hour ago",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=past_hour,
+        private=True,
+    )
+    draft_passed = ArticleFactory(
+        title="draft and ended one hour ago",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        publish_end=past_hour,
+        status=STATUS_DRAFT,
+    )
+
+    assert draft.is_published(now) is False
+    assert basic.is_published(now) is True
+    assert published_yesterday.is_published(now) is True
+    assert published_notyet.is_published(now) is False
+    assert published_passed.is_published(now) is False
+    assert published_private_passed.is_published(now) is False
+    assert draft_passed.is_published(now) is False

@@ -14,14 +14,14 @@ from lotus.utils.tests import html_pyquery
 
 # Shortcuts for shorter variable names
 STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
-ADMINMODE_ARG = settings.LOTUS_ADMINMODE_URLARG
-ADMINMODE_CONTEXTVAR = settings.LOTUS_ADMINMODE_CONTEXTVAR
 STATE_PREFIX = "article--"
 
 
-def test_article_view_list_admin_mode(db, admin_client, client):
+def test_article_view_list_preview_mode(
+    db, settings, admin_client, client, enable_preview
+):
     """
-    List view should have context variable "admin_mode" with correct value according
+    List view should have context variable for preview mode with correct value according
     to the user and possible URL argument.
 
     TODO:
@@ -31,42 +31,45 @@ def test_article_view_list_admin_mode(db, admin_client, client):
 
     ArticleFactory()
 
-    # Anonymous are never allowed for admin mode
+    # Anonymous are never allowed for preview mode
     response = client.get(reverse(urlname))
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = client.get(reverse(urlname), {ADMINMODE_ARG: 1})
+    enable_preview(client)
+    response = client.get(reverse(urlname))
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    # Basic authenticated users are never allowed for admin mode
+    # Basic authenticated users are never allowed for preview mode
     user = AuthorFactory()
     client.force_login(user)
     response = client.get(reverse(urlname))
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = client.get(reverse(urlname), {ADMINMODE_ARG: 1})
+    enable_preview(client)
+    response = client.get(reverse(urlname))
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    # Staff user is only allowed for admin mode if it request for it with correct URL
+    # Staff user is only allowed for preview mode if it request for it with correct URL
     # argument
     response = admin_client.get(reverse(urlname))
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = admin_client.get(reverse(urlname), {ADMINMODE_ARG: 1})
+    enable_preview(admin_client)
+    response = admin_client.get(reverse(urlname))
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is True
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is True
 
 
 @freeze_time("2012-10-15 10:00:00")
-@pytest.mark.parametrize("user_kind,client_kwargs,expected", [
+@pytest.mark.parametrize("user_kind,with_preview,expected", [
     (
         "anonymous",
-        {},
+        False,
         [
             # Expected title and CSS classes
             [
@@ -93,7 +96,7 @@ def test_article_view_list_admin_mode(db, admin_client, client):
     ),
     (
         "anonymous",
-        {ADMINMODE_ARG: 1},
+        True,
         [
             # Expected title and CSS classes
             [
@@ -120,7 +123,7 @@ def test_article_view_list_admin_mode(db, admin_client, client):
     ),
     (
         "user",
-        {},
+        False,
         [
             # Expected title and CSS classes
             [
@@ -151,7 +154,7 @@ def test_article_view_list_admin_mode(db, admin_client, client):
     ),
     (
         "user",
-        {ADMINMODE_ARG: 1},
+        True,
         [
             # Expected title and CSS classes
             [
@@ -182,7 +185,7 @@ def test_article_view_list_admin_mode(db, admin_client, client):
     ),
     (
         "admin",
-        {},
+        False,
         [
             # Expected title and CSS classes
             [
@@ -213,7 +216,7 @@ def test_article_view_list_admin_mode(db, admin_client, client):
     ),
     (
         "admin",
-        {ADMINMODE_ARG: 1},
+        True,
         [
             # Expected title and CSS classes
             [
@@ -259,8 +262,9 @@ def test_article_view_list_admin_mode(db, admin_client, client):
         ],
     ),
 ])
-def test_article_view_list_publication(db, admin_client, client, user_kind,
-                                       client_kwargs, expected):
+def test_article_view_list_publication(
+    db, admin_client, client, enable_preview, user_kind, with_preview, expected
+):
     """
     View list should respect publication criterias (dates and state, private article and
     order.
@@ -268,11 +272,11 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
     Tested against profiles:
 
     * non authenticated;
-    * non authenticated trying to use admin mode;
+    * non authenticated trying to use preview mode;
     * authenticated basic user;
-    * authenticated basic user trying to use admin mode;
-    * admin without admin mode;
-    * admin with admin mode;
+    * authenticated basic user trying to use preview mode;
+    * admin without preview mode;
+    * admin with preview mode;
     """
     # Available Django clients as a dict to be able to switch on
     client_for = {
@@ -363,9 +367,12 @@ def test_article_view_list_publication(db, admin_client, client, user_kind,
         user = AuthorFactory()
         client.force_login(user)
 
+    if with_preview:
+        enable_preview(enabled_client)
+
     # Get all available items from HTML page
     urlname = "lotus:article-index"
-    response = enabled_client.get(reverse(urlname), client_kwargs)
+    response = enabled_client.get(reverse(urlname))
     assert response.status_code == 200
 
     # Parse HTML
@@ -400,9 +407,9 @@ def test_article_view_detail_published(db, admin_client, client):
     assert response.status_code == 200
 
 
-def test_article_view_detail_draft(db, admin_client, client):
+def test_article_view_detail_draft(db, admin_client, client, enable_preview):
     """
-    Draft article is only reachable for admin in 'admin mode'.
+    Draft article is only reachable for admin in 'preview mode'.
     """
     user = AuthorFactory()
     instance = ArticleFactory(status=STATUS_DRAFT)
@@ -414,16 +421,22 @@ def test_article_view_detail_draft(db, admin_client, client):
     response = admin_client.get(instance.get_absolute_url())
     assert response.status_code == 404
 
-    # Admin mode behavior do not work for non admin users
-    response = client.get(instance.get_absolute_url(), {ADMINMODE_ARG: 1})
+    # Switch user to preview mode
+    enable_preview(client)
+
+    # Preview mode behavior do not work for non admin users
+    response = client.get(instance.get_absolute_url())
     assert response.status_code == 404
 
     client.force_login(user)
-    response = client.get(instance.get_absolute_url(), {ADMINMODE_ARG: 1})
+    response = client.get(instance.get_absolute_url())
     assert response.status_code == 404
 
-    # Admin mode behavior only work for admin users
-    response = admin_client.get(instance.get_absolute_url(), {ADMINMODE_ARG: 1})
+    # Switch admin to preview mode
+    enable_preview(admin_client)
+
+    # Preview mode behavior only work for admin users
+    response = admin_client.get(instance.get_absolute_url())
     assert response.status_code == 200
 
 
@@ -443,7 +456,7 @@ def test_article_view_detail_private(db, client):
 
 
 @freeze_time("2012-10-15 10:00:00")
-def test_article_view_detail_publication(db, admin_client, client):
+def test_article_view_detail_publication(db, admin_client, client, enable_preview):
     """
     Publication criteria should be respected to view an Article, excepted for admin
     mode.
@@ -456,53 +469,60 @@ def test_article_view_detail_publication(db, admin_client, client):
     response = client.get(instance.get_absolute_url())
     assert response.status_code == 404
 
-    response = admin_client.get(instance.get_absolute_url(), {ADMINMODE_ARG: 1})
+    # Switch user to preview mode
+    enable_preview(admin_client)
+
+    response = admin_client.get(instance.get_absolute_url())
     assert response.status_code == 200
 
 
-def test_article_view_detail_admin_mode(db, admin_client, client):
+def test_article_view_detail_preview_mode(
+    db, settings, admin_client, client, enable_preview
+):
     """
-    Detail view should have context variable "admin_mode" with correct value according
-    to the user and possible URL argument.
+    Detail view should have context variable for preview mode with correct value
+    according to the user and possible URL argument.
     """
     ping = ArticleFactory()
 
-    # Anonymous are never allowed for admin mode
+    # Anonymous are never allowed for preview mode
     response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    # Switch user to preview mode
+    enable_preview(client)
+
+    response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    # Basic authenticated users are never allowed for admin mode
+    # Basic authenticated users are never allowed for preview mode
     user = AuthorFactory()
     client.force_login(user)
     response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
-    assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
-
-    # Staff user is only allowed for admin mode if it request for it with correct URL
+    # Staff user is only allowed for preview mode if it request for it with correct URL
     # argument
     response = admin_client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = admin_client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    # Switch user to preview mode
+    enable_preview(admin_client)
+
+    response = admin_client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is True
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is True
 
 
-def test_article_view_detail_content(db, admin_client):
+def test_article_view_detail_content(db, admin_client, enable_preview):
     """
     Detail view should contain all expected content and relations.
 
-    Note we are requesting with admin mode to be able to see a draft
+    Note we are requesting with preview mode to be able to see a draft
     article to check for the "draft" CSS class.
 
     Also, this does not care about textual content (title, lead, content, etc..).
@@ -527,8 +547,11 @@ def test_article_view_detail_content(db, admin_client):
         private=True,
     )
 
+    # Switch user to preview mode
+    enable_preview(admin_client)
+
     # Get detail HTML page
-    response = admin_client.get(article_3.get_absolute_url(), {ADMINMODE_ARG: 1})
+    response = admin_client.get(article_3.get_absolute_url())
     assert response.status_code == 200
 
     # Parse HTML response to get content and relations
@@ -592,3 +615,36 @@ def test_article_view_detail_metas(db, client):
     assert meta_title.text == "Meow"
     assert len(meta_description) == 1
     assert meta_description[0].get("content") == "Pwet pwet"
+
+
+def test_article_view_preview(db, client, admin_client):
+    """
+    Preview view should only be reachable from admin and return a success response for
+    any article, published or not.
+    """
+    user = AuthorFactory()
+
+    published = ArticleFactory()
+    draft = ArticleFactory(status=STATUS_DRAFT)
+
+    # For anonymous user
+    response = client.get(published.get_absolute_preview_url())
+    assert response.status_code == 403
+
+    response = client.get(draft.get_absolute_preview_url())
+    assert response.status_code == 403
+
+    # For authenticated user
+    client.force_login(user)
+    response = client.get(published.get_absolute_preview_url())
+    assert response.status_code == 403
+
+    response = client.get(draft.get_absolute_preview_url())
+    assert response.status_code == 403
+
+    # For admin
+    response = admin_client.get(published.get_absolute_preview_url())
+    assert response.status_code == 200
+
+    response = admin_client.get(draft.get_absolute_preview_url())
+    assert response.status_code == 200

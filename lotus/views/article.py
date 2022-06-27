@@ -1,11 +1,11 @@
 from django.conf import settings
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
 from django.views.generic import DetailView, ListView
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..models import Article
-from .mixins import AdminModeMixin, ArticleFilterMixin
+from .mixins import PreviewModeMixin, ArticleFilterMixin
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -13,7 +13,7 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
+class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin,
                        ListView):
     """
     Paginated list of articles.
@@ -37,7 +37,7 @@ class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
+class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin,
                         DetailView):
     """
     Article detail.
@@ -68,11 +68,10 @@ class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
     def get_queryset(self):
         """
         Get the base queryset which may include the basic publication filter
-        depending admin mode.
+        depending preview mode.
 
-        Admin mode is enabled if url have "admin" argument and user is staff member.
-
-        If Admin mode is disabled publication criterias are applied as lookups.
+        Preview mode is enabled from a flag in session and only for staff user. If it is
+        disabled publication criterias are applied on lookups.
 
         Also apply lookup for "private" mode for non authenticated users.
         """
@@ -105,3 +104,35 @@ class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
                           {'verbose_name': queryset.model._meta.verbose_name})
 
         return obj
+
+
+class PreviewArticleDetailView(ArticleDetailView):
+    """
+    TODO: Should force set the context var for preview mode at True without to tamper
+    session so the user session is still in its current state but it can preview.
+    """
+    def allowed_preview_mode(self, request):
+        """
+        Force preview mode for querysets.
+        """
+        return True
+
+    def get_context_data(self, **kwargs):
+        """
+        Force preview mode in context (without tampering preview mode in session).
+
+        TODO: Control user staff right to use this
+        """
+        context = super().get_context_data(**kwargs)
+        context[settings.LOTUS_PREVIEW_VARNAME] = True
+
+        return context
+
+    def get(self, request, *args, **kwargs):
+        """
+        Ensure that user is allowed to use this view.
+        """
+        if not self.request.user.is_staff:
+            return HttpResponseForbidden("You are not allowed to be here.")
+
+        return super().get(request, *args, **kwargs)

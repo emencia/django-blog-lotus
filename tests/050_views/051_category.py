@@ -10,8 +10,6 @@ from lotus.utils.tests import html_pyquery
 
 # Shortcuts for shorter variable names
 STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
-ADMINMODE_ARG = settings.LOTUS_ADMINMODE_URLARG
-ADMINMODE_CONTEXTVAR = settings.LOTUS_ADMINMODE_CONTEXTVAR
 
 
 def test_category_view_list(db, client):
@@ -88,48 +86,53 @@ def test_category_view_detail_404(db, client):
     assert response.status_code == 404
 
 
-def test_category_view_detail_admin_mode(db, admin_client, client):
+def test_category_view_detail_preview_mode(
+    db, settings, admin_client, client, enable_preview
+):
     """
-    Detail view should have context variable "admin_mode" with correct value according
-    to the user and possible URL argument.
+    Detail view should have context variable for preview mode with correct value
+    according to the user and possible URL argument.
     """
     ping = CategoryFactory()
 
-    # Anonymous are never allowed for admin mode
+    # Anonymous are never allowed for preview mode
     response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    enable_preview(client)
+    response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    # Basic authenticated users are never allowed for admin mode
+    # Basic authenticated users are never allowed for preview mode
     user = AuthorFactory()
     client.force_login(user)
     response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    enable_preview(client)
+    response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    # Staff user is only allowed for admin mode if it request for it with correct URL
+    # Staff user is only allowed for preview mode if it request for it with correct URL
     # argument
     response = admin_client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = admin_client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    enable_preview(admin_client)
+    response = admin_client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is True
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is True
 
 
-@pytest.mark.parametrize("user_kind,client_kwargs,expected", [
+@pytest.mark.parametrize("user_kind,with_preview,expected", [
     (
         "anonymous",
-        {},
+        False,
         [
             # Expected title and CSS classes
             ["Pinned", [STATES["pinned"], STATES["status_available"]]],
@@ -144,7 +147,7 @@ def test_category_view_detail_admin_mode(db, admin_client, client):
     ),
     (
         "anonymous",
-        {ADMINMODE_ARG: 1},
+        True,
         [
             # Expected title and CSS classes
             ["Pinned", [STATES["pinned"], STATES["status_available"]]],
@@ -159,7 +162,7 @@ def test_category_view_detail_admin_mode(db, admin_client, client):
     ),
     (
         "user",
-        {},
+        False,
         [
             # Expected title and CSS classes
             ["Pinned", [STATES["pinned"], STATES["status_available"]]],
@@ -175,7 +178,7 @@ def test_category_view_detail_admin_mode(db, admin_client, client):
     ),
     (
         "user",
-        {ADMINMODE_ARG: 1},
+        True,
         [
             # Expected title and CSS classes
             ["Pinned", [STATES["pinned"], STATES["status_available"]]],
@@ -191,7 +194,7 @@ def test_category_view_detail_admin_mode(db, admin_client, client):
     ),
     (
         "admin",
-        {},
+        False,
         [
             # Expected title and CSS classes
             ["Pinned", [STATES["pinned"], STATES["status_available"]]],
@@ -207,7 +210,7 @@ def test_category_view_detail_admin_mode(db, admin_client, client):
     ),
     (
         "admin",
-        {ADMINMODE_ARG: 1},
+        True,
         [
             # Expected title and CSS classes
             ["Pinned", [STATES["pinned"], STATES["status_available"]]],
@@ -223,8 +226,9 @@ def test_category_view_detail_admin_mode(db, admin_client, client):
         ],
     ),
 ])
-def test_category_view_detail_content(db, admin_client, client, user_kind,
-                                      client_kwargs, expected):
+def test_category_view_detail_content(
+    db, admin_client, client, enable_preview, user_kind, with_preview, expected
+):
     """
     Category detail page should have category contents and related articles following
     publication rules (as described in article list view tests).
@@ -271,9 +275,12 @@ def test_category_view_detail_content(db, admin_client, client, user_kind,
         user = AuthorFactory()
         client.force_login(user)
 
+    if with_preview:
+        enable_preview(enabled_client)
+
     # Get detail page
     url = picsou.get_absolute_url()
-    response = enabled_client.get(url, client_kwargs)
+    response = enabled_client.get(url)
     assert response.status_code == 200
 
     # Parse HTML

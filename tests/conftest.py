@@ -68,3 +68,41 @@ def tests_settings():
                 print(tests_settings.format("foo: {VERSION}"))
     """
     return FixturesSettingsTestMixin()
+
+
+@pytest.fixture(scope="function")
+def enable_preview(settings):
+    """
+    Enable preview mode in given client session
+
+    Example:
+        You may use it in tests like this: ::
+
+            def test_foo(client, enable_preview):
+                enable_preview(client)
+    """
+    def _inner(current_client):
+        session = current_client.session
+        session[settings.LOTUS_PREVIEW_KEYWORD] = True
+        session.save()
+
+    return _inner
+
+
+@pytest.fixture(scope="function")
+def disable_preview(settings):
+    """
+    Enable preview mode in given client or request session
+
+    Example:
+        You may use it in tests like this: ::
+
+            def test_foo(client, disable_preview):
+                disable_preview(client)
+    """
+    def _inner(current_client):
+        session = current_client.session
+        session[settings.LOTUS_PREVIEW_KEYWORD] = False
+        session.save()
+
+    return _inner

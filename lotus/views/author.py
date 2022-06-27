@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..models import Article, Author
-from .mixins import AdminModeMixin, ArticleFilterMixin
+from .mixins import PreviewModeMixin, ArticleFilterMixin
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -13,7 +13,7 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-class AuthorIndexView(BaseBreadcrumbMixin, ListView):
+class AuthorIndexView(BaseBreadcrumbMixin, PreviewModeMixin, ListView):
     """
     List of authors which have contributed at least to one article.
     """
@@ -36,7 +36,7 @@ class AuthorIndexView(BaseBreadcrumbMixin, ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class AuthorDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
+class AuthorDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin,
                        SingleObjectMixin, ListView):
     """
     Author detail and its related article list.

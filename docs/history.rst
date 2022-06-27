@@ -8,7 +8,13 @@ History
 Version 0.5.0 - Unreleased
 --------------------------
 
-- Add github templates for bug report and feature request;
+**Not released to a package**
+
+* Add github templates for bug report and feature request;
+* Define admin context varname and url arg from settings instead of AdminModeMixin
+  attributes, close issue #33;
+* Refactored *preview mode* (previously named *admin mode*) to use session instead
+  of URL argument and make all missing improvements, close issue #26;
 
 
 Version 0.4.4 - 2022/01/03

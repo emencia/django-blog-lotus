@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from ..models import Article, Category
 
-from .mixins import AdminModeMixin, ArticleFilterMixin
+from .mixins import PreviewModeMixin, ArticleFilterMixin
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -14,7 +14,7 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-class CategoryIndexView(BaseBreadcrumbMixin, ListView):
+class CategoryIndexView(BaseBreadcrumbMixin, PreviewModeMixin, ListView):
     """
     List of categories
     """
@@ -40,7 +40,7 @@ class CategoryIndexView(BaseBreadcrumbMixin, ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, AdminModeMixin,
+class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin,
                          SingleObjectMixin, ListView):
     """
     Category detail and its related article list.

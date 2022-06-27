@@ -12,11 +12,6 @@ from lotus.factories import ArticleFactory, AuthorFactory
 from lotus.utils.tests import html_pyquery
 
 
-# Shortcuts for shorter variable names
-ADMINMODE_ARG = settings.LOTUS_ADMINMODE_URLARG
-ADMINMODE_CONTEXTVAR = settings.LOTUS_ADMINMODE_CONTEXTVAR
-
-
 def test_author_view_list(db, client):
     """
     Author list should be correctly ordered and paginated.
@@ -119,81 +114,87 @@ def test_author_view_detail_for_empty(db, client):
     assert response.status_code == 200
 
 
-def test_author_view_detail_admin_mode(db, admin_client, client):
+def test_author_view_detail_preview_mode(
+    db, settings, admin_client, client, enable_preview
+):
     """
-    Detail view should have context variable "admin_mode" with correct value according
-    to the user and possible URL argument.
+    Detail view should have context variable for preview mode with correct value
+    according to the user and possible URL argument.
     """
     ping = AuthorFactory()
 
-    # Anonymous are never allowed for admin mode
+    # Anonymous are never allowed for preview mode
     response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    enable_preview(client)
+    response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    # Basic authenticated users are never allowed for admin mode
+    # Basic authenticated users are never allowed for preview mode
     user = AuthorFactory()
     client.force_login(user)
     response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    enable_preview(client)
+    response = client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    # Staff user is only allowed for admin mode if it request for it with correct URL
+    # Staff user is only allowed for preview mode if it request for it with correct URL
     # argument
     response = admin_client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is False
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is False
 
-    response = admin_client.get(ping.get_absolute_url(), {ADMINMODE_ARG: 1})
+    enable_preview(admin_client)
+    response = admin_client.get(ping.get_absolute_url())
     assert response.status_code == 200
-    assert response.context[ADMINMODE_CONTEXTVAR] is True
+    assert response.context[settings.LOTUS_PREVIEW_VARNAME] is True
 
 
 @freeze_time("2012-10-15 10:00:00")
-@pytest.mark.parametrize("user_kind,client_kwargs,expected", [
+@pytest.mark.parametrize("user_kind,with_preview,expected", [
     (
         "anonymous",
-        {},
+        False,
         ["Sample"],
     ),
     (
         "anonymous",
-        {"admin": 1},
+        True,
         ["Sample"],
     ),
     (
         "user",
-        {},
+        False,
         ["Private eye only", "Sample"],
     ),
     (
         "user",
-        {"admin": 1},
+        True,
         ["Private eye only", "Sample"],
     ),
     (
         "admin",
-        {},
+        False,
         ["Private eye only", "Sample"],
     ),
     (
         "admin",
-        {"admin": 1},
+        True,
         ["Tomorrow", "Niet", "Nope", "Private eye only", "Sample", "Yesterday"],
     ),
 ])
-def test_author_view_detail_content(db, admin_client, client, user_kind,
-                                    client_kwargs, expected):
+def test_author_view_detail_content(
+    db, admin_client, client, enable_preview, user_kind, with_preview, expected
+):
     """
-    Detail should contains expected content and the admin mode should be respected.
+    Detail should contains expected content and the preview mode should be respected.
 
     We just superficially test article cases since they are already covered from
     article and category tests.
@@ -219,7 +220,7 @@ def test_author_view_detail_content(db, admin_client, client, user_kind,
     ArticleFactory(title="For nobody", fill_authors=[nobody])
     # For authenticated user only
     ArticleFactory(title="Private eye only", private=True, fill_authors=[picsou])
-    # Only available in admin mode
+    # Only available in preview mode
     ArticleFactory(title="Nope", status=STATUS_DRAFT, fill_authors=[picsou])
     ArticleFactory(title="Niet", status=STATUS_DRAFT, fill_authors=[picsou, nobody])
     ArticleFactory(title="Yesterday", fill_authors=[picsou], publish_end=yesterday)
@@ -237,8 +238,11 @@ def test_author_view_detail_content(db, admin_client, client, user_kind,
         user = AuthorFactory()
         client.force_login(user)
 
+    if with_preview:
+        enable_preview(enabled_client)
+
     url = picsou.get_absolute_url()
-    response = enabled_client.get(url, client_kwargs)
+    response = enabled_client.get(url)
 
     assert response.status_code == 200
 

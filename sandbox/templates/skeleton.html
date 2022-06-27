@@ -1,4 +1,4 @@
-{% load i18n view_breadcrumbs %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
+{% load i18n view_breadcrumbs lotus %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
 <head>{% spaceless %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,6 +33,9 @@
                         <a class="nav-link" href="{% url "lotus:author-index" %}">{% trans "Authors" %}</a>
                     </li>
                 </ul>
+
+                {% preview_switch %}
+
                 <div class="d-flex">
                     <div class="btn-group btn-group-sm" role="group" aria-label="Languages">
                         {% get_current_language as LANGUAGE_CODE %}

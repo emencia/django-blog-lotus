@@ -10,7 +10,7 @@ NOTE:
 {% block object-tools %}
     {% if change %}
         {% if not is_popup %}
-            {% translation_siblings original admin_mode=True as sibling_stats %}
+            {% translation_siblings original preview=True as sibling_stats %}
 
             <ul class="object-tools">
                 {% block object-tools-items %}
@@ -20,6 +20,11 @@ NOTE:
                     </li>
                     {% endif %}
                     {% change_form_object_tools %}
+                    {% if not original.is_published %}
+                    <li>
+                        <a class="lotus-preview-link viewsitelink" href="{{ original.get_absolute_preview_url }}">{% trans "Preview" %}</a>
+                    </li>
+                    {% endif %}
                 {% endblock %}
             </ul>
 
