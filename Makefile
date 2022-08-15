@@ -296,8 +296,9 @@ flake:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Flake <---$(FORMATRESET)\n"
 	@echo ""
-	$(FLAKE) --show-source project django-apps
-	$(FLAKE) --show-source tests
+	$(FLAKE) --statistics --show-source $(APPLICATION_NAME)
+	$(FLAKE) --statistics --show-source sandbox
+	$(FLAKE) --statistics --show-source tests
 .PHONY: flake
 
 tests:
@@ -320,7 +321,7 @@ freeze-dependencies:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Freeze dependencies versions <---$(FORMATRESET)\n"
 	@echo ""
-	$(VENV_PATH)/bin/pip freeze --all --local > requirements/requirements_freeze.txt
+	$(VENV_PATH)/bin/python freezer.py
 .PHONY: freeze-dependencies
 
 tox:

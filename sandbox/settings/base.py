@@ -2,7 +2,6 @@
 Base Django settings for sandbox
 """
 
-from os import listdir
 from os.path import abspath, dirname, join, normpath
 
 
@@ -205,7 +204,7 @@ CKEDITOR_CONFIGS = {
 django-view-breadcrumbs optional part
 """
 try:
-    import view_breadcrumbs
+    import view_breadcrumbs  # noqa: F401
 except ImportError:
     pass
 else:
@@ -217,4 +216,4 @@ else:
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW
 """
-from lotus.settings import *
+from lotus.settings import *  # noqa: E402,F401,F403
