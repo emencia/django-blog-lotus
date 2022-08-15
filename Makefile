@@ -172,6 +172,14 @@ run:
 	$(PYTHON_BIN) $(DJANGO_MANAGE) runserver 0.0.0.0:8001
 .PHONY: run
 
+run-demo:
+	@echo ""
+	@echo "==== Running development server with external settings ===="
+	@echo ""
+	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
+	$(PYTHON_BIN) $(DJANGO_MANAGE) runserver --settings=settings.external 0.0.0.0:8010
+.PHONY: run-demo
+
 po:
 	@echo ""
 	@echo "==== Update PO from 'lotus' app ===="
