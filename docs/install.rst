@@ -12,7 +12,7 @@ Or without any features: ::
 
     pip install django-blog-lotus
 
-For development usage see :ref:`install_development`.
+For development install see :ref:`install_development`.
 
 
 Configuration

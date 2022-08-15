@@ -33,15 +33,26 @@ Every requirements are available in package extra requirements in section
 Install for development
 ***********************
 
-First ensure you have `pip`_ and `virtualenv`_ packages installed then
-type: ::
+First ensure you have `pip`_ and `virtualenv`_ packages installed then type: ::
 
     git clone https://github.com/emencia/django-blog-lotus.git
     cd django-blog-lotus
     make install
 
-django-blog-lotus will be installed in editable mode from the
-latest commit on master branch with some development tools.
+This will install the whole project in development mode with both backend and sandbox
+frontend which involves a Node.js stack and assets building.
+
+To reach the administration you may need a super user: ::
+
+    make superuser
+
+And finally, at this stage the site is empty, you may want to fill it with some
+demonstration data: ::
+
+    make demo
+
+This may take some times since there is a lot of data to create.
+
 
 Unittests
 ---------
@@ -56,16 +67,13 @@ Tox
 ---
 
 To ease development against multiple Python versions a tox configuration has
-been added. You are strongly encouraged to use it to test your pull requests.
+been added. You are encouraged to use it to test your pull requests to ensure about
+compatibility support.
 
-Before using it you will need to install tox, it is recommended to install it
-at your system level (tox dependancy is not in requirements): ::
-
-    sudo pip install tox
-
-Then go in the ``django-blog-lotus`` directory execute tox: ::
+Just go in the ``django-blog-lotus`` directory and execute Tox: ::
 
     tox
+
 
 Documentation
 -------------
@@ -84,6 +92,7 @@ And go on ``http://localhost:8002/`` or your server machine IP with port 8002.
 Note that you need to build the documentation at least once before using
 ``livedocs``.
 
+
 Releasing
 ---------
 
@@ -96,6 +105,7 @@ Which will build the package release and send it to Pypi with `twine`_.
 You may think to
 `configure your Pypi account <https://twine.readthedocs.io/en/latest/#configuration>`_
 on your machine to avoid to input it each time.
+
 
 Contribution
 ------------

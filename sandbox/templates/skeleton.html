@@ -1,11 +1,11 @@
-{% load i18n view_breadcrumbs lotus %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
+{% load i18n view_breadcrumbs lotus static %}{% get_current_language as LANGUAGE_CODE %}<!DOCTYPE html>
 <head>{% spaceless %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block head_title %}{% trans "Lotus weblog" %}{% endblock head_title %}</title>
     {% block head_metas %}{% endblock head_metas %}
     {% block head_styles %}
-    <link href="/static/css/main.css" rel="stylesheet">
+    <link href="{% static "css/main.css" %}" rel="stylesheet">
     {% endblock head_styles %}
 {% endspaceless %}
 </head>
@@ -57,5 +57,8 @@
     </div>
 </div>
 
+{% block javascript %}
+    <script src="{% static "js/main.js" %}"></script>
+{% endblock javascript %}
 {% endspaceless %}</body>
 </html>
