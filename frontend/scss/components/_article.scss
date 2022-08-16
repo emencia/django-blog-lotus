@@ -36,7 +36,9 @@
     .article-detail {
         .image {
             img {
-                max-width: rem-calc(800px);
+                @include media-breakpoint-up(lg) {
+                    max-width: rem-calc(800px);
+                }
             }
         }
     }
@@ -45,7 +47,9 @@
     .category-detail {
         .cover {
             img {
-                max-width: rem-calc(800px);
+                @include media-breakpoint-up(lg) {
+                    max-width: rem-calc(800px);
+                }
             }
         }
     }

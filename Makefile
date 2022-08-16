@@ -172,6 +172,13 @@ install-frontend:
 install: venv create-var-dirs install-backend migrate install-frontend frontend
 .PHONY: install
 
+migrations:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Making application migrations <---$(FORMATRESET)\n"
+	@echo ""
+	$(PYTHON_BIN) $(DJANGO_MANAGE) makemigrations $(APPLICATION_NAME)
+.PHONY: migrations
+
 check-migrations:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Checking for pending project applications models migrations <---$(FORMATRESET)\n"
@@ -220,8 +227,7 @@ demo:
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Filling with demo datas <---$(FORMATRESET)\n"
 	@echo ""
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-# 	$(PYTHON_BIN) $(DJANGO_MANAGE) lotus_demo --flush-all --translation=fr --translation=de
-	$(PYTHON_BIN) $(DJANGO_MANAGE) lotus_demo --flush-all --authors 2 --articles 8 --categories 2 --font ./tests/data_fixtures/font/VeraMono.ttf
+ 	$(PYTHON_BIN) $(DJANGO_MANAGE) lotus_demo --flush-all --translation=fr --translation=de --font ./tests/data_fixtures/font/VeraMono.ttf
 .PHONY: demo
 
 run:

@@ -310,14 +310,21 @@ def test_djangoimagecrafter_create(tests_settings, font, options, file_expection
 
     assert built_hash == sample_hash
 
+
+@pytest.mark.skip("font family management with image creation from demo maker")
 def test_porting_new_create_bitmap():
     """
     TODO:
+
     This test to remind the lotus_demo command do not use yet the font argument from
     DjangoSampleImageCrafter since it needs the font that is embedded in test structure
     that is not shipped in package.
 
     The font has to be located in application to be packaged and available out of the
     development environment.
+
+    This is probably to fix font size in image to better fit on lowest breakpoints,
+    or maybe the demo command is broken because it use it, i can not remember exactly
+    yet..
     """
     assert 1 == 42

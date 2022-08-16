@@ -8,7 +8,7 @@
     <h1 class="title border-bottom border-5 py-1 mb-3">{% trans "Articles" %}</h1>
 
     <div class="list container">
-        <div class="row row-cols-4 g-4">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
             {% for article in article_list %}
             <div class="col">
                 {% include "lotus/article/item.html" with article_object=article %}

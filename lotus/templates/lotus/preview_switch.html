@@ -1,7 +1,7 @@
 {% spaceless %}
 {% load i18n %}
 {% if allowed %}
-    <div class="d-flex me-lg-4">
+    <div class="d-flex me-lg-4 mb-4 mb-lg-0">
         {% if current_mode == "enabled" %}
             <a class="btn btn-sm btn-outline-light" href="{% url "lotus:preview-disable" %}?next={{ redirection }}">{% trans "Disable preview" %}</a>
         {% elif current_mode == "disabled" %}
