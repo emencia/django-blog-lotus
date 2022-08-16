@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+from PIL import ImageFont
+
 import lotus
 
 
@@ -106,3 +108,16 @@ def disable_preview(settings):
         session.save()
 
     return _inner
+
+
+@pytest.fixture(scope="module")
+def font(tests_settings):
+    """
+    Return a PIL ImageFont using embedded TrueType font in data fixtures directory.
+
+    Font will be loaded with hardcoded 12px font size.
+    """
+    return ImageFont.truetype(
+        str(tests_settings.fixtures_path / "font" / "VeraMono.ttf"),
+        12
+    )

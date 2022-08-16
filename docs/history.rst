@@ -15,6 +15,8 @@ Version 0.5.0 - Unreleased
   attributes, close issue #33;
 * Refactored *preview mode* (previously named *admin mode*) to use session instead
   of URL argument and make all missing improvements, close issue #26;
+* Added full frontend stack to be able to build Bootstrap CSS and JS for sandbox;
+* Improved Makefile with new actions and some color on action titles;
 
 
 Version 0.4.4 - 2022/01/03

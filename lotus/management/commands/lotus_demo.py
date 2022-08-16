@@ -1,6 +1,9 @@
 import random
+from pathlib import Path
 
 from faker import Faker
+
+from PIL import ImageFont
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -45,6 +48,16 @@ ARTICLE_LARGE_SIZE = getattr(settings, "LOTUS_DEMO_ARTICLE_LARGE_SIZE", (1280, 6
 class Command(BaseCommand):
     """
     Demo data maker.
+
+    TODO:
+
+        Variance creation is not safe against the 'articles' argument if it
+        is less than needed from variances, each variance requiring at least a
+        dedicated article in addition to the base articles.
+
+        The command should be tested to be safer and articles/authors/categories
+        arguments should be validated. Actually if they do not match needed length,
+        the script will fail.
     """
     help = (
         "Create Author, Article and Category objects for demonstration purpose."
@@ -71,7 +84,7 @@ class Command(BaseCommand):
             "--articles",
             type=int,
             default=(settings.LOTUS_ARTICLE_PAGINATION * 2),
-            help="Number of Article object to create. Must be greater than 1.",
+            help="Number of Article object to create. Must be greater than 7.",
         )
         parser.add_argument(
             "--flush-articles",
@@ -105,6 +118,7 @@ class Command(BaseCommand):
                 item[0] for item in settings.LANGUAGES
                 if (item[0] != settings.LANGUAGE_CODE)
             ],
+            default=[],
             action="append",
             help=(
                 "A language code (like 'fr' or 'fr-be') to enable for translations. "
@@ -113,6 +127,17 @@ class Command(BaseCommand):
                 "language for translations, object are only created for default "
                 "language from 'settings.LANGUAGE_CODE'."
             )
+        )
+        parser.add_argument(
+            "--font",
+            type=str,
+            metavar="FILEPATH",
+            default=None,
+            help=(
+                "A path to a TrueType font to use to create random bitmap images. If "
+                "empty, a default non TrueType font will be used which leads to badly "
+                "positionned text in bitmap images."
+            ),
         )
 
     def flush(self, articles=False, authors=False, categories=False):
@@ -279,11 +304,6 @@ class Command(BaseCommand):
     def create_articles(self, language, authors=[], categories=[], originals=None):
         """
         Create Article objects required length from factory.
-
-        TODO: We need to add some variance for some options. So we must have at least
-        an article with option featured, pinned, private, draft enabled. And another one
-        which mixes pinned and draft. Another one article which would be published in
-        a far futur would be nice too.
         """
         created = []
 
@@ -477,12 +497,24 @@ class Command(BaseCommand):
 
         return created
 
+    def get_font(self, font_path=None):
+        if not font_path:
+            return None
+
+        font = Path(font_path).resolve()
+        # Temporary validation, we can do better
+        assert font.exists()
+
+        return ImageFont.truetype(str(font), 12)
+
     def handle(self, *args, **options):
         self.stdout.write(
             self.style.SUCCESS("=== Starting creations ===")
         )
 
-        self.image_crafter = DjangoSampleImageCrafter()
+        self.font = self.get_font(font_path=options["font"])
+
+        self.image_crafter = DjangoSampleImageCrafter(font=self.font)
 
         self.translation_languages = options["translation"]
 

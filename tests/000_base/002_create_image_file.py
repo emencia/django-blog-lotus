@@ -27,7 +27,7 @@ def test_imagecrafter_file_extension(format_name, expected):
 ])
 def test_imagecrafter_mode(format_name, expected):
     """
-    Method should returns the right mode more according to given format.
+    Method should returns the right mode according to given format.
     """
     builder = SampleImageCrafter()
     assert builder.get_mode(format_name) == expected
@@ -57,7 +57,7 @@ def test_imagecrafter_mode(format_name, expected):
 ])
 def test_imagecrafter_filename(file_extension, options, expected):
     """
-    Method should returns the right filename more according to given options.
+    Method should returns the right filename according to given options.
     """
     builder = SampleImageCrafter()
     assert builder.get_filename(file_extension, **options) == expected
@@ -91,7 +91,7 @@ def test_imagecrafter_filename(file_extension, options, expected):
 ])
 def test_imagecrafter_text_content(text, width, height, expected):
     """
-    Method should returns the right text content more according to options.
+    Method should returns the right text content according to options.
     """
     builder = SampleImageCrafter()
     assert builder.get_text_content(text, width, height) == expected
@@ -212,12 +212,12 @@ def test_imagecrafter_create_vectorial(tests_settings, width, height, bg_color, 
         ),
     ]
 )
-def test_imagecrafter_create_bitmap(tests_settings, mode, format_name, width, height,
-                                    bg_color, options, file_expection):
+def test_imagecrafter_create_bitmap(tests_settings, font, mode, format_name,
+                                    width, height, bg_color, options, file_expection):
     """
     Method should creates the right bitmap file according to given options.
     """
-    builder = SampleImageCrafter()
+    builder = SampleImageCrafter(font=font)
     built = builder.create_bitmap(mode, format_name, width, height, bg_color, **options)
     built_hash = sum_file_object(built)
 
@@ -252,11 +252,11 @@ def test_imagecrafter_create_bitmap(tests_settings, mode, format_name, width, he
         "burlywood_with_text.svg"
     ),
 ])
-def test_imagecrafter_create(tests_settings, options, file_expection):
+def test_imagecrafter_create(tests_settings, font, options, file_expection):
     """
     Method should creates the right image file object according to given options.
     """
-    builder = SampleImageCrafter()
+    builder = SampleImageCrafter(font=font)
     built = builder.create(**options)
     sample = tests_settings.fixtures_path / "image_samples" / file_expection
 
@@ -290,11 +290,11 @@ def test_imagecrafter_create(tests_settings, options, file_expection):
         "burlywood_with_text.svg"
     ),
 ])
-def test_djangoimagecrafter_create(tests_settings, options, file_expection):
+def test_djangoimagecrafter_create(tests_settings, font, options, file_expection):
     """
     Method should creates the right Django file object according to given options.
     """
-    builder = DjangoSampleImageCrafter()
+    builder = DjangoSampleImageCrafter(font=font)
     built = builder.create(**options)
     sample = tests_settings.fixtures_path / "image_samples" / file_expection
 
@@ -309,3 +309,15 @@ def test_djangoimagecrafter_create(tests_settings, options, file_expection):
             sample_hash = sum_file_object(sample_file)
 
     assert built_hash == sample_hash
+
+def test_porting_new_create_bitmap():
+    """
+    TODO:
+    This test to remind the lotus_demo command do not use yet the font argument from
+    DjangoSampleImageCrafter since it needs the font that is embedded in test structure
+    that is not shipped in package.
+
+    The font has to be located in application to be packaged and available out of the
+    development environment.
+    """
+    assert 1 == 42

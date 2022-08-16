@@ -7,7 +7,7 @@ Imaging utilities
 import io
 
 from PIL import Image as PILimage
-from PIL import ImageDraw as PILdrawer
+from PIL import ImageDraw
 
 from django.core.files import File
 
@@ -18,7 +18,19 @@ class SampleImageCrafter:
 
     Basically every supported format from PIL should work however this code only knows
     about JPEG, GIF, PNG and SVG.
+
+    Keyword Arguments:
+        font (Pil.ImageFont): A font object to use. This is only used for bitmap image.
+            It is strongly recommended to use a TrueType font. Default is None, this
+            will use the default PIL font. Note than text without a TrueType font will
+            be badly positionned (almost centered but largely shifted).
     """
+    def __init__(self, *args, **kwargs):
+        self.font = None
+
+        if "font" in kwargs:
+            self.font = kwargs.pop("font")
+
     def get_text_content(self, text, width, height):
         """
         Get the text content to include in image.
@@ -197,7 +209,7 @@ class SampleImageCrafter:
         return io.StringIO(svg)
 
     def create_bitmap(self, mode, format_name, width, height, bg_color,
-                      text_content=None, text_color=None):
+                          text_content=None, text_color=None):
         """
         Create Bitmap image object.
 
@@ -219,17 +231,16 @@ class SampleImageCrafter:
         """
         img = PILimage.new(mode, (width, height), bg_color)
 
+
         # Optional text, always centered
         if text_color and text_content:
-            draw = PILdrawer.Draw(img)
-            text_width, text_height = draw.textsize(text_content)
+            draw = ImageDraw.Draw(img)
             draw.text(
-                (
-                    (width - text_width) / 2,
-                    (height - text_height) / 2
-                ),
+                (width / 2, height / 2),
                 text_content,
                 fill=text_color,
+                font=self.font,
+                anchor="mm",
             )
 
         output = io.BytesIO()

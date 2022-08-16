@@ -23,7 +23,7 @@ Add it to your installed Django apps in settings : ::
     INSTALLED_APPS = (
         ...
         "view_breadcrumbs",
-        "lotus",
+        "lotus.apps.LotusConfig",
     )
 
 Remove the line with ``view_breadcrumbs`` if you didn't installed the full features.
