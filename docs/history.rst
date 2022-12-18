@@ -8,15 +8,23 @@ History
 Version 0.5.0 - Unreleased
 --------------------------
 
-**Not released to a package**
+**Enter in beta stage**
 
+* **Dropped Python 3.6 support**;
 * Add github templates for bug report and feature request;
 * Define admin context varname and url arg from settings instead of AdminModeMixin
   attributes, close issue #33;
 * Refactored *preview mode* (previously named *admin mode*) to use session instead
   of URL argument and make all missing improvements, close issue #26;
-* Added full frontend stack to be able to build Bootstrap CSS and JS for sandbox;
+* Added full frontend stack to be able to build Bootstrap CSS and JS for sandbox.
+  However frontend assets are currently directly deployed in sandbox and loaded with
+  django static tag, there is no 'django-webpack' configuration to use;
 * Improved Makefile with new actions and some color on action titles;
+* Fixed Demonstration layout for responsive issues and missing Bootstrap Javascript
+  loading;
+* Changed ``SampleImageCrafter`` to use a TrueType font that is required to remove
+  usage of deprecated ``ImageDraw.textsize``;
+* Splitted dev requirements to reduce Tox environment installation time;
 
 
 Version 0.4.4 - 2022/01/03

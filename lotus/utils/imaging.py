@@ -209,7 +209,7 @@ class SampleImageCrafter:
         return io.StringIO(svg)
 
     def create_bitmap(self, mode, format_name, width, height, bg_color,
-                          text_content=None, text_color=None):
+                      text_content=None, text_color=None):
         """
         Create Bitmap image object.
 
@@ -230,7 +230,6 @@ class SampleImageCrafter:
             io.BytesIO: Image object in a byte buffer.
         """
         img = PILimage.new(mode, (width, height), bg_color)
-
 
         # Optional text, always centered
         if text_color and text_content:

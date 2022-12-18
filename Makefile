@@ -54,6 +54,13 @@ help:
 	@echo "  watch-css                     -- to watch for Sass changes to rebuild CSS"
 	@echo "  css-prod                      -- to build compressed and minified CSS from Sass sources"
 	@echo
+	@echo "  js                            -- to build uncompressed Javascript from sources"
+	@echo "  watch-js                      -- to watch for Javascript sources changes to rebuild assets"
+	@echo "  js-prod                       -- to build minified JS assets"
+	@echo
+	@echo "  frontend                      -- to build uncompressed frontend assets (CSS, JS, etc..)"
+	@echo "  frontend-prod                 -- to build minified frontend assets (CSS, JS, etc..)"
+	@echo
 	@echo "  docs                          -- to build documentation"
 	@echo "  livedocs                      -- to run livereload server to rebuild documentation on source changes"
 	@echo
@@ -158,7 +165,7 @@ install-backend:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing backend requirements <---$(FORMATRESET)\n"
 	@echo ""
-	$(PIP) install -e .[breadcrumbs,dev]
+	$(PIP) install -e .[breadcrumbs,dev,quality,doc]
 .PHONY: install-backend
 
 install-frontend:
