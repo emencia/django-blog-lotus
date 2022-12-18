@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..models import Article, Author
-from .mixins import PreviewModeMixin, ArticleFilterMixin
+from .mixins import PreviewModeMixin, ArticleFilterMixin, LotusContextStage
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -13,7 +13,8 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-class AuthorIndexView(BaseBreadcrumbMixin, PreviewModeMixin, ListView):
+class AuthorIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
+                      ListView):
     """
     List of authors which have contributed at least to one article.
     """
@@ -23,6 +24,7 @@ class AuthorIndexView(BaseBreadcrumbMixin, PreviewModeMixin, ListView):
     context_object_name = "author_list"
     crumb_title = _("Authors")
     crumb_urlname = "lotus:author-index"
+    lotus_stage = "authors"
 
     @property
     def crumbs(self):
@@ -36,8 +38,8 @@ class AuthorIndexView(BaseBreadcrumbMixin, PreviewModeMixin, ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class AuthorDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin,
-                       SingleObjectMixin, ListView):
+class AuthorDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
+                       PreviewModeMixin, SingleObjectMixin, ListView):
     """
     Author detail and its related article list.
 
@@ -54,6 +56,7 @@ class AuthorDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin
     pk_url_kwarg = None
     crumb_title = None  # No usage since title depends from object
     crumb_urlname = "lotus:author-detail"
+    lotus_stage = "authors"
 
     @property
     def crumbs(self):

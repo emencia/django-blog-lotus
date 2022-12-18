@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from ..models import Article, Category
 
-from .mixins import PreviewModeMixin, ArticleFilterMixin
+from .mixins import PreviewModeMixin, ArticleFilterMixin, LotusContextStage
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -14,7 +14,8 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-class CategoryIndexView(BaseBreadcrumbMixin, PreviewModeMixin, ListView):
+class CategoryIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
+                        ListView):
     """
     List of categories
     """
@@ -24,6 +25,7 @@ class CategoryIndexView(BaseBreadcrumbMixin, PreviewModeMixin, ListView):
     context_object_name = "category_list"
     crumb_title = _("Categories")
     crumb_urlname = "lotus:category-index"
+    lotus_stage = "categories"
 
     @property
     def crumbs(self):
@@ -40,8 +42,8 @@ class CategoryIndexView(BaseBreadcrumbMixin, PreviewModeMixin, ListView):
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin,
-                         SingleObjectMixin, ListView):
+class CategoryDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
+                         PreviewModeMixin, SingleObjectMixin, ListView):
     """
     Category detail and its related article list.
     """
@@ -54,6 +56,7 @@ class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMix
     pk_url_kwarg = None
     crumb_title = None  # No usage since title depends from object
     crumb_urlname = "lotus:category-detail"
+    lotus_stage = "categories"
 
     @property
     def crumbs(self):

@@ -25,6 +25,8 @@ Version 0.5.0 - Unreleased
 * Changed ``SampleImageCrafter`` to use a TrueType font that is required to remove
   usage of deprecated ``ImageDraw.textsize``;
 * Splitted dev requirements to reduce Tox environment installation time;
+* Added ``LotusContextStage`` mixin in views for a basic way to mark Lotus menu items
+  as active depending current view;
 
 
 Version 0.4.4 - 2022/01/03

@@ -315,13 +315,13 @@ flake:
 	$(FLAKE) --statistics --show-source tests
 .PHONY: flake
 
-tests:
+test:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Tests <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTEST) -vv --reuse-db tests/
 	rm -Rf var/media-tests/
-.PHONY: tests
+.PHONY: test
 
 test-initial:
 	@echo ""

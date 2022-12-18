@@ -24,13 +24,13 @@
             <div class="collapse navbar-collapse" id="main-navbar-toggler">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url "lotus:article-index" %}">{% trans "Articles" %}</a>
+                        <a class="nav-link{% if lotus_stage == "articles" %} active{% endif %}" href="{% url "lotus:article-index" %}">{% trans "Articles" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url "lotus:category-index" %}">{% trans "Categories" %}</a>
+                        <a class="nav-link{% if lotus_stage == "categories" %} active{% endif %}" href="{% url "lotus:category-index" %}">{% trans "Categories" %}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url "lotus:author-index" %}">{% trans "Authors" %}</a>
+                        <a class="nav-link{% if lotus_stage == "authors" %} active{% endif %}" href="{% url "lotus:author-index" %}">{% trans "Authors" %}</a>
                     </li>
                 </ul>
 

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..models import Article
-from .mixins import PreviewModeMixin, ArticleFilterMixin
+from .mixins import PreviewModeMixin, ArticleFilterMixin, LotusContextStage
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -13,8 +13,8 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin,
-                       ListView):
+class ArticleIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
+                       PreviewModeMixin, ListView):
     """
     Paginated list of articles.
     """
@@ -24,6 +24,7 @@ class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin
     context_object_name = "article_list"
     crumb_title = _("Articles")
     crumb_urlname = "lotus:article-index"
+    lotus_stage = "articles"
 
     @property
     def crumbs(self):
@@ -37,8 +38,8 @@ class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixin,
-                        DetailView):
+class ArticleDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
+                        PreviewModeMixin, DetailView):
     """
     Article detail.
     """
@@ -48,6 +49,7 @@ class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterMixin, PreviewModeMixi
     context_object_name = "article_object"
     crumb_title = None  # No usage since title depends from object
     crumb_urlname = "lotus:article-detail"
+    lotus_stage = "articles"
 
     @property
     def crumbs(self):
