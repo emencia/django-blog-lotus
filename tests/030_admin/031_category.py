@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
@@ -74,7 +74,7 @@ def test_category_admin_change_form(db, admin_client):
 
     # Check everything has been saved
     assert updated_obj.title == obj.title
-    assert os.path.exists(obj.cover.path) is True
+    assert Path(obj.cover.path).exists() is True
 
 
 def test_category_admin_original_choices(db, admin_client):

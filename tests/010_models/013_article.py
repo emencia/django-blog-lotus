@@ -1,5 +1,5 @@
-import os
 import datetime
+from pathlib import Path
 
 import pytest
 import pytz
@@ -401,12 +401,12 @@ def test_article_model_file_purge(db):
     ping.delete()
 
     # Files are deleted along their object
-    assert os.path.exists(ping_cover_path) is False
-    assert os.path.exists(ping_image_path) is False
+    assert Path(ping_cover_path).exists() is False
+    assert Path(ping_image_path).exists() is False
     # Paranoiac mode: other existing similar filename (as uploaded) are conserved
     # since Django rename file with a unique hash if filename alread exist, they
     # should not be mistaken
-    assert os.path.exists(pong_cover_path) is True
+    assert Path(pong_cover_path).exists() is True
 
     # Change object file to a new one
     pong.cover = crafter.create(filename="new_cover.png")
@@ -415,10 +415,10 @@ def test_article_model_file_purge(db):
 
     # During pre save signal, old file is removed from FS and new one is left
     # untouched
-    assert os.path.exists(pong_cover_path) is False
-    assert os.path.exists(pong_image_path) is False
-    assert os.path.exists(pong.cover.path) is True
-    assert os.path.exists(pong.image.path) is True
+    assert Path(pong_cover_path).exists() is False
+    assert Path(pong_image_path).exists() is False
+    assert Path(pong.cover.path).exists() is True
+    assert Path(pong.image.path).exists() is True
 
 
 def test_article_model_get_states(db):

@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 import datetime
 
 import pytz
@@ -184,8 +184,8 @@ def test_article_admin_change_form(db, admin_client):
 
     # Check everything has been saved
     assert updated_obj.title == obj.title
-    assert os.path.exists(obj.cover.path) is True
-    assert os.path.exists(obj.image.path) is True
+    assert Path(obj.cover.path).exists() is True
+    assert Path(obj.image.path).exists() is True
 
 
 def test_article_admin_original_choices(db, admin_client):

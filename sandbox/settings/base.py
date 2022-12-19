@@ -2,24 +2,21 @@
 Base Django settings for sandbox
 """
 
-from os.path import abspath, dirname, join, normpath
+from pathlib import Path
 
 
 SECRET_KEY = "***TOPSECRET***"
 
 
-# Root of project
-BASE_DIR = normpath(
-    join(
-        dirname(abspath(__file__)),
-        "..",
-        "..",
-    )
-)
+# Root of project repository
+BASE_DIR = Path(__file__).parents[2]
 
 # Django project
-PROJECT_PATH = join(BASE_DIR, "sandbox")
-VAR_PATH = join(BASE_DIR, "var")
+PROJECT_PATH = BASE_DIR / "sandbox"
+
+# Variable content directory, mostly use for local db and media storage in
+# deployed environments
+VAR_PATH = BASE_DIR / "var"
 
 DEBUG = False
 
@@ -58,7 +55,7 @@ LANGUAGES = (
 
 # A tuple of directories where Django looks for translation files
 LOCALE_PATHS = [
-    join(PROJECT_PATH, "locale"),
+    PROJECT_PATH / "locale",
 ]
 
 SITE_ID = 1
@@ -76,7 +73,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = join(VAR_PATH, "media")
+MEDIA_ROOT = VAR_PATH / "media"
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -87,7 +84,7 @@ MEDIA_URL = "/media/"
 # Don't put anything in this directory yourself; store your static files
 # in apps "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = join(VAR_PATH, "static")
+STATIC_ROOT = VAR_PATH / "static"
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -98,7 +95,7 @@ STATICFILES_DIRS = [
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    join(PROJECT_PATH, "static-sources"),
+    PROJECT_PATH / "static-sources",
 ]
 
 
@@ -122,7 +119,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            join(PROJECT_PATH, "templates"),
+            PROJECT_PATH / "templates",
         ],
         "APP_DIRS": True,
         "OPTIONS": {

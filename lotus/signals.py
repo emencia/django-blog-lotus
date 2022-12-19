@@ -4,7 +4,7 @@ Signal receivers functions
 ==========================
 
 """
-import os
+from pathlib import Path
 
 
 def auto_purge_cover_file_on_delete(sender, instance, **kwargs):
@@ -13,11 +13,7 @@ def auto_purge_cover_file_on_delete(sender, instance, **kwargs):
 
     To be used on signal ``django.db.models.signals.post_delete``.
     """
-    if (
-        instance.cover and
-        os.path.exists(instance.cover.path) and
-        os.path.isfile(instance.cover.path)
-    ):
+    if instance.cover and Path(instance.cover.path).is_file():
         instance.cover.storage.delete(instance.cover.path)
 
 
@@ -44,11 +40,7 @@ def auto_purge_cover_file_on_change(sender, instance, **kwargs):
     else:
         old_cover = old_obj.cover
 
-    if (
-        old_cover and old_cover != instance.cover and
-        os.path.exists(old_cover.path) and
-        os.path.isfile(old_cover.path)
-    ):
+    if old_cover and old_cover != instance.cover and Path(old_cover.path).is_file():
         instance.cover.storage.delete(old_cover.path)
 
 
@@ -59,18 +51,10 @@ def auto_purge_media_files_on_delete(sender, instance, **kwargs):
 
     To be used on signal ``django.db.models.signals.post_delete``.
     """
-    if (
-        instance.cover and
-        os.path.exists(instance.cover.path) and
-        os.path.isfile(instance.cover.path)
-    ):
+    if instance.cover and Path(instance.cover.path).is_file():
         instance.cover.storage.delete(instance.cover.path)
 
-    if (
-        instance.image and
-        os.path.exists(instance.image.path) and
-        os.path.isfile(instance.image.path)
-    ):
+    if instance.image and Path(instance.image.path).is_file():
         instance.image.storage.delete(instance.image.path)
 
 
@@ -98,16 +82,8 @@ def auto_purge_media_files_on_change(sender, instance, **kwargs):
         old_cover = old_obj.cover
         old_image = old_obj.image
 
-    if (
-        old_cover and old_cover != instance.cover and
-        os.path.exists(old_cover.path) and
-        os.path.isfile(old_cover.path)
-    ):
+    if old_cover and old_cover != instance.cover and Path(old_cover.path).is_file():
         instance.cover.storage.delete(old_cover.path)
 
-    if (
-        old_image and old_image != instance.image and
-        os.path.exists(old_image.path) and
-        os.path.isfile(old_image.path)
-    ):
+    if old_image and old_image != instance.image and Path(old_image.path).is_file():
         instance.image.storage.delete(old_image.path)

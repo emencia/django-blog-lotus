@@ -10,7 +10,8 @@ Version 0.5.0 - Unreleased
 
 **Enter in beta stage**
 
-* **Dropped Python 3.6 support**;
+* **Dropped Python 3.6 and 3.7 support**;
+* **Added Python 3.10 support**;
 * Add github templates for bug report and feature request;
 * Define admin context varname and url arg from settings instead of AdminModeMixin
   attributes, close issue #33;
@@ -27,6 +28,7 @@ Version 0.5.0 - Unreleased
 * Splitted dev requirements to reduce Tox environment installation time;
 * Added ``LotusContextStage`` mixin in views for a basic way to mark Lotus menu items
   as active depending current view;
+* Replaced usage of ``os`` module for disk I/O in favor of ``pathlib.Path``;
 
 
 Version 0.4.4 - 2022/01/03

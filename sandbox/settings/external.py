@@ -12,7 +12,7 @@ TEMPLATES[0]['OPTIONS']['debug'] = DEBUG  # noqa: F405
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": join(VAR_PATH, "db", "db.sqlite3"),  # noqa: F405
+        "NAME": VAR_PATH / "db" / "db.sqlite3",  # noqa: F405
     }
 }
 
