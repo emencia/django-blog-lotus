@@ -12,6 +12,7 @@ Version 0.5.0 - Unreleased
 
 * **Dropped Python 3.6 and 3.7 support**;
 * **Added Python 3.10 support**;
+* **Added Django 4.0 and 4.1 support**;
 * Add github templates for bug report and feature request;
 * Define admin context varname and url arg from settings instead of AdminModeMixin
   attributes, close issue #33;
