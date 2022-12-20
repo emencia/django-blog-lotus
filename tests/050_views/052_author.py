@@ -1,8 +1,14 @@
 import datetime
 
 import pytest
-import pytz
 from freezegun import freeze_time
+
+# Try to use the builtin zoneinfo available since Python 3.9
+try:
+    from zoneinfo import ZoneInfo
+# Django 4.x install the backports for Python 3.8
+except ModuleNotFoundError:
+    from backports.zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.urls import reverse
@@ -207,9 +213,9 @@ def test_author_view_detail_content(
     }
 
     # Date references
-    default_tz = pytz.timezone("UTC")
-    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    utc = ZoneInfo("UTC")
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
 
     picsou = AuthorFactory()
     nobody = AuthorFactory(username="nobody")

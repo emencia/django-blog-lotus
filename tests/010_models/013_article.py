@@ -2,7 +2,13 @@ import datetime
 from pathlib import Path
 
 import pytest
-import pytz
+
+# Try to use the builtin zoneinfo available since Python 3.9
+try:
+    from zoneinfo import ZoneInfo
+# Django 4.x install the backports for Python 3.8
+except ModuleNotFoundError:
+    from backports.zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -427,11 +433,11 @@ def test_article_model_get_states(db):
     values and publication criterias.
     """
     # Date references
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 00))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
-    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
 
     article_draft = ArticleFactory(
         title="draft",
@@ -506,16 +512,15 @@ def test_article_model_get_states(db):
 
 def test_article_model_is_published(db):
     """
-    TODO:
     Object method "is_published" should return a boolean for publication state.
     """
     # Date references
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 00))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
-    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
-    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 00))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
+    next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
 
     draft = ArticleFactory(
         title="draft",

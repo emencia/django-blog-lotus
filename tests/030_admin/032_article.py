@@ -1,8 +1,14 @@
 from pathlib import Path
 import datetime
 
-import pytz
 from freezegun import freeze_time
+
+# Try to use the builtin zoneinfo available since Python 3.9
+try:
+    from zoneinfo import ZoneInfo
+# Django 4.x install the backports for Python 3.8
+except ModuleNotFoundError:
+    from backports.zoneinfo import ZoneInfo
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse
@@ -44,10 +50,10 @@ def test_article_admin_list_is_published(db, admin_client):
     "is_published" depending item is published or not (following publication criterias).
     """
     # Date references
-    default_tz = pytz.timezone("UTC")
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
-    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 00))
+    utc = ZoneInfo("UTC")
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
+    next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
 
     draft = ArticleFactory(
         title="draft",

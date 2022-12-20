@@ -1,8 +1,14 @@
 import datetime
 
 import pytest
-import pytz
 from freezegun import freeze_time
+
+# Try to use the builtin zoneinfo available since Python 3.9
+try:
+    from zoneinfo import ZoneInfo
+# Django 4.x install the backports for Python 3.8
+except ModuleNotFoundError:
+    from backports.zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.urls import reverse
@@ -292,11 +298,11 @@ def test_article_view_list_publication(
     ]
 
     # Date references
-    default_tz = pytz.timezone("UTC")
-    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
-    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 00))
+    utc = ZoneInfo("UTC")
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
+    next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
 
     # Create 10 articles (according to pagination limit) with different publication
     # parameters
@@ -461,8 +467,8 @@ def test_article_view_detail_publication(db, admin_client, client, enable_previe
     Publication criteria should be respected to view an Article, excepted for admin
     mode.
     """
-    default_tz = pytz.timezone("UTC")
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    utc = ZoneInfo("UTC")
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
 
     instance = ArticleFactory(publish_end=past_hour)
 

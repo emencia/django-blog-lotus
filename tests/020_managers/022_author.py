@@ -1,7 +1,13 @@
 import datetime
 
-import pytz
 from freezegun import freeze_time
+
+# Try to use the builtin zoneinfo available since Python 3.9
+try:
+    from zoneinfo import ZoneInfo
+# Django 4.x install the backports for Python 3.8
+except ModuleNotFoundError:
+    from backports.zoneinfo import ZoneInfo
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import ArticleFactory, AuthorFactory
@@ -15,11 +21,11 @@ def test_author_manager_active(db):
     Author manager should be able to get all author which have contributed to one
     article or more with possibility to filter on language.
     """
-    default_tz = pytz.timezone("UTC")
+    utc = ZoneInfo("UTC")
 
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
     # Today 5min sooner to avoid shifting with pytest and factory delays
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
+    today = datetime.datetime(2012, 10, 15, 9, 55).replace(tzinfo=utc)
 
     # Some authors
     picsou = AuthorFactory(username="picsou")
@@ -97,11 +103,11 @@ def test_author_manager_published(db):
     """
     Demonstrate Article manager usage from Author "articles" relation.
     """
-    default_tz = pytz.timezone("UTC")
+    utc = ZoneInfo("UTC")
 
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
     # Today 5min sooner
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
+    today = datetime.datetime(2012, 10, 15, 9, 55).replace(tzinfo=utc)
 
     # Some authors
     picsou = AuthorFactory(username="picsou")

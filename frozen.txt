@@ -1,16 +1,16 @@
-# Frozen requirement versions from '0.5.0rc10' installation
-Django==3.2.15
-django-ckeditor==6.5.0
-django-view-breadcrumbs==2.3.0
+# Frozen requirement versions from '0.5.0rc12' installation
+Django==4.1.4
+django-ckeditor==6.5.1
+django-view-breadcrumbs==2.4.1
 factory-boy==3.2.1
-flake8==5.0.4
+flake8==6.0.0
 freezegun==1.2.2
 livereload==2.6.3
-Pillow==9.2.0
+Pillow==9.3.0
 pyquery==1.4.3
-pytest==7.1.2
+pytest==7.2.0
 pytest-django==4.5.2
-Sphinx==5.1.1
-sphinx-rtd-theme==1.0.0
-tox==3.25.1
-twine==4.0.1
+Sphinx==5.3.0
+sphinx-rtd-theme==1.1.1
+tox==4.0.15
+twine==4.0.2

@@ -11,6 +11,8 @@ Version 0.5.0 - Unreleased
 **Enter in beta stage**
 
 * **Dropped Python 3.6 and 3.7 support**;
+* **Dropped Django 3.1 support** (in fact it should currently work but is not able to
+  run tests so we can not keep support);
 * **Added Python 3.10 support**;
 * **Added Django 4.0 and 4.1 support**;
 * Add github templates for bug report and feature request;

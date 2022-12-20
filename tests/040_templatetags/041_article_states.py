@@ -1,6 +1,11 @@
 import datetime
 
-import pytz
+# Try to use the builtin zoneinfo available since Python 3.9
+try:
+    from zoneinfo import ZoneInfo
+# Django 4.x install the backports for Python 3.8
+except ModuleNotFoundError:
+    from backports.zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.template import Context, Template
@@ -38,10 +43,10 @@ def test_tag_article_state_list_mixed(db):
     return all the right states.
     """
     # Date references
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 00))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
 
     article_object = ArticleFactory(
         title="pinned, private and ended one hour ago",
@@ -77,10 +82,10 @@ def test_tag_article_state_list_prefixed(db):
     return all the right states prefixed.
     """
     # Date references
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 00))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
 
     article_object = ArticleFactory(
         title="pinned, private and ended one hour ago",
@@ -117,10 +122,10 @@ def test_tag_article_states_mixed(db):
     return all the right states.
     """
     # Date references
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 00))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
 
     article_object = ArticleFactory(
         title="pinned, private and ended one hour ago",
@@ -155,10 +160,10 @@ def test_tag_article_states_prefixed(db):
     return all the right states prefixed.
     """
     # Date references
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 00))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 1, 00))
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 00))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
 
     article_object = ArticleFactory(
         title="pinned, private and ended one hour ago",

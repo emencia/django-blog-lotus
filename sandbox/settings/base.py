@@ -43,10 +43,6 @@ ALLOWED_HOSTS = ["*"]
 # TIME_ZONE = "America/Chicago"
 TIME_ZONE = "Europe/Paris"
 
-# Transitionnal settings to keep using pytz until we drop support for Django<4.0, this
-# will be removed in Django==5.0
-USE_DEPRECATED_PYTZ = True
-
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = "en"

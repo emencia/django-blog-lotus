@@ -1,7 +1,13 @@
 import datetime
 
 import pytest
-import pytz
+
+# Try to use the builtin zoneinfo available since Python 3.9
+try:
+    from zoneinfo import ZoneInfo
+# Django 4.x install the backports for Python 3.8
+except ModuleNotFoundError:
+    from backports.zoneinfo import ZoneInfo
 
 from django.template import (
     Context, Template, TemplateSyntaxError, TemplateDoesNotExist,
@@ -94,10 +100,10 @@ def test_tag_translation_siblings_article(db, settings):
     Tag "translation_siblings" should correctly build HTML with all article
     translations depending arguments given and template context.
     """
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 0))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 0).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 9, 55).replace(tzinfo=utc)
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
 
     # Create cheese articles with published FR translation and unplished (yet) DE
     # translation
@@ -183,10 +189,10 @@ def test_tag_translation_siblings_html_article(db, settings):
     Tag "translation_siblings_html" should correctly build HTML with all article
     translations depending arguments given and template context.
     """
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 0))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 0).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 9, 55).replace(tzinfo=utc)
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
 
     # Create cheese articles with published FR translation and unplished (yet) DE
     # translation
@@ -248,10 +254,10 @@ def test_tag_translation_siblings_html_article_bypass(db, settings):
     Tag optional argument "preview" should bypass usage of context variable to
     enable or disable the preview mode.
     """
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 0))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 0).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 9, 55).replace(tzinfo=utc)
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
 
     # Create cheese articles with published FR translation and unplished (yet) DE
     # translation

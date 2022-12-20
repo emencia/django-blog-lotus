@@ -1,7 +1,13 @@
 import datetime
 
-import pytz
 from freezegun import freeze_time
+
+# Try to use the builtin zoneinfo available since Python 3.9
+try:
+    from zoneinfo import ZoneInfo
+# Django 4.x install the backports for Python 3.8
+except ModuleNotFoundError:
+    from backports.zoneinfo import ZoneInfo
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
@@ -21,14 +27,14 @@ def test_article_managers(db):
     create a new one for each article, this should speed up the tests. This is possibly
     to port on other tests which create many articles.
     """
-    default_tz = pytz.timezone("UTC")
+    utc = ZoneInfo("UTC")
 
     # Craft dates
-    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
-    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 00))
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
+    next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
     # Today 5min sooner
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
+    today = datetime.datetime(2012, 10, 15, 9, 55).replace(tzinfo=utc)
 
     # Single language only
     common_kwargs = {
@@ -178,17 +184,17 @@ def test_article_managers_publication_time(db):
     date and time (which is required to have correct constraint) and so require a more
     complex lookup than with a simple datetime field.
     """
-    default_tz = pytz.timezone("UTC")
+    utc = ZoneInfo("UTC")
 
     # Craft dates
-    forged_now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 0))
-    yesterday = default_tz.localize(datetime.datetime(2012, 10, 14, 10, 0))
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
-    midnight = default_tz.localize(datetime.datetime(2012, 10, 15, 0, 0))
-    past_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 0))
-    sooner = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
-    next_hour = default_tz.localize(datetime.datetime(2012, 10, 15, 11, 0))
-    next_year = default_tz.localize(datetime.datetime(2013, 10, 15, 10, 0))
+    forged_now = datetime.datetime(2012, 10, 15, 10, 0).replace(tzinfo=utc)
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
+    midnight = datetime.datetime(2012, 10, 15, 0, 0).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 0).replace(tzinfo=utc)
+    sooner = datetime.datetime(2012, 10, 15, 9, 55).replace(tzinfo=utc)
+    next_hour = datetime.datetime(2012, 10, 15, 11, 0).replace(tzinfo=utc)
+    next_year = datetime.datetime(2013, 10, 15, 10, 0).replace(tzinfo=utc)
 
     ArticleFactory(
         slug="yesterday",
@@ -244,7 +250,7 @@ def test_article_managers_publication_time(db):
     # Here is reproduction of expected bug. Publish dates is below targeted date but
     # publish times are always bigger than targeted time.
     results = Article.objects.get_published(
-        target_date=default_tz.localize(datetime.datetime(2012, 10, 20, 0, 0)),
+        target_date=datetime.datetime(2012, 10, 20, 0, 0).replace(tzinfo=utc),
         language="en",
     )
     futur_items = [item.slug for item in results]
@@ -274,10 +280,10 @@ def test_article_managers_get_siblings(db):
     Manager method "get_siblings" should return all siblings article translations
     respecting publication criterias if needed.
     """
-    default_tz = pytz.timezone("UTC")
-    now = default_tz.localize(datetime.datetime(2012, 10, 15, 10, 00))
-    today = default_tz.localize(datetime.datetime(2012, 10, 15, 9, 55))
-    tomorrow = default_tz.localize(datetime.datetime(2012, 10, 16, 10, 0))
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 9, 55).replace(tzinfo=utc)
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
 
     ping = CategoryFactory(slug="ping")
 
