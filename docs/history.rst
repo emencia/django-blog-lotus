@@ -11,8 +11,8 @@ Version 0.5.0 - Unreleased
 **Enter in beta stage**
 
 * **Dropped Python 3.6 and 3.7 support**;
-* **Dropped Django 3.1 support** (in fact it should currently work but is not able to
-  run tests so we can not keep support);
+* **Dropped Django 3.1 support** (in fact it should currently work but won't able to
+  run tests so we can not keep official support);
 * **Added Python 3.10 support**;
 * **Added Django 4.0 and 4.1 support**;
 * Add github templates for bug report and feature request;
@@ -32,6 +32,9 @@ Version 0.5.0 - Unreleased
 * Added ``LotusContextStage`` mixin in views for a basic way to mark Lotus menu items
   as active depending current view;
 * Replaced usage of ``os`` module for disk I/O in favor of ``pathlib.Path``;
+* Replaced usage of ``pytz`` module for timezone crafting in tests to ``timezone``;
+* Fixed Tox to install ``backports.zoneinfo`` for combo Python 3.8 + Django 3.2,
+  required to run tests;
 
 
 Version 0.4.4 - 2022/01/03

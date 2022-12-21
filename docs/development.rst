@@ -60,8 +60,15 @@ Unittests
 Unittests are made to works on `Pytest`_, a shortcut in Makefile is available
 to start them on your current development install: ::
 
-    make tests
+    make test
 
+.. Note::
+
+    Tests needs a special additional package requirement to be run on specific combo
+    Python3.8 and Django 3.2, you need to install it after base install and before
+    running test: ::
+
+        .venv/bin/pip install backports.zoneinfo
 
 Tox
 ---
