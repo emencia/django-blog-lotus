@@ -8,13 +8,14 @@ History
 Version 0.5.0 - Unreleased
 --------------------------
 
-**Enter in beta stage**
-
+* **Enter in beta stage**;
+* **First release on PyPi**;
 * **Dropped Python 3.6 and 3.7 support**;
-* **Dropped Django 3.1 support** (in fact it should currently work but won't able to
+* **Dropped Django 3.1 support** (it should currently work but won't able to
   run tests so we can not keep official support);
 * **Added Python 3.10 support**;
 * **Added Django 4.0 and 4.1 support**;
+* **Rebooted again migrations**
 * Add github templates for bug report and feature request;
 * Define admin context varname and url arg from settings instead of AdminModeMixin
   attributes, close issue #33;
@@ -40,9 +41,7 @@ Version 0.5.0 - Unreleased
 Version 0.4.4 - 2022/01/03
 --------------------------
 
-**Not released to a package**
-
-This is the last Alpha branch version, it have everything working still needs some
+This is the last Alpha branch version, it has everything working still needs some
 improvements and minor features to come with Beta branch versions.
 
 * Improved image crafting for test and demo usage with new classes
@@ -64,8 +63,6 @@ improvements and minor features to come with Beta branch versions.
 
 Version 0.4.3 - 2021/12/27
 --------------------------
-
-**Not released to a package**
 
 * Article, Category and Author models;
 * Article and Category translations;

@@ -20,8 +20,17 @@ from ..managers import ArticleManager
 from ..signals import (
     auto_purge_media_files_on_delete, auto_purge_media_files_on_change,
 )
+from ..utils.file import uploadto_unique
 
 from .translated import Translated
+
+
+def cover_uploadto(instance, filename):
+    return uploadto_unique("lotus/article/cover/%y/%m", instance, filename)
+
+
+def image_uploadto(instance, filename):
+    return uploadto_unique("lotus/article/image/%y/%m", instance, filename)
 
 
 class Article(Translated):
@@ -203,7 +212,7 @@ class Article(Translated):
 
     cover = models.ImageField(
         verbose_name=_("cover image"),
-        upload_to="lotus/article/cover/%y/%m",
+        upload_to=cover_uploadto,
         max_length=255,
         blank=True,
         default="",
@@ -217,7 +226,7 @@ class Article(Translated):
 
     image = models.ImageField(
         verbose_name=_("main image"),
-        upload_to="lotus/article/image/%y/%m",
+        upload_to=image_uploadto,
         max_length=255,
         blank=True,
         default="",

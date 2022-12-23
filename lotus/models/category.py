@@ -15,8 +15,13 @@ from ..managers import CategoryManager
 from ..signals import (
     auto_purge_cover_file_on_delete, auto_purge_cover_file_on_change,
 )
+from ..utils.file import uploadto_unique
 
 from .translated import Translated
+
+
+def cover_uploadto(instance, filename):
+    return uploadto_unique("lotus/category/cover/%y/%m", instance, filename)
 
 
 class Category(Translated):
@@ -76,7 +81,7 @@ class Category(Translated):
 
     cover = models.ImageField(
         verbose_name=_("cover image"),
-        upload_to="lotus/category/cover/%y/%m",
+        upload_to=cover_uploadto,
         max_length=255,
         blank=True,
         default="",

@@ -17,8 +17,8 @@ finished yet. Full documentation is yet to be done.
 Dependancies
 ************
 
-* `Python`_>=3.6;
-* `Django`_>=3.1;
+* `Python`_>=3.8;
+* `Django`_>=3.2;
 * `django-ckeditor`_>=6.0.0;
 * `django-view-breadcrumbs`_>=2.2.1 (optional);
 
