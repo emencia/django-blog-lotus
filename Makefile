@@ -12,7 +12,7 @@ FLAKE=$(VENV_PATH)/bin/flake8
 PYTEST=$(VENV_PATH)/bin/pytest
 TWINE=$(VENV_PATH)/bin/twine
 TOX=$(VENV_PATH)/bin/tox
-SPHINX_RELOAD=$(VENV_PATH)/bin/python sphinx_reload.py
+SPHINX_RELOAD=$(/bin/python) sphinx_reload.py
 
 DEMO_DJANGO_SECRET_KEY=samplesecretfordev
 PACKAGE_NAME=django-blog-lotus

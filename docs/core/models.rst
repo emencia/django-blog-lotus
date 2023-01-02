@@ -1,4 +1,4 @@
-.. _intro_django-app_models:
+.. _intro_core_models:
 
 ======
 Models

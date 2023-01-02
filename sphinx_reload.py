@@ -37,9 +37,16 @@ server.watch(
     )
 )
 
-# Watch root modules for autodoc review from core docs
+# Watch Python modules for autodoc review
 server.watch(
     'lotus/*.py',
+    shell(
+        'make html',
+        cwd='docs'
+    )
+)
+server.watch(
+    'lotus/*/**.py',
     shell(
         'make html',
         cwd='docs'
