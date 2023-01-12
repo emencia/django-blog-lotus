@@ -1,7 +1,11 @@
+from pathlib import Path
+
 import pytest
 
 from django.conf import settings
 from django.urls import reverse
+
+from sorl.thumbnail.conf import settings as sorl_settings
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
@@ -233,7 +237,12 @@ def test_category_view_detail_content(
     Category detail page should have category contents and related articles following
     publication rules (as described in article list view tests).
     """
+    SORL_CACHE_PATH = str(
+        Path(settings.MEDIA_URL) / Path(sorl_settings.THUMBNAIL_PREFIX)
+    )
+
     STATE_PREFIX = "article--"
+
     # Available Django clients as a dict to be able to switch on
     client_for = {
         "anonymous": client,
@@ -285,11 +294,14 @@ def test_category_view_detail_content(
 
     # Parse HTML
     dom = html_pyquery(response)
-    title = dom.find("#lotus-content .category-detail .title")[0].text
-    cover = dom.find("#lotus-content .cover img")[0].get("src")
 
+    title = dom.find("#lotus-content .category-detail .title")[0].text
     assert title == picsou.title
-    assert cover == picsou.cover.url
+
+    cover_link = dom.find("#lotus-content .cover a")[0].get("href")
+    cover_img = dom.find("#lotus-content .cover img")[0].get("src")
+    assert cover_link == picsou.cover.url
+    assert cover_img.startswith(SORL_CACHE_PATH) is True
 
     # Get articles
     items = dom.find("#lotus-content .category-detail .articles .article")

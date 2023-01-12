@@ -149,7 +149,7 @@ INSTALLED_APPS = [
     "django.forms",
     "sorl.thumbnail",
     "smart_media",
-    "lotus.apps.LotusConfig",
+    "lotus",
 ]
 
 LOGIN_REDIRECT_URL = "/"

@@ -11,7 +11,7 @@
         <div class="row row-cols-1 row-cols-md-4 g-4">
             {% for author in author_list %}
             <div class="col">
-                {% include "lotus/author/item.html" with author_object=author %}
+                {% include "lotus/author/partials/item.html" with author_object=author from="author-list" %}
             </div>
             {% endfor %}
         </div>

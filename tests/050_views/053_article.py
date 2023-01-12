@@ -1,4 +1,5 @@
 import datetime
+from pathlib import Path
 
 import pytest
 from freezegun import freeze_time
@@ -9,6 +10,8 @@ try:
 # Django 4.x install the backports for Python 3.8
 except ModuleNotFoundError:
     from backports.zoneinfo import ZoneInfo
+
+from sorl.thumbnail.conf import settings as sorl_settings
 
 from django.conf import settings
 from django.urls import reverse
@@ -533,6 +536,10 @@ def test_article_view_detail_content(db, admin_client, enable_preview):
 
     Also, this does not care about textual content (title, lead, content, etc..).
     """
+    SORL_CACHE_PATH = str(
+        Path(settings.MEDIA_URL) / Path(sorl_settings.THUMBNAIL_PREFIX)
+    )
+
     picsou = AuthorFactory(first_name="Picsou", last_name="McDuck")
     AuthorFactory(first_name="Flairsou", last_name="Cresus")
 
@@ -563,24 +570,33 @@ def test_article_view_detail_content(db, admin_client, enable_preview):
     # Parse HTML response to get content and relations
     dom = html_pyquery(response)
     container = dom.find("#lotus-content .article-detail")[0]
+
     categories = [item.text for item in dom.find("#lotus-content .categories li a")]
+    assert categories == ["cat_1"]
+
     authors = [item.text for item in dom.find("#lotus-content .authors li a")]
+    assert authors == ["Picsou McDuck"]
+
     relateds = [item.text for item in dom.find("#lotus-content .relateds li a")]
-    cover = dom.find("#lotus-content .cover img")[0].get("src")
+    assert relateds == ["Bar"]
+
+    cover_link = dom.find("#lotus-content .cover a")[0].get("href")
+    cover_img = dom.find("#lotus-content .cover img")[0].get("src")
+    assert cover_link == article_3.cover.url
+    assert cover_img.startswith(SORL_CACHE_PATH) is True
+
+    large_link = dom.find("#lotus-content .image a")[0].get("href")
     large_img = dom.find("#lotus-content .image img")[0].get("src")
+    assert large_link == article_3.image.url
+    assert large_img.startswith(SORL_CACHE_PATH) is True
+
     classes = sorted([
         v.replace(STATE_PREFIX, "") for v in container.get("class").split()
         if v != "article-detail"
     ])
-
-    assert categories == ["cat_1"]
-    assert authors == ["Picsou McDuck"]
-    assert relateds == ["Bar"]
     assert classes == [
         STATES["status_draft"], STATES["featured"], STATES["pinned"], STATES["private"],
     ]
-    assert cover == article_3.cover.url
-    assert large_img == article_3.image.url
 
 
 def test_article_view_detail_metas(db, client):

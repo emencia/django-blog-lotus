@@ -36,6 +36,10 @@ Version 0.5.0 - Unreleased
 * Replaced usage of ``pytz`` module for timezone crafting in tests to ``timezone``;
 * Fixed Tox to install ``backports.zoneinfo`` for combo Python 3.8 + Django 3.2,
   required to run tests;
+* Added ``django-smart-media`` to requirements and implemented it as image model fields
+  and thumbnailing in templates;
+* Added new context argument ``from`` to "items" templates so these items will know
+  where they are used and possibly implement some variant behaviors;
 
 
 Version 0.4.4 - 2022/01/03

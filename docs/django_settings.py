@@ -153,6 +153,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "sorl.thumbnail",
+    "smart_media",
     "lotus",
 ]
 
@@ -160,4 +162,5 @@ INSTALLED_APPS = [
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW
 """
-from lotus.settings import *
+from smart_media.settings import *  # noqa: E402,F401,F403
+from lotus.settings import *  # noqa: E402,F401,F403

@@ -12,9 +12,9 @@
 
         <div class="row row-cols-1 row-cols-md-3 g-4">
             {% for article in object_list %}
-            <div class="col">
-                {% include "lotus/article/item.html" with article_object=article %}
-            </div>
+                <div class="col">
+                    {% include "lotus/article/partials/item.html" with article_object=article from="author-detail" %}
+                </div>
             {% endfor %}
         </div>
         {% include "lotus/pagination.html" %}

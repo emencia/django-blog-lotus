@@ -1,9 +1,9 @@
 {% extends "lotus/base.html" %}
-{% load i18n %}
+{% load i18n smart_image %}
 
 {% block head_title %}{{ category_object.title }}{% endblock head_title %}
 {% block head_metas %}
-{% if category_object.lead %}<meta name="description" content="{{ category_object.lead|striptags }}">{% endif %}
+    {% if category_object.lead %}<meta name="description" content="{{ category_object.lead|striptags }}">{% endif %}
 {% endblock head_metas %}
 
 {% block lotus_content %}{% spaceless %}
@@ -11,9 +11,14 @@
     <div class="detail mb-4">
         <h1 class="title">{{ category_object.title }}</h1>
 
-        <div class="cover bg-light rounded text-center mb-2 p-2">{% if category_object.cover %}
-            <img src="{{ category_object.cover.url }}" class="rounded" alt="">
-        {% endif %}</div>
+        <div class="cover bg-light rounded text-center mb-2 p-2">
+            {% if category_object.cover %}
+                <a href="{{ category_object.cover.url }}" target="_blank">
+                    {% media_thumb category_object.cover "300x200" crop="center" as cover_thumb %}
+                    <img src="{{ cover_thumb.url }}" class="rounded img-fluid" alt="">
+                </a>
+            {% endif %}
+        </div>
 
         <div class="description p-2 fs-5">{{ category_object.description|safe }}</div>
     </div>
@@ -23,9 +28,9 @@
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for article in object_list %}
-            <div class="col">
-                {% include "lotus/article/item.html" with article_object=article %}
-            </div>
+                <div class="col">
+                    {% include "lotus/article/partials/item.html" with article_object=article from="category-detail" %}
+                </div>
             {% endfor %}
         </div>
         {% include "lotus/pagination.html" %}

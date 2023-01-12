@@ -11,7 +11,7 @@
         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-4">
             {% for category in category_list %}
             <div class="col">
-                {% include "lotus/category/item.html" with category_object=category %}
+                {% include "lotus/category/partials/item.html" with category_object=category from="category-list" %}
             </div>
             {% endfor %}
         </div>

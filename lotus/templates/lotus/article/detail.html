@@ -1,9 +1,11 @@
 {% extends "lotus/base.html" %}
-{% load i18n lotus %}
+{% load i18n lotus smart_image %}
 
 {% block head_title %}{% if article_object.seo_title %}{{ article_object.seo_title }}{% else %}{{ article_object.title }}{% endif %}{% endblock head_title %}
 {% block head_metas %}
-{% if article_object.lead %}<meta name="description" content="{{ article_object.lead|striptags }}">{% endif %}
+    {% if article_object.lead %}
+        <meta name="description" content="{{ article_object.lead|striptags }}">
+    {% endif %}
 {% endblock head_metas %}
 
 {% block lotus_content %}{% spaceless %}
@@ -11,9 +13,14 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-lg-9">
-                {% if article_object.image %}<div class="image bg-light rounded text-center mb-2 p-2">
-                    <img src="{{ article_object.image.url }}" class="rounded" alt="">
-                </div>{% endif %}
+                {% if article_object.image %}
+                    <div class="image bg-light rounded text-center mb-2 p-2">
+                        <a href="{{ article_object.image.url }}" target="_blank">
+                            {% media_thumb article_object.image "948x416" as image_thumb %}
+                            <img src="{{ image_thumb.url }}" class="rounded" alt="">
+                        </a>
+                    </div>
+                {% endif %}
 
                 <h1 class="title">{{ article_object.title }}</h1>
 
@@ -39,7 +46,12 @@
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item text-center">
-                                <img src="{{ article_object.cover.url }}" class="rounded img-fluid" alt="">
+                                {% if article_object.cover %}
+                                    <a href="{{ article_object.cover.url }}" target="_blank">
+                                        {% media_thumb article_object.cover "300x200" crop="center" as cover_thumb %}
+                                        <img src="{{ cover_thumb.url }}" class="rounded img-fluid" alt="">
+                                    </a>
+                                {% endif %}
                             </li>
                         </ul>
                     </div>
@@ -47,101 +59,101 @@
 
                     {% article_state_list article_object as article_states %}
                     {% if "featured" in article_states or "pinned" in article_states or "draft" in article_states or "private" in article_states or "passed" in article_states or "not-yet" in article_states %}
-                    <div class="states card mb-4">
-                        <div class="card-header">
-                            <strong>{% trans "States" %}</strong>
+                        <div class="states card mb-4">
+                            <div class="card-header">
+                                <strong>{% trans "States" %}</strong>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                {% if "featured" in article_states %}
+                                    <li class="list-group-item">
+                                        <i class="bi bi-star" title="{% trans "Featured" %}"></i> {% trans "Featured" %}
+                                    </li>
+                                {% endif %}
+                                {% if "pinned" in article_states %}
+                                    <li class="list-group-item">
+                                        <i class="bi bi-pin-angle" title="{% trans "Pinned" %}"></i> {% trans "Pinned" %}
+                                    </li>
+                                {% endif %}
+                                {% if "draft" in article_states %}
+                                    <li class="list-group-item">
+                                        <i class="bi bi-pen" title="{% trans "Draft" %}"></i> {% trans "Draft" %}
+                                    </li>
+                                {% endif %}
+                                {% if "private" in article_states %}
+                                    <li class="list-group-item">
+                                        <i class="bi bi-key" title="{% trans "Private" %}"></i> {% trans "Private" %}
+                                    </li>
+                                {% endif %}
+                                {% if "not-yet" in article_states %}
+                                    <li class="list-group-item">
+                                        <i class="bi bi-calendar-event" title="{% trans "Scheduled publication" %}"></i> {% trans "Scheduled publication" %}
+                                    </li>
+                                {% endif %}
+                                {% if "passed" in article_states %}
+                                    <li class="list-group-item">
+                                        <i class="bi bi-calendar2-x" title="{% trans "Ended publication" %}"></i> {% trans "Ended publication" %}
+                                    </li>
+                                {% endif %}
+                            </ul>
                         </div>
-                        <ul class="list-group list-group-flush">
-                            {% if "featured" in article_states %}
-                                <li class="list-group-item">
-                                    <i class="bi bi-star" title="{% trans "Featured" %}"></i> {% trans "Featured" %}
-                                </li>
-                            {% endif %}
-                            {% if "pinned" in article_states %}
-                                <li class="list-group-item">
-                                    <i class="bi bi-pin-angle" title="{% trans "Pinned" %}"></i> {% trans "Pinned" %}
-                                </li>
-                            {% endif %}
-                            {% if "draft" in article_states %}
-                                <li class="list-group-item">
-                                    <i class="bi bi-pen" title="{% trans "Draft" %}"></i> {% trans "Draft" %}
-                                </li>
-                            {% endif %}
-                            {% if "private" in article_states %}
-                                <li class="list-group-item">
-                                    <i class="bi bi-key" title="{% trans "Private" %}"></i> {% trans "Private" %}
-                                </li>
-                            {% endif %}
-                            {% if "not-yet" in article_states %}
-                                <li class="list-group-item">
-                                    <i class="bi bi-calendar-event" title="{% trans "Scheduled publication" %}"></i> {% trans "Scheduled publication" %}
-                                </li>
-                            {% endif %}
-                            {% if "passed" in article_states %}
-                                <li class="list-group-item">
-                                    <i class="bi bi-calendar2-x" title="{% trans "Ended publication" %}"></i> {% trans "Ended publication" %}
-                                </li>
-                            {% endif %}
-                        </ul>
-                    </div>
                     {% endif %}
                 {% endif %}
 
                 {% translation_siblings article_object as sibling_stats %}
                 {% if sibling_stats.siblings %}
-                <div class="siblings card mb-4">
-                    <div class="card-header">
-                        <strong>{% trans "Available in languages" %}</strong>
+                    <div class="siblings card mb-4">
+                        <div class="card-header">
+                            <strong>{% trans "Available in languages" %}</strong>
+                        </div>
+                        {% include "lotus/article/partials/siblings.html" with siblings=sibling_stats.siblings %}
                     </div>
-                    {% include "lotus/article/partials/siblings.html" with siblings=sibling_stats.siblings %}
-                </div>
                 {% endif %}
 
                 {% with categories=article_object.get_categories %}
-                {% if categories %}
-                <div class="categories card mb-4">
-                    <div class="card-header">
-                        <strong>{% trans "Categories" %}</strong>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        {% for category in categories %}
-                        <li class="list-group-item">
-                            <a href="{{ category.get_absolute_url }}">{{ category.title }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
+                    {% if categories %}
+                        <div class="categories card mb-4">
+                            <div class="card-header">
+                                <strong>{% trans "Categories" %}</strong>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                {% for category in categories %}
+                                <li class="list-group-item">
+                                    <a href="{{ category.get_absolute_url }}">{{ category.title }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                 {% endwith %}
 
                 {% with authors=article_object.get_authors %}
-                {% if authors %}
-                <div class="authors card mb-4">
-                    <div class="card-header">
-                        <strong>{% trans "Authors" %}</strong>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        {% for author in authors %}
-                        <li class="list-group-item"><a href="{{ author.get_absolute_url }}">{{ author.get_full_name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
+                    {% if authors %}
+                        <div class="authors card mb-4">
+                            <div class="card-header">
+                                <strong>{% trans "Authors" %}</strong>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                {% for author in authors %}
+                                    <li class="list-group-item"><a href="{{ author.get_absolute_url }}">{{ author.get_full_name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                 {% endwith %}
 
                 {% with relateds=article_object.get_related %}
-                {% if relateds %}
-                <div class="relateds card mb-4">
-                    <div class="card-header">
-                        <strong>{% trans "Related articles" %}</strong>
-                    </div>
-                    <ul class="list-group list-group-flush">
-                        {% for related in relateds %}
-                        <li class="list-group-item"><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
+                    {% if relateds %}
+                        <div class="relateds card mb-4">
+                            <div class="card-header">
+                                <strong>{% trans "Related articles" %}</strong>
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                {% for related in relateds %}
+                                <li class="list-group-item"><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
                 {% endwith %}
             </div>
         </div>

@@ -316,7 +316,7 @@ livedocs:
 
 flake:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Flake <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Flake check <---$(FORMATRESET)\n"
 	@echo ""
 	$(FLAKE) --statistics --show-source $(APPLICATION_NAME)
 	$(FLAKE) --statistics --show-source sandbox
@@ -325,7 +325,7 @@ flake:
 
 test:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Tests <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Tests <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTEST) -vv --reuse-db tests/
 	rm -Rf var/media-tests/
@@ -333,7 +333,7 @@ test:
 
 test-initial:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Tests from zero <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Tests from zero <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTEST) -vv --reuse-db --create-db tests/
 	rm -Rf var/media-tests/
