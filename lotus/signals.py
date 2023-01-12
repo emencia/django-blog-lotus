@@ -66,7 +66,7 @@ def auto_purge_media_files_on_change(sender, instance, **kwargs):
     Try to perform an additional get request on instance object to get its
     previous value just before current save.
 
-    It's safe about case when file does not exists anymore.
+    It is safe if file does not exists anymore.
 
     To be used on signal ``django.db.models.signals.pre_save``.
     """

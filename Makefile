@@ -12,7 +12,7 @@ FLAKE=$(VENV_PATH)/bin/flake8
 PYTEST=$(VENV_PATH)/bin/pytest
 TWINE=$(VENV_PATH)/bin/twine
 TOX=$(VENV_PATH)/bin/tox
-SPHINX_RELOAD=$(/bin/python) sphinx_reload.py
+SPHINX_RELOAD=$(PYTHON_BIN) sphinx_reload.py
 
 DEMO_DJANGO_SECRET_KEY=samplesecretfordev
 PACKAGE_NAME=django-blog-lotus
@@ -43,6 +43,7 @@ help:
 	@echo "  migrate                       -- to apply demo database migrations"
 	@echo "  migrations                    -- to create new migrations for application after changes"
 	@echo "  check-migrations              -- to check for pending migrations (do not write anything)"
+	@echo "  check-django                  -- to run Django System check framework"
 	@echo "  superuser                     -- to create a superuser for Django admin"
 	@echo "  demo                          -- to fill database with demo datas (this removes every existing Author, Article and Category objects)"
 	@echo
@@ -178,6 +179,13 @@ install-frontend:
 
 install: venv create-var-dirs install-backend migrate install-frontend frontend
 .PHONY: install
+
+check-django:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Django System check framework <---$(FORMATRESET)\n"
+	@echo ""
+	$(PYTHON_BIN) $(DJANGO_MANAGE) check
+.PHONY: check-django
 
 migrations:
 	@echo ""

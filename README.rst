@@ -2,6 +2,8 @@
 .. _Django: https://www.djangoproject.com/
 .. _django-ckeditor: https://github.com/django-ckeditor/django-ckeditor
 .. _django-view-breadcrumbs: https://github.com/tj-django/django-view-breadcrumbs
+.. _django-smart-media: https://github.com/sveetch/django-smart-media
+
 
 =================
 Django Blog Lotus
@@ -12,6 +14,7 @@ A weblog application with Django.
 This is on alpha stage, everything is working but expected basic behaviors may not be
 finished yet. Full documentation is yet to be done.
 
+
 Dependancies
 ************
 
@@ -19,6 +22,8 @@ Dependancies
 * `Django`_>=3.2;
 * `django-ckeditor`_>=6.0.0;
 * `django-view-breadcrumbs`_>=2.2.1 (optional);
+* `django-smart-media`_;
+
 
 Links
 *****

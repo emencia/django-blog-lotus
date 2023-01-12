@@ -6,6 +6,8 @@ from django.contrib import admin
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
+from smart_media.admin import SmartModelAdmin
+
 from ..forms import ArticleAdminForm
 from ..models import Article
 from ..views.admin import ArticleAdminTranslateView
@@ -17,7 +19,8 @@ from .translated import LanguageListFilter, TranslationStateListFilter
 LANGUAGE_NAMES = dict(settings.LANGUAGES)
 
 
-class ArticleAdmin(admin.ModelAdmin):
+@admin.register(Article)
+class ArticleAdmin(SmartModelAdmin):
     form = ArticleAdminForm
     list_display = (
         "title",
@@ -160,7 +163,3 @@ class ArticleAdmin(admin.ModelAdmin):
         ]
 
         return extra_urls + urls
-
-
-# Registering interface to model
-admin.site.register(Article, ArticleAdmin)

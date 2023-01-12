@@ -11,20 +11,16 @@ from django.utils.translation import get_language
 from django.utils.translation import activate as translation_activate
 from django.urls import reverse
 
+from smart_media.modelfields import SmartMediaField
+from smart_media.mixins import SmartFormatMixin
+from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
+
 from ..managers import CategoryManager
-from ..signals import (
-    auto_purge_cover_file_on_delete, auto_purge_cover_file_on_change,
-)
-from ..utils.file import uploadto_unique
 
 from .translated import Translated
 
 
-def cover_uploadto(instance, filename):
-    return uploadto_unique("lotus/category/cover/%y/%m", instance, filename)
-
-
-class Category(Translated):
+class Category(SmartFormatMixin, Translated):
     """
     Category model.
     """
@@ -79,13 +75,14 @@ class Category(Translated):
     Optional description string.
     """
 
-    cover = models.ImageField(
+    cover = SmartMediaField(
         verbose_name=_("cover image"),
-        upload_to=cover_uploadto,
+        upload_to="lotus/category/cover/%y/%m",
         max_length=255,
         blank=True,
         default="",
     )
+
     """
     Optional cover image file.
     """
@@ -141,15 +138,20 @@ class Category(Translated):
 
         return url
 
+    def get_cover_format(self):
+        return self.media_format(self.cover)
+
 
 # Connect some signals
 post_delete.connect(
-    auto_purge_cover_file_on_delete,
+    auto_purge_files_on_delete(["cover"]),
     dispatch_uid="category_cover_on_delete",
     sender=Category,
+    weak=False,
 )
 pre_save.connect(
-    auto_purge_cover_file_on_change,
+    auto_purge_files_on_change(["cover"]),
     dispatch_uid="category_cover_on_change",
     sender=Category,
+    weak=False,
 )

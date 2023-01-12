@@ -7,9 +7,6 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": ":memory:",
-        "TEST": {
-            "NAME": VAR_PATH / "db" / "tests.sqlite3",  # noqa: F405
-        }
     }
 }
 

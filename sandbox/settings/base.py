@@ -147,6 +147,8 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.forms",
+    "sorl.thumbnail",
+    "smart_media",
     "lotus.apps.LotusConfig",
 ]
 
@@ -213,4 +215,5 @@ else:
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW
 """
+from smart_media.settings import *  # noqa: E402,F401,F403
 from lotus.settings import *  # noqa: E402,F401,F403

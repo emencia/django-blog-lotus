@@ -15,25 +15,17 @@ from django.utils.translation import activate as translation_activate
 from django.urls import reverse
 from django.utils import timezone
 
+from smart_media.modelfields import SmartMediaField
+from smart_media.mixins import SmartFormatMixin
+from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
+
 from ..choices import get_status_choices, get_status_default, STATUS_PUBLISHED
 from ..managers import ArticleManager
-from ..signals import (
-    auto_purge_media_files_on_delete, auto_purge_media_files_on_change,
-)
-from ..utils.file import uploadto_unique
 
 from .translated import Translated
 
 
-def cover_uploadto(instance, filename):
-    return uploadto_unique("lotus/article/cover/%y/%m", instance, filename)
-
-
-def image_uploadto(instance, filename):
-    return uploadto_unique("lotus/article/image/%y/%m", instance, filename)
-
-
-class Article(Translated):
+class Article(SmartFormatMixin, Translated):
     """
     Article model.
     """
@@ -210,9 +202,9 @@ class Article(Translated):
     Optional text content.
     """
 
-    cover = models.ImageField(
+    cover = SmartMediaField(
         verbose_name=_("cover image"),
-        upload_to=cover_uploadto,
+        upload_to="lotus/article/cover/%y/%m",
         max_length=255,
         blank=True,
         default="",
@@ -224,9 +216,9 @@ class Article(Translated):
     Optional cover image.
     """
 
-    image = models.ImageField(
+    image = SmartMediaField(
         verbose_name=_("main image"),
-        upload_to=image_uploadto,
+        upload_to="lotus/article/image/%y/%m",
         max_length=255,
         blank=True,
         default="",
@@ -474,6 +466,12 @@ class Article(Translated):
             state_names["publish_end_passed"] not in states
         )
 
+    def get_cover_format(self):
+        return self.media_format(self.cover)
+
+    def get_image_format(self):
+        return self.media_format(self.image)
+
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save
         self.last_update = timezone.now()
@@ -483,12 +481,14 @@ class Article(Translated):
 
 # Connect signals for automatic media purge
 post_delete.connect(
-    auto_purge_media_files_on_delete,
+    auto_purge_files_on_delete(["cover", "image"]),
     dispatch_uid="article_medias_on_delete",
     sender=Article,
+    weak=False,
 )
 pre_save.connect(
-    auto_purge_media_files_on_change,
+    auto_purge_files_on_change(["cover", "image"]),
     dispatch_uid="article_medias_on_change",
     sender=Article,
+    weak=False,
 )

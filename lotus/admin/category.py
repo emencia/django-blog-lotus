@@ -6,6 +6,8 @@ from django.contrib import admin
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
+from smart_media.admin import SmartModelAdmin
+
 from ..forms import CategoryAdminForm
 from ..models import Category
 from ..views.admin import CategoryAdminTranslateView
@@ -18,7 +20,7 @@ LANGUAGE_NAMES = dict(settings.LANGUAGES)
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(SmartModelAdmin):
     form = CategoryAdminForm
     list_display = (
         "title",
