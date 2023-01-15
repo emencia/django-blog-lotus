@@ -18,7 +18,7 @@ Version 0.5.0 - Unreleased
 * **Rebooted again migrations**
 * Add github templates for bug report and feature request;
 * Define admin context varname and url arg from settings instead of AdminModeMixin
-  attributes, close issue #33;
+  attributes;
 * Refactored *preview mode* (previously named *admin mode*) to use session instead
   of URL argument and make all missing improvements, close issue #26;
 * Added full frontend stack to be able to build Bootstrap CSS and JS for sandbox.
@@ -40,6 +40,8 @@ Version 0.5.0 - Unreleased
   and thumbnailing in templates;
 * Added new context argument ``from`` to "items" templates so these items will know
   where they are used and possibly implement some variant behaviors;
+* Pinned ``sphinx-rtd-theme`` to ``==1.1.0`` to avoid an
+  `issue which enforce install of old 0.5.x release <https://stackoverflow.com/questions/67542699/readthedocs-sphinx-not-rendering-bullet-list-from-rst-file/71069918#71069918>`_;
 
 
 Version 0.4.4 - 2022/01/03

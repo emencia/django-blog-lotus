@@ -1,9 +1,3 @@
-"""
-============================
-Model querysets and managers
-============================
-
-"""
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
@@ -127,8 +121,8 @@ class BaseTranslatedQuerySet(models.QuerySet):
 
         Returns:
             queryset: Queryset with sibling articles. For an original article it will
-                be all of its translations. For a translation article it will be its
-                original article and all other original's translation articles.
+            be all of its translations. For a translation article it will be its
+            original article and all other original's translation articles.
         """
         # Original has just translation relations
         if source.original is None:

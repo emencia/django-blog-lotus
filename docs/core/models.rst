@@ -1,17 +1,17 @@
-.. _intro_core_models:
+.. _intro_references_models:
 
 ======
 Models
 ======
 
-.. automodule:: lotus.models.author
-    :members: safe_get_user_model, AuthorManagerEnabled, Author
-    :exclude-members: DoesNotExist, MultipleObjectsReturned
 
 .. automodule:: lotus.models.translated
     :members: Translated
     :exclude-members: DoesNotExist, MultipleObjectsReturned
 
+.. automodule:: lotus.models.author
+    :members: safe_get_user_model, AuthorManagerEnabled, Author
+    :exclude-members: DoesNotExist, MultipleObjectsReturned
 .. automodule:: lotus.models.category
     :members: Category
     :exclude-members: DoesNotExist, MultipleObjectsReturned

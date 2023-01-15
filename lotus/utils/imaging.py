@@ -1,9 +1,3 @@
-"""
-=================
-Imaging utilities
-=================
-
-"""
 import io
 
 from PIL import Image as PILimage
@@ -37,8 +31,8 @@ class SampleImageCrafter:
 
         Arguments:
             text (string or boolean): Either a string to use it as content or ``True``
-                to make automatic content from given sizes such as "320x240" for
-                ``320 `` width value and ``240`` height value). If string is given it
+                to make automatic content from given sizes such as ``320x240`` (for
+                width value ``320`` and height value ``240``). If string is given it
                 should be a short text else it is not guaranteed to fit. If you don't
                 want text content, just pass a empty string.
             width (integer): Width value to display in automatic text content.
@@ -284,7 +278,7 @@ class SampleImageCrafter:
                 https://pillow.readthedocs.io/en/stable/reference/ImageColor.html
                 Default to "white".
             text (string or boolean): ``True`` for automatic image size like
-                320x240 (for ``320 `` width value and ``240`` height value). ``None``
+                ``320x240`` (for width value ``320`` and height value ``240``). ``None``
                 or ``False`` to disable text drawing (this is the default value). A
                 string for custom text, this should be a short text else it is not
                 guaranteed to fit.

@@ -4,7 +4,7 @@
 Install
 =======
 
-Install package with every features in your environment : ::
+Install package with every extra features in your environment : ::
 
     pip install django-blog-lotus[breadcrumbs]
 
@@ -79,11 +79,15 @@ Once finished, you can run the Django command to apply the Lotus migrations. Als
 will need to create a superuser or an admin to write contents from Django admin.
 
 
+.. _intro_install_settings:
+
 Settings
 ********
 
 .. automodule:: lotus.settings
    :members:
+
+.. _intro_install_demo:
 
 Demonstration
 *************

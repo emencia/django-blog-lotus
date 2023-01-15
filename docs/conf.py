@@ -10,6 +10,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import datetime
 import os
 import sys
 
@@ -30,8 +31,9 @@ from lotus import __version__ as lotus_version
 
 # -- Project information -----------------------------------------------------
 
+now = datetime.date.today()
 project = 'django-blog-lotus'
-copyright = '2021, Emencia'
+copyright = '2021-{}, Emencia'.format(now.year)
 author = 'Emencia'
 
 # The short X.Y version

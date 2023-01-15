@@ -375,7 +375,7 @@ check-release: build-package
 	$(TWINE) check dist/*
 .PHONY: check-release
 
-quality: test-initial flake docs check-release check-migrations freeze-dependencies
+quality: flake test-initial docs check-release check-migrations freeze-dependencies
 	@echo ""
 	@echo "♥ ♥ Everything should be fine ♥ ♥"
 	@echo ""

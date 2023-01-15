@@ -1,9 +1,3 @@
-"""
-==============
-Article models
-==============
-
-"""
 import datetime
 
 from django.conf import settings
@@ -227,7 +221,7 @@ class Article(SmartFormatMixin, Translated):
         ),
     )
     """
-    Optional cover image.
+    Optional large image.
     """
 
     categories = models.ManyToManyField(

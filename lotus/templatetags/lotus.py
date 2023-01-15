@@ -14,17 +14,22 @@ def article_state_list(context, article, **kwargs):
     This is a shortcut around ``Article.get_states`` to be able to use the ``lotus_now``
     context variable or force another value.
 
-    Usage: ::
+    Example:
+        At least you must give an Article object: ::
 
-        {% load lotus %}
-        {% article_state_list article [now=custom_now] [prefix="foo_"] %}
+            {% load lotus %}
+            {% article_state_list article [now=custom_now] [prefix="foo_"] %}
+
+        * Optional ``now`` argument expect a datetime to use instead of current date;
+        * Optional ``prefix`` argument expect a string to prepend all returned state
+          names.
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
             context variable for template where the tag is included.
         article (lotus.models.article.Article): Article object to compute states.
 
-    Keywords Arguments:
+    Keyword Arguments:
         now (datetime.datetime): A datetime to use to compare against publish
             start and end dates to check for some publication criterias. See
             ``Article.get_states`` docstring for more details.
@@ -51,17 +56,22 @@ def article_states(context, article, **kwargs):
 
     Identical to ``article_state_list`` but return a string instead of list.
 
-    Usage: ::
+    Example:
+        At least you must give an Article object: ::
 
-        {% load lotus %}
-        {% article_states article [now=custom_now] [prefix="foo_"] %}
+            {% load lotus %}
+            {% article_states article [now=custom_now] [prefix="foo_"] %}
+
+        * Optional ``now`` argument expect a datetime to use instead of current date;
+        * Optional ``prefix`` argument expect a string to prepend all returned state
+          names.
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
             context variable for template where the tag is included.
         article (lotus.models.article.Article): Article object to compute states.
 
-    Keywords Arguments:
+    Keyword Arguments:
         now (datetime.datetime): A datetime to use to compare against publish
             start and end dates to check for some publication criterias. See
             ``Article.get_states`` docstring for more details.
@@ -95,10 +105,15 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
     template context variable ``lotus_now`` (as implemented in ``ArticleFilterMixin``)
     or it can be given through the tag argument ``now``.
 
-    Usage: ::
+    Example:
+        At least you must give an Article object: ::
 
-        {% load lotus %}
-        {% translation_siblings_html article [now=custom_now] [preview=True|False] %}
+            {% load lotus %}
+            {% translation_siblings_html article [now=custom_now] [preview=True] %}
+
+        * Optional ``now`` argument expect a datetime to use instead of current date;
+        * Optional ``preview`` argument expect a boolean to explicitely disable or
+          enable preview mode, on default it is ``None`` to determine it automatically.
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
@@ -107,7 +122,7 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
         source (object): Either a ``lotus.models.Article`` or ``lotus.models.Category``
             to retrieve its translation siblings.
 
-    Keywords Arguments:
+    Keyword Arguments:
         now (datetime.datetime): A datetime to use to compare against publish
             start and end dates to check for some publication criterias. Only used
             for Article object.
@@ -121,7 +136,7 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
 
     Returns:
         dict: A dictionnary with item ``source`` for the given source object and item
-            ``siblings`` for retrieved translation sibling objects.
+        ``siblings`` for retrieved translation sibling objects.
 
     """
     model = type(source)
@@ -183,10 +198,17 @@ def translation_siblings_html(context, source, **kwargs):
     """
     Work like ``translation_siblings`` but render HTML from a template instead.
 
-    Usage: ::
+    Example:
+        At least you must give an Article object: ::
 
-        {% load lotus %}
-        {% translation_siblings_html article [now=custom_now] [template="foo/bar.html"] [preview=True|False] %}
+            {% load lotus %}
+            {% translation_siblings_html article [now=custom_now] [template="foo/bar.html"] [preview=True] %}
+
+        * Optional ``now`` argument expect a datetime to use instead of current date;
+        * Optional ``template`` argument expect a string for a template path to use
+          instead of default one;
+        * Optional ``preview`` argument expect a boolean to explicitely disable or
+          enable preview mode, on default it is ``None`` to determine it automatically;
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
@@ -195,7 +217,7 @@ def translation_siblings_html(context, source, **kwargs):
         source (object): Either a ``lotus.models.Article`` or ``lotus.models.Category``
             to retrieve its translation siblings.
 
-    Keywords Arguments:
+    Keyword Arguments:
         now (datetime.datetime): A datetime to use to compare against publish
             start and end dates to check for some publication criterias. Only used
             for Article object.
@@ -236,10 +258,11 @@ def preview_switch(context):
     """
     Display a button to enable or disable preview mode.
 
-    Usage: ::
+    Example:
+        This tag does not expect any argument: ::
 
-        {% load lotus %}
-        {% preview_switch %}
+            {% load lotus %}
+            {% preview_switch %}
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
@@ -249,7 +272,14 @@ def preview_switch(context):
             processors in your project settings.
 
     Returns:
-        dict: ...
+        dict: A dictionnary of payload to build preview button template.
+
+        * user: User object (or Anonymous)
+        * allowed: Boolean to determine if user is allowed for preview mode or not;
+        * current_mode: Either ``enabled`` or ``disabled`` string to indicate current
+          preview mode state;
+        * redirection: A string for the path to give to button URL that will be used
+          to redirect to once preview toggle has been requested;
     """
     allowed = False
     current_mode = None

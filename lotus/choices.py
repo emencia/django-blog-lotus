@@ -1,20 +1,24 @@
-"""
-Application choices
-"""
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 
-# Constant values
 STATUS_DRAFT = 0
+"""
+Draft status numeric value
+"""
+
 STATUS_PUBLISHED = 10
+"""
+Published status numeric value
+"""
 
-
-# Choice list
 STATUS_CHOICES = (
     (STATUS_DRAFT, _("draft")),
     (STATUS_PUBLISHED, _("available"))
 )
+"""
+Status choice list
+"""
 
 
 def get_status_choices():

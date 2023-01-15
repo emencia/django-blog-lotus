@@ -31,26 +31,4 @@
             }
         }
     }
-
-    // Article detail
-    .article-detail {
-        .image {
-            img {
-                @include media-breakpoint-up(lg) {
-                    max-width: rem-calc(800px);
-                }
-            }
-        }
-    }
-
-    // Category detail
-    .category-detail {
-        .cover {
-            img {
-                @include media-breakpoint-up(lg) {
-                    max-width: rem-calc(800px);
-                }
-            }
-        }
-    }
 }

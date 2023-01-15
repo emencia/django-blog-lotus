@@ -1,14 +1,19 @@
-.. _intro_core-reference:
+.. _intro_references:
 
-===============
-Core references
-===============
-
-.. Note::
-
-    This document is far from finished yet.
+==========
+References
+==========
 
 .. toctree::
    :maxdepth: 2
 
    models.rst
+   managers.rst
+   views.rst
+   forms.rst
+   admin.rst
+   templatetags.rst
+   choices.rst
+   responses.rst
+   utils.rst
+   factories.rst

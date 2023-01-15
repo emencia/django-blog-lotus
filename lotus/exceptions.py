@@ -1,13 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Exceptions
-==========
-
-Specific application exceptions.
-"""
-
-
-class MyAppBaseException(Exception):
+class LotusException(Exception):
     """
     Exception base.
 
@@ -17,7 +8,7 @@ class MyAppBaseException(Exception):
     pass
 
 
-class DummyError(MyAppBaseException):
+class DummyError(LotusException):
     """
     Dummy exception sample to raise from your code.
     """

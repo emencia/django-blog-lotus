@@ -1,9 +1,3 @@
-"""
-=================
-Factory utilities
-=================
-
-"""
 import random
 
 import faker

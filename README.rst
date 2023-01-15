@@ -9,10 +9,20 @@
 Django Blog Lotus
 =================
 
-A weblog application with Django.
+A Django weblog application with builtin multilingual content and inspired from
+deceased Zinnia weblog.
 
-This is on alpha stage, everything is working but expected basic behaviors may not be
-finished yet. Full documentation is yet to be done.
+Features
+********
+
+* Multilingual articles and categories;
+* Featuring, pinning, private and draft modes;
+* Configured CKEditor to write rich text in admin;
+* Preview mode for admins;
+* Publishing date and publishing end date;
+* Included image thumbnailing;
+* SVG soft support in image fields;
+* Full test coverage;
 
 
 Dependancies
@@ -28,42 +38,6 @@ Dependancies
 Links
 *****
 
-* (Not yet) Read the documentation on `Read the docs <https://django-blog-lotus.readthedocs.io/>`_;
-* (Not yet) Download its `PyPi package <https://pypi.python.org/pypi/django-blog-lotus>`_;
+* Read the documentation on `Read the docs <https://django-blog-lotus.readthedocs.io/>`_;
+* Download its `PyPi package <https://pypi.python.org/pypi/django-blog-lotus>`_;
 * Clone it on its `Github repository <https://github.com/emencia/django-blog-lotus>`_;
-
-Differences with Zinnia
-***********************
-
-Some of Zinnia features have been dropped:
-
-* Category have no more "tree" levels feature;
-* All features related to "discussion" (pingback, comments, etc..);
-* Custom templates for each Article;
-* Multi-sites (Django Site framework) article support;
-* There is no more a distinct publication date and publication start. Now
-  publication start is the publication date;
-* Article status is limited to "draft" or "available";
-* There is no "short url" feature;
-* Article image caption;
-* Article tags;
-* Article password;
-* Article modularity which enabled to use a custom Article model instead of
-  shipped one;
-
-Additional features:
-
-* Multi-lingual content;
-* Article cover additionally to Article image, the first is more like a
-  thumbnail, the second one for larger picture;
-* Article pinning;
-* Lead text for Category;
-* Private article (for authenticated users only);
-* Optional breadcrumbs;
-
-On hold features:
-
-* Move CKEditor usage in a contrib package (and let possibilities to use another
-  editor like Summernote);
-* Django-CMS plugin in a contrib package;
-* A way to implement again Article modularity;

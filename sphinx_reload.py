@@ -21,6 +21,13 @@ server = Server()
 
 # Watch root documents (not recursive)
 server.watch(
+    './*.rst',
+    shell(
+        'make html',
+        cwd='docs'
+    )
+)
+server.watch(
     'docs/*.rst',
     shell(
         'make html',

@@ -1,6 +1,3 @@
-"""
-Category admin interface
-"""
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path
@@ -15,8 +12,10 @@ from ..views.admin import CategoryAdminTranslateView
 from .translated import LanguageListFilter, TranslationStateListFilter
 
 
-# Shortcut to get setting as a dict
 LANGUAGE_NAMES = dict(settings.LANGUAGES)
+"""
+Shortcut to get setting as a dict
+"""
 
 
 @admin.register(Category)
