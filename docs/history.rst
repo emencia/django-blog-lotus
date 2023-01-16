@@ -5,10 +5,11 @@ History
 =======
 
 
-Version 0.5.0 - Unreleased
+Version 0.5.0 - 2023/01/16
 --------------------------
 
-* **Enter in beta stage**;
+**Enter in beta stage**
+
 * **First release on PyPi**;
 * **Dropped Python 3.6 and 3.7 support**;
 * **Dropped Django 3.1 support** (it should currently work but won't able to
