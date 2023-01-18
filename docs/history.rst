@@ -5,6 +5,14 @@ History
 =======
 
 
+Version 0.5.1 - Unreleased
+--------------------------
+
+* Pinned requirements for RTFD to fix issue with rtd theme alike it was done in extra
+  requirements "dev";
+* Added 'Translate' link to Article detail page along the 'Edit' link;
+
+
 Version 0.5.0 - 2023/01/16
 --------------------------
 

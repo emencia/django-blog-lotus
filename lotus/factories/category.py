@@ -70,7 +70,7 @@ def multilingual_category(**kwargs):
     Returns:
         dict: A dict where "original" item is the original category object and
         "translations" is a dict of translations object for language required
-        from "langs" argument. Item are index by their language code.
+        from "langs" argument. Item are indexed by their language code.
     """
     langs = set(kwargs.pop("langs", []))
     contents = kwargs.pop("contents", {})

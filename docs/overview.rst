@@ -244,3 +244,10 @@ retrieve everything to build them into your project from the repository.
 
 However there is only a very few CSS enhancements around states icons, that you could
 just start on your own Bootstrap v5 build.
+
+
+Writing permission
+******************
+
+There is currently no specific permissions management. All admin users can create, edit
+and delete anything.

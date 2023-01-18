@@ -9,6 +9,7 @@
 {% endblock head_metas %}
 
 {% block lotus_content %}{% spaceless %}
+{% translation_siblings article_object as sibling_stats %}
 <div class="article-detail {% article_states article_object prefix="article--" %}">
     <div class="container">
         <div class="row">
@@ -34,9 +35,16 @@
             <div class="col-12 col-lg-3">
                 {% if user.is_authenticated and user.is_staff %}
                     <div class="d-grid mb-4">
-                        <a class="btn btn-primary" href="{{ article_object.get_edit_url }}" target="_blank">
+                        <a class="detail-edit btn btn-primary" href="{{ article_object.get_edit_url }}" target="_blank">
                             {% trans "Edit" %}
                         </a>
+                        {% if sibling_stats.available_languages %}
+                            <a class="detail-translate btn btn-primary mt-1"
+                               href="{% url "admin:lotus_article_translate_original" id=article_object.id %}"
+                               target="_blank">
+                                {% trans "Translate" %}
+                            </a>
+                        {% endif %}
                     </div>
 
                     {% if article_object.cover %}
@@ -99,7 +107,7 @@
                     {% endif %}
                 {% endif %}
 
-                {% translation_siblings article_object as sibling_stats %}
+
                 {% if sibling_stats.siblings %}
                     <div class="siblings card mb-4">
                         <div class="card-header">

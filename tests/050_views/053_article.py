@@ -17,8 +17,10 @@ from django.conf import settings
 from django.urls import reverse
 
 from lotus.choices import STATUS_DRAFT
-from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
-from lotus.utils.tests import html_pyquery
+from lotus.factories import (
+    ArticleFactory, AuthorFactory, CategoryFactory, multilingual_article,
+)
+from lotus.utils.tests import get_admin_change_url, html_pyquery
 
 
 # Shortcuts for shorter variable names
@@ -670,3 +672,140 @@ def test_article_view_preview(db, client, admin_client):
 
     response = admin_client.get(draft.get_absolute_preview_url())
     assert response.status_code == 200
+
+
+def check_detail_links(client_obj, article):
+    """
+    Internal helper to get links from article detail for a client object.
+
+    Always perform a request.
+    """
+    response = client_obj.get(article.get_absolute_url())
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    container = dom.find("#lotus-content .article-detail")[0]
+
+    link_edit = container.cssselect(".detail-edit")
+    link_translate = container.cssselect(".detail-translate")
+
+    return link_edit, link_translate
+
+
+def test_article_view_detail_admin_links(db, admin_client, client, enable_preview):
+    """
+    Detail sidebar should have the right links for admin depending article status.
+    """
+    # Create a single category used everywhere to avoid create multiple random ones
+    # from factory
+    ping = CategoryFactory(slug="ping")
+
+    # Create bread articles with published FR translation
+    created_bread = multilingual_article(
+        title="Bread",
+        slug="bread",
+        langs=["fr"],
+        fill_categories=[ping],
+        contents={
+            "fr": {
+                "title": "Pain",
+                "slug": "pain",
+                "fill_categories": [ping],
+            },
+        },
+    )
+
+    # Create cheese articles with published FR and DE translations
+    created_cheese = multilingual_article(
+        title="Cheese",
+        slug="cheese",
+        langs=["fr", "de"],
+        fill_categories=[ping],
+        contents={
+            "fr": {
+                "title": "Fromage",
+                "slug": "fromage",
+                "fill_categories": [ping],
+            },
+            "de": {
+                "title": "Käse",
+                "slug": "kase",
+                "fill_categories": [ping],
+            }
+        },
+    )
+
+    # Parse Cheese versions with anonymous to search for links
+    ano_cheese_en_links = check_detail_links(
+        client,
+        created_cheese["original"]
+    )
+    ano_cheese_fr_links = check_detail_links(
+        client,
+        created_cheese["translations"]["fr"]
+    )
+    # Nothing is available to non admin
+    assert ano_cheese_en_links == ([], [])
+    assert ano_cheese_fr_links == ([], [])
+
+    # Parse Cheese versions with admin to search for links
+    admin_cheese_en_links = check_detail_links(
+        admin_client,
+        created_cheese["original"]
+    )
+    admin_cheese_fr_links = check_detail_links(
+        admin_client,
+        created_cheese["translations"]["fr"]
+    )
+    # 'Edit' link is available but not 'translate' since there is no language left
+    assert admin_cheese_en_links[0][0].get("href") == get_admin_change_url(
+        created_cheese["original"]
+    )
+    assert len(admin_cheese_en_links[1]) == 0
+    assert admin_cheese_fr_links[0][0].get("href") == get_admin_change_url(
+        created_cheese["translations"]["fr"]
+    )
+    assert len(admin_cheese_fr_links[1]) == 0
+
+    # Parse Bread versions with anonymous to search for links
+    ano_bread_en_links = check_detail_links(
+        client,
+        created_bread["original"]
+    )
+    ano_bread_fr_links = check_detail_links(
+        client,
+        created_bread["translations"]["fr"]
+    )
+    # Nothing is available to non admin
+    assert ano_bread_en_links == ([], [])
+    assert ano_bread_fr_links == ([], [])
+
+    # Parse Bread versions with admin to search for links
+    admin_bread_en_links = check_detail_links(
+        admin_client,
+        created_bread["original"]
+    )
+    admin_bread_fr_links = check_detail_links(
+        admin_client,
+        created_bread["translations"]["fr"]
+    )
+    # 'Edit' and 'translate' links are available since there is a language left (de)
+    assert admin_bread_en_links[0][0].get("href") == get_admin_change_url(
+        created_bread["original"]
+    )
+    assert len(admin_bread_en_links[1]) == 1
+    assert admin_bread_en_links[1][0].get("href") == reverse(
+        "admin:lotus_article_translate_original",
+        args=[
+            created_bread["original"].pk
+        ]
+    )
+    assert admin_bread_fr_links[0][0].get("href") == get_admin_change_url(
+        created_bread["translations"]["fr"]
+    )
+    assert admin_bread_fr_links[1][0].get("href") == reverse(
+        "admin:lotus_article_translate_original",
+        args=[
+            created_bread["translations"]["fr"].pk
+        ]
+    )
