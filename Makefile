@@ -78,7 +78,7 @@ help:
 
 clean-pycache:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Clear Python cache <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Clearing Python cache <---$(FORMATRESET)\n"
 	@echo ""
 	rm -Rf .tox
 	rm -Rf .pytest_cache
@@ -228,11 +228,11 @@ po:
 
 mo:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build PO from 'lotus' app <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build MO from 'lotus' app <---$(FORMATRESET)\n"
 	@echo ""
 	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages --verbosity 3
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build PO from sandbox <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build MO from sandbox <---$(FORMATRESET)\n"
 	@echo ""
 	@cd $(SANDBOX_DIR); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages --verbosity 3
 .PHONY: mo
@@ -318,9 +318,7 @@ flake:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Flake check <---$(FORMATRESET)\n"
 	@echo ""
-	$(FLAKE) --statistics --show-source $(APPLICATION_NAME)
-	$(FLAKE) --statistics --show-source sandbox
-	$(FLAKE) --statistics --show-source tests
+	$(FLAKE) --statistics --show-source $(APPLICATION_NAME) sandbox tests
 .PHONY: flake
 
 test:
@@ -341,7 +339,7 @@ test-initial:
 
 freeze-dependencies:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Freeze dependencies versions <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Freeze backend dependencies versions <---$(FORMATRESET)\n"
 	@echo ""
 	$(VENV_PATH)/bin/python freezer.py
 .PHONY: freeze-dependencies
@@ -375,7 +373,7 @@ check-release: build-package
 	$(TWINE) check dist/*
 .PHONY: check-release
 
-quality: flake test-initial docs check-release check-migrations freeze-dependencies
+quality: flake check-migrations test-initial docs check-release freeze-dependencies
 	@echo ""
 	@echo "♥ ♥ Everything should be fine ♥ ♥"
 	@echo ""
