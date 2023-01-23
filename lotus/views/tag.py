@@ -1,10 +1,12 @@
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Q
+from django.http import Http404
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from django.views import View
 
 from taggit.models import Tag, TaggedItem
 
@@ -17,19 +19,22 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-class TagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin, ListView):
+
+class DisabledTagIndexView(View):
+    """
+    A very basic view which always return the common Http404 page.
+    """
+    def get(self, request, *args, **kwargs):
+        raise Http404()
+
+
+class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin, ListView):
     """
     List of tags that are related from at least one article.
-
-    TODO:
-    * Allow to disable view from a boolean setting (properly disabled from urls.py
-      or switched to a dummy 404 view)
-    * Set a proper pagination
     """
     model = Tag
     template_name = "lotus/tag/list.html"
-    #paginate_by = settings.LOTUS_TAG_PAGINATION
-    paginate_by = None
+    paginate_by = settings.LOTUS_TAG_PAGINATION
     context_object_name = "tag_list"
     crumb_title = _("Tags")
     crumb_urlname = "lotus:tag-index"
@@ -76,10 +81,14 @@ class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
             "tag": self.object.slug,
         }
 
+        index_crumb_url = (
+            reverse(EnabledTagIndexView.crumb_urlname)
+            if settings.LOTUS_ENABLE_TAG_INDEX_VIEW
+            else None
+        )
+
         return [
-            (TagIndexView.crumb_title, reverse(
-                TagIndexView.crumb_urlname
-            )),
+            (EnabledTagIndexView.crumb_title, index_crumb_url),
             (str(self.object), reverse(self.crumb_urlname, kwargs=details_kwargs)),
         ]
 
@@ -110,3 +119,14 @@ class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
 
         # Let the ListView mechanics manage list pagination from given queryset
         return super().get(request, *args, **kwargs)
+
+
+TagIndexView = type("TagIndexView", (
+    (EnabledTagIndexView,)
+    if settings.LOTUS_ENABLE_TAG_INDEX_VIEW
+    else (DisabledTagIndexView,)
+), {})
+"""
+This is the effective index class view which depend either the working index view or
+the dummy 404 view Tag index is enabled or not according to settings.
+"""

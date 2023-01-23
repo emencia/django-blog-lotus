@@ -24,6 +24,26 @@ Author per page limit for pagination, set it to ``None`` to disable
 pagination.
 """
 
+LOTUS_TAG_PAGINATION = 40
+"""
+Tag per page limit for pagination, set it to ``None`` to disable
+pagination.
+"""
+
+
+LOTUS_ENABLE_TAG_INDEX_VIEW = True
+"""
+To allow (``True``) or not (``False``) the tag index view. This option exists because
+tag index view may have performance issues and is not always required in some projects.
+
+.. Note::
+
+    The tag index part will still appears in breadcrumbs since it won't have any
+    meaning to locate a tag detail at the root of Lotus breadcrumbs. However it won't
+    have any link to click.
+
+"""
+
 LOTUS_ARTICLE_PUBLICATION_STATE_NAMES = {
     "pinned": "pinned",
     "featured": "featured",
