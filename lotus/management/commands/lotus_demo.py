@@ -107,13 +107,13 @@ class Command(BaseCommand):
         parser.add_argument(
             "--tags",
             type=int,
-            default=10,
+            default=30,
             help="Length of Tag objects to create. Must be greater than 1.",
         )
         parser.add_argument(
             "--tag-per-article",
             type=int,
-            default=3,
+            default=5,
             help=(
                 "Maximum of Tag to add to each article. Must be less than tag length "
                 "to create.",

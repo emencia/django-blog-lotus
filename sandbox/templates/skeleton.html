@@ -32,6 +32,9 @@
                     <li class="nav-item">
                         <a class="nav-link{% if lotus_stage == "authors" %} active{% endif %}" href="{% url "lotus:author-index" %}">{% trans "Authors" %}</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link{% if lotus_stage == "tags" %} active{% endif %}" href="{% url "lotus:tag-index" %}">{% trans "Tags" %}</a>
+                    </li>
                 </ul>
 
                 {% preview_switch %}

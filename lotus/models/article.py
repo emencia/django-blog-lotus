@@ -388,7 +388,6 @@ class Article(SmartFormatMixin, Translated):
         Returns:
             queryset: List of 'taggit.models.Tag' objects.
         """
-        #print(self.tags.all().values())
         return self.tags.all()
 
     def publish_datetime(self):

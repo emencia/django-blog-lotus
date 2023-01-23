@@ -19,13 +19,12 @@ except ImportError:
 
 class TagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin, ListView):
     """
-    List of tags which have contributed at least to one article.
+    List of tags that are related from at least one article.
 
     TODO:
     * Allow to disable view from a boolean setting (properly disabled from urls.py
       or switched to a dummy 404 view)
     * Set a proper pagination
-    * Should only list tags with article>0 for current language
     """
     model = Tag
     template_name = "lotus/tag/list.html"
@@ -54,10 +53,6 @@ class TagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin, Lis
 class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
                     PreviewModeMixin, SingleObjectMixin, ListView):
     """
-    TODO:
-    * Nothing has been done yet, its just a copy from AuthorDetailView
-    * Should only list article from current language
-
     Tag detail and its related article list.
 
     Opposed to article or category listing, this one list objects for language from
@@ -69,7 +64,7 @@ class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
     paginate_by = settings.LOTUS_ARTICLE_PAGINATION
     context_object_name = "tag_object"
     slug_field = "slug"
-    slug_url_kwarg = "slug"
+    slug_url_kwarg = "tag"
     pk_url_kwarg = None
     crumb_title = None  # No usage since title depends from object
     crumb_urlname = "lotus:tag-detail"
@@ -78,7 +73,7 @@ class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
     @property
     def crumbs(self):
         details_kwargs = {
-            "username": self.object.username,
+            "tag": self.object.slug,
         }
 
         return [
@@ -101,7 +96,9 @@ class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
         Depend on "self.object" to list the Tag related objects.
         """
         q = self.apply_article_lookups(
-            self.object.articles,
+            self.listed_model.objects.filter(
+                tags__id__in=[self.object.id]
+            ),
             self.request.LANGUAGE_CODE,
         )
 

@@ -55,7 +55,7 @@ urlpatterns = [
 
     path("tags/", TagIndexView.as_view(), name="tag-index"),
     path(
-        "tags/<slug:tag>/",
+        "tags/<str:tag>/",
         TagDetailView.as_view(),
         name="tag-detail"
     ),

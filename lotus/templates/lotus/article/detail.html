@@ -142,7 +142,10 @@
                             </div>
                             <div class="p-2">
                                 {% for tag in tags %}
-                                <a class="badge rounded-pill btn btn-primary text-decoration-none me-1" href="">{{ tag.name }}</a>
+                                <a class="badge rounded-pill btn btn-primary text-decoration-none me-1"
+                                   href="{% url "lotus:tag-detail" tag=tag.slug %}">
+                                    {{ tag.name }}
+                                </a>
                                 {% endfor %}
                             </div>
                         </div>
