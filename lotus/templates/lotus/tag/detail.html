@@ -1,0 +1,23 @@
+{% extends "lotus/base.html" %}
+{% load i18n %}
+
+{% block head_title %}{{ tag_object }}{% endblock head_title %}
+
+{% block lotus_content %}{% spaceless %}
+<div class="tag-detail">
+    <h1 class="title">{{ tag_object }}</h1>
+
+    <div class="articles container">
+        <h2>{% trans "Articles" %}</h2>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for article in object_list %}
+                <div class="col">
+                    {% include "lotus/article/partials/item.html" with article_object=article from="tag-detail" %}
+                </div>
+            {% endfor %}
+        </div>
+        {% include "lotus/pagination.html" %}
+    </div>
+</div>
+{% endspaceless %}{% endblock lotus_content %}

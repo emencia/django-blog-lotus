@@ -8,6 +8,7 @@ from .views import (
     AuthorIndexView, AuthorDetailView,
     CategoryIndexView, CategoryDetailView,
     PreviewTogglerView, PreviewArticleDetailView,
+    TagIndexView, TagDetailView,
 )
 
 
@@ -50,5 +51,12 @@ urlpatterns = [
         "preview/articles/<int:year>/<int:month>/<int:day>/<slug:slug>/",
         PreviewArticleDetailView.as_view(),
         name="preview-article-detail"
+    ),
+
+    path("tags/", TagIndexView.as_view(), name="tag-index"),
+    path(
+        "tags/<slug:tag>/",
+        TagDetailView.as_view(),
+        name="tag-detail"
     ),
 ]

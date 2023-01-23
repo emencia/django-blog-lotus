@@ -355,7 +355,7 @@ def test_article_admin_related_create_validation(db, admin_client):
 
     # Build initial POST data
     ignore = [
-        "id", "relations", "article", "authors", "related", "categories",
+        "id", "relations", "article", "authors", "related", "categories", "tags",
     ]
     data = build_post_data_from_object(Article, build_fr, ignore=ignore)
 
@@ -459,7 +459,7 @@ def test_article_admin_category_create_validation(db, admin_client):
 
     # Build initial POST data
     ignore = [
-        "id", "relations", "article", "authors", "related", "categories",
+        "id", "relations", "article", "authors", "related", "categories", "tags",
     ]
     data = build_post_data_from_object(Article, build_fr, ignore=ignore)
 

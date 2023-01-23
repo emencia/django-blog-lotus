@@ -49,8 +49,8 @@ LANGUAGE_CODE = "en"
 
 LANGUAGES = (
     ("en", "English"),
-    ('fr', "Français"),
-    ('de', "Deutsche"),
+    ("fr", "Français"),
+    ("de", "Deutsche"),
 )
 
 # A tuple of directories where Django looks for translation files
@@ -148,6 +148,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.forms",
     "sorl.thumbnail",
+    "taggit",
     "smart_media",
     "lotus",
 ]

@@ -105,8 +105,9 @@ class LotusContextStage:
 
     The default stage value is ``None``.
 
-    Finally, the Lotus stage is just an helper for basic navigation and there is no
-    code which use it so it can be ignored from custom Lotus implementation.
+    Finally, the Lotus stage is just an helper for basic navigation like in a menu to
+    highlight corresponding item. There is no code which use it so it can be ignored
+    from custom Lotus implementation.
     """
     lotus_stage = None
 

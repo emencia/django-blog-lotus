@@ -1,0 +1,115 @@
+from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Count, Q
+from django.views.generic import ListView
+from django.views.generic.detail import SingleObjectMixin
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
+
+from taggit.models import Tag, TaggedItem
+
+from ..models import Article
+from .mixins import PreviewModeMixin, ArticleFilterMixin, LotusContextStage
+
+try:
+    from view_breadcrumbs import BaseBreadcrumbMixin
+except ImportError:
+    from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
+
+
+class TagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin, ListView):
+    """
+    List of tags which have contributed at least to one article.
+
+    TODO:
+    * Allow to disable view from a boolean setting (properly disabled from urls.py
+      or switched to a dummy 404 view)
+    * Set a proper pagination
+    * Should only list tags with article>0 for current language
+    """
+    model = Tag
+    template_name = "lotus/tag/list.html"
+    #paginate_by = settings.LOTUS_TAG_PAGINATION
+    paginate_by = None
+    context_object_name = "tag_list"
+    crumb_title = _("Tags")
+    crumb_urlname = "lotus:tag-index"
+    lotus_stage = "tags"
+
+    @property
+    def crumbs(self):
+        return [
+            (self.crumb_title, reverse(self.crumb_urlname)),
+        ]
+
+    def get_queryset(self):
+        return Tag.objects.annotate(
+            article_count=Count(
+                "article",
+                filter=Q(article__language=self.request.LANGUAGE_CODE)
+            )
+        ).filter(article_count__gt=0).order_by("name")
+
+
+class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
+                    PreviewModeMixin, SingleObjectMixin, ListView):
+    """
+    TODO:
+    * Nothing has been done yet, its just a copy from AuthorDetailView
+    * Should only list article from current language
+
+    Tag detail and its related article list.
+
+    Opposed to article or category listing, this one list objects for language from
+    request, not from the tag language since it dont have one.
+    """
+    model = Tag
+    listed_model = Article
+    template_name = "lotus/tag/detail.html"
+    paginate_by = settings.LOTUS_ARTICLE_PAGINATION
+    context_object_name = "tag_object"
+    slug_field = "slug"
+    slug_url_kwarg = "slug"
+    pk_url_kwarg = None
+    crumb_title = None  # No usage since title depends from object
+    crumb_urlname = "lotus:tag-detail"
+    lotus_stage = "tags"
+
+    @property
+    def crumbs(self):
+        details_kwargs = {
+            "username": self.object.username,
+        }
+
+        return [
+            (TagIndexView.crumb_title, reverse(
+                TagIndexView.crumb_urlname
+            )),
+            (str(self.object), reverse(self.crumb_urlname, kwargs=details_kwargs)),
+        ]
+
+    def get_queryset_for_object(self):
+        """
+        Build queryset base to get Tag.
+        """
+        return self.model.objects
+
+    def get_queryset(self):
+        """
+        Build queryset base to list Tag articles.
+
+        Depend on "self.object" to list the Tag related objects.
+        """
+        q = self.apply_article_lookups(
+            self.object.articles,
+            self.request.LANGUAGE_CODE,
+        )
+
+        return q.order_by(*self.listed_model.COMMON_ORDER_BY)
+
+    def get(self, request, *args, **kwargs):
+        # Try to get Tag object
+        self.object = self.get_object(queryset=self.get_queryset_for_object())
+
+        # Let the ListView mechanics manage list pagination from given queryset
+        return super().get(request, *args, **kwargs)

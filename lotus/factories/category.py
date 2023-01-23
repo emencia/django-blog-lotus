@@ -1,9 +1,3 @@
-"""
-==================
-Category factories
-==================
-
-"""
 from django.conf import settings
 
 import factory

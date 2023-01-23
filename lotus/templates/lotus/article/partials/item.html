@@ -5,15 +5,19 @@
         <img src="{{ cover_thumb.url }}" class="cover card-img-top" alt="">
     {% endif %}
 
-    <div class="card-body">
-        <p class="card-text mb-0"><small class="publish text-muted">{{ article_object.publish_datetime }}</small></p>
-        <h2 class="title h5">{{ article_object.title }}</h2>
+    <div class="card-body pb-0">
+        <p class="card-text mb-0">
+            <small class="publish text-muted">{{ article_object.publish_datetime|date }}</small>
+        </p>
+        <h2 class="title h5 text-black">{{ article_object.title }}</h2>
         <div class="introduction card-text">{{ article_object.introduction|safe }}</div>
-        <div class="card-text mb-2">
-            {% for category in article_object.get_categories %}
-                <span class="badge rounded-pill bg-light text-dark">{{ category.title }}</span>
-            {% endfor %}
-        </div>
+    </div>
+
+    <div class="card-footer pt-0 border-0 bg-transparent text-dark">
+        <small class="me-1 text-muted">In</small>
+        {% for category in article_object.get_categories %}
+            <small class="category">{{ category.title }}</small>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
     </div>
 
     {% if user.is_authenticated and user.is_staff %}

@@ -3,6 +3,7 @@ from .author import AuthorIndexView, AuthorDetailView
 from .category import CategoryIndexView, CategoryDetailView
 from .preview import PreviewTogglerView
 from .mixins import ArticleFilterMixin
+from .tag import TagIndexView, TagDetailView
 
 
 __all__ = [
@@ -13,6 +14,6 @@ __all__ = [
     "AuthorDetailView",
     "CategoryIndexView",
     "CategoryDetailView",
-    "PreviewTogglerView",
-    "PreviewArticleDetailView",
+    "TagIndexView",
+    "TagDetailView",
 ]

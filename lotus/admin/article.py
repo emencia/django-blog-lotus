@@ -105,6 +105,7 @@ class ArticleAdmin(SmartModelAdmin):
             _("Relations"), {
                 "fields": (
                     "categories",
+                    "tags",
                     "authors",
                     "related",
                 )

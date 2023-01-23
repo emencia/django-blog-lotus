@@ -9,6 +9,8 @@ from django.utils.translation import activate as translation_activate
 from django.urls import reverse
 from django.utils import timezone
 
+from taggit.managers import TaggableManager
+
 from smart_media.modelfields import SmartMediaField
 from smart_media.mixins import SmartFormatMixin
 from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
@@ -255,6 +257,11 @@ class Article(SmartFormatMixin, Translated):
     Optional related article.
     """
 
+    tags = TaggableManager(blank=True)
+    """
+    Optional tags
+    """
+
     COMMON_ORDER_BY = ["-pinned", "-publish_date", "-publish_time", "title"]
     """
     List of field order commonly used in frontend view/api
@@ -373,6 +380,16 @@ class Article(SmartFormatMixin, Translated):
         return self.related.get_for_lang(self.language).order_by(
             *self.COMMON_ORDER_BY
         )
+
+    def get_tags(self):
+        """
+        Return article tags.
+
+        Returns:
+            queryset: List of 'taggit.models.Tag' objects.
+        """
+        #print(self.tags.all().values())
+        return self.tags.all()
 
     def publish_datetime(self):
         """

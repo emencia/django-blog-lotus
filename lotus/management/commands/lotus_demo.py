@@ -6,11 +6,13 @@ from faker import Faker
 from PIL import ImageFont
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.utils.text import slugify
 
+from taggit.models import Tag
+
 from lotus.factories import (
-    ArticleFactory, AuthorFactory, CategoryFactory,
+    ArticleFactory, AuthorFactory, CategoryFactory, TagsFactory,
 )
 from lotus.models import Article, Author, Category
 from lotus.choices import STATUS_DRAFT
@@ -55,7 +57,7 @@ class Command(BaseCommand):
         is less than needed from variances, each variance requiring at least a
         dedicated article in addition to the base articles.
 
-        The command should be tested to be safer and articles/authors/categories
+        The command should be tested to be safer and articles/authors/categories/tags
         arguments should be validated. Actually if they do not match needed length,
         the script will fail.
     """
@@ -73,7 +75,7 @@ class Command(BaseCommand):
             "--authors",
             type=int,
             default=(settings.LOTUS_AUTHOR_PAGINATION * 2),
-            help="Number of Author object to create. Must be greater than 1.",
+            help="Length of Author objects to create. Must be greater than 1.",
         )
         parser.add_argument(
             "--flush-authors",
@@ -84,7 +86,7 @@ class Command(BaseCommand):
             "--articles",
             type=int,
             default=(settings.LOTUS_ARTICLE_PAGINATION * 2),
-            help="Number of Article object to create. Must be greater than 7.",
+            help="Length of Article objects to create. Must be greater than 7.",
         )
         parser.add_argument(
             "--flush-articles",
@@ -95,12 +97,32 @@ class Command(BaseCommand):
             "--categories",
             type=int,
             default=(settings.LOTUS_CATEGORY_PAGINATION * 2),
-            help="Number of Category object to create. Must be greater than 1.",
+            help="Length of Category objects to create. Must be greater than 1.",
         )
         parser.add_argument(
             "--flush-categories",
             action="store_true",
             help="Flush all category objects before creations.",
+        )
+        parser.add_argument(
+            "--tags",
+            type=int,
+            default=10,
+            help="Length of Tag objects to create. Must be greater than 1.",
+        )
+        parser.add_argument(
+            "--tag-per-article",
+            type=int,
+            default=3,
+            help=(
+                "Maximum of Tag to add to each article. Must be less than tag length "
+                "to create.",
+            ),
+        )
+        parser.add_argument(
+            "--flush-tags",
+            action="store_true",
+            help="Flush all taggit tag objects before creations.",
         )
         parser.add_argument(
             "--flush-all",
@@ -140,7 +162,7 @@ class Command(BaseCommand):
             ),
         )
 
-    def flush(self, articles=False, authors=False, categories=False):
+    def flush(self, articles=False, authors=False, categories=False, tags=False):
         """
         Flush required model objects.
         """
@@ -163,6 +185,12 @@ class Command(BaseCommand):
                 self.style.WARNING("* Flushing all categories")
             )
             Category.objects.all().delete()
+
+        if tags:
+            self.stdout.write(
+                self.style.WARNING("* Flushing all tags")
+            )
+            Tag.objects.all().delete()
 
     def build_random_placeholder(self, slug, size, background=None, text_color=None):
         """
@@ -249,6 +277,26 @@ class Command(BaseCommand):
 
         return created
 
+    def create_tags(self, faker):
+        """
+        Create a list of unique tags.
+
+        Arguments:
+            faker (Faker): A Faker instance to use to generated words.
+
+        Returns:
+            list: List of tag names.
+        """
+        self.stdout.write(
+            self.style.SUCCESS("* Creating {length} tags".format(
+                length=self.tag_length,
+            ))
+        )
+
+        builder = TagsFactory(faker=faker)
+
+        return builder.build(self.tag_length)
+
     def create_categories(self, language, originals=None):
         """
         Create Category objects required length from factory.
@@ -301,7 +349,8 @@ class Command(BaseCommand):
 
         return created
 
-    def create_articles(self, language, authors=[], categories=[], originals=None):
+    def create_articles(self, language, authors=[], categories=[], tags=[],
+                        originals=None):
         """
         Create Article objects required length from factory.
         """
@@ -327,7 +376,7 @@ class Command(BaseCommand):
             background = random.choice(list(PLACEHOLDER_PALETTE.keys()))
             text_color = PLACEHOLDER_PALETTE[background]
 
-            # Estimate how many authors exists to relate on, but never more than 5
+            # Estimate how many authors exists to relate on, but never more than 3
             authors_count = 0
             if self.author_length > 3:
                 authors_count = 3
@@ -336,7 +385,7 @@ class Command(BaseCommand):
             elif self.author_length > 0:
                 authors_count = 1
 
-            # Estimate how many categories exists to relate on, but never more than 5
+            # Estimate how many categories exists to relate on, but never more than 3
             categories_count = 0
             if self.category_length > 3:
                 categories_count = 3
@@ -345,7 +394,7 @@ class Command(BaseCommand):
             elif self.category_length > 0:
                 categories_count = 1
 
-            # Estimate how many article exists to relate on, but never more than 5
+            # Estimate how many article exists to relate on, but never more than 3
             relations_count = 0
             if len(created) > 3:
                 relations_count = 3
@@ -381,6 +430,10 @@ class Command(BaseCommand):
                 "fill_related": random.sample(
                     created,
                     random.randint(0, relations_count),
+                ),
+                "fill_tags": random.sample(
+                    tags,
+                    random.randint(0, self.tag_per_article),
                 ),
             }
             # Use item from reserved originals according to the object index
@@ -507,10 +560,40 @@ class Command(BaseCommand):
 
         return ImageFont.truetype(str(font), 12)
 
+    def validate_command_args(self, *args, **options):
+        """
+        Naive validation on command arguments.
+
+        TODO:
+        Object lengths should be smarter to avoid issues with missing left relations
+        needed in random choices because of uniqueness.
+        """
+        if options["authors"] < 2:
+            raise CommandError("Argument 'authors' should be greater than 1")
+
+        if options["articles"] < 2:
+            raise CommandError("Argument 'articles' should be greater than 1")
+
+        if options["categories"] < 2:
+            raise CommandError("Argument 'categories' should be greater than 1")
+
+        if options["tags"] < 2:
+            raise CommandError("Argument 'tags' should be greater than 1")
+
+        if options["tag_per_article"] > options["tags"]:
+            raise CommandError((
+                "Argument 'tag_per_article' can not be greater than 'tags' argument "
+                "value."
+            ))
+
+        return True
+
     def handle(self, *args, **options):
         self.stdout.write(
             self.style.SUCCESS("=== Starting creations ===")
         )
+
+        self.validate_command_args(*args, **options)
 
         self.font = self.get_font(font_path=options["font"])
 
@@ -525,10 +608,12 @@ class Command(BaseCommand):
                 ))
             )
 
-        # Should be validated there are greater than 1
+        # Register limits from command arguments
         self.author_length = options["authors"]
         self.article_length = options["articles"]
         self.category_length = options["categories"]
+        self.tag_length = options["tags"]
+        self.tag_per_article = options["tag_per_article"]
 
         # Initialize faker instance with default language
         self.faker = Faker(settings.LANGUAGE_CODE)
@@ -537,18 +622,21 @@ class Command(BaseCommand):
         flush_articles = options["flush_articles"]
         flush_authors = options["flush_authors"]
         flush_categories = options["flush_categories"]
+        flush_tags = options["flush_tags"]
         if options["flush_all"]:
             flush_articles = True
             flush_authors = True
             flush_categories = True
+            flush_tags = True
 
         self.flush(
             articles=flush_articles,
             authors=flush_authors,
             categories=flush_categories,
+            tags=flush_tags,
         )
 
-        # Create objects (order does matter) for default language
+        # Create objects (order does matter) for default language only
         created_authors = self.create_authors()
 
         created_categories = {
@@ -561,6 +649,7 @@ class Command(BaseCommand):
             settings.LANGUAGE_CODE,
             authors=created_authors,
             categories=created_categories[settings.LANGUAGE_CODE],
+            tags=self.create_tags(self.faker),
         )
 
         # Continue for enabled languages
@@ -578,4 +667,5 @@ class Command(BaseCommand):
                 authors=created_authors,
                 categories=created_categories[code],
                 originals=created_articles,
+                tags=self.create_tags(self.faker),
             )

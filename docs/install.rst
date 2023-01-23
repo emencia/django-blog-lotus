@@ -23,7 +23,10 @@ Add it to your installed Django apps in settings : ::
     INSTALLED_APPS = (
         ...
         "view_breadcrumbs",
-        "lotus.apps.LotusConfig",
+        "sorl.thumbnail",
+        "taggit",
+        "smart_media",
+        "lotus",
     )
 
 Remove the line with ``view_breadcrumbs`` if you didn't installed the full features.
@@ -104,10 +107,28 @@ superuser: ::
     make superuser
 
 And finally automatically fill some demonstration Author, Article and Category
-objects: ::
+objects using command ``lotus_demo`` with default values: ::
 
     make demo
 
-Careful, the ``demo`` command has hardcoded argument values for enabled languages to
-match the ones from sandbox settings. You need to adjust these command arguments to fit
-to your language settings from ``settings.LANGUAGES``.
+.. Note::
+
+    The makefile command ``demo`` use hardcoded arguments values based on demonstration
+    Lotus settings to enable languages for object creations.
+
+    If you want to make a demonstration on some specific languages, you will need to
+    edit your project setting ``settings.LANGUAGES`` and directly use the command
+    ``lotus_demo`` to specify the right languages to use.
+
+.. Warning::
+
+    The ``lotus_demo`` command is currently not safe with various object lengths
+    required from command arguments. Command has been done to work with default Lotus
+    settings so the object length to create is based on pagination limits.
+
+    In some case where you change an object length it may not cover the effectively
+    required length from insertion. Indeed some object relation have uniqueness
+    constraint which lead to consume random objects and may lead to empty remaining
+    object queue.
+
+    So this command may fails depending object lengths.

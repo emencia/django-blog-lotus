@@ -134,6 +134,21 @@
                     {% endif %}
                 {% endwith %}
 
+                {% with tags=article_object.get_tags %}
+                    {% if tags %}
+                        <div class="tags card mb-4">
+                            <div class="card-header">
+                                <strong>{% trans "Tags" %}</strong>
+                            </div>
+                            <div class="p-2">
+                                {% for tag in tags %}
+                                <a class="badge rounded-pill btn btn-primary text-decoration-none me-1" href="">{{ tag.name }}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
                 {% with authors=article_object.get_authors %}
                     {% if authors %}
                         <div class="authors card mb-4">

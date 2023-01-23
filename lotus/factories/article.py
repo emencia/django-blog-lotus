@@ -1,9 +1,3 @@
-"""
-=================
-Article factories
-=================
-
-"""
 import datetime
 
 from django.conf import settings
@@ -189,7 +183,7 @@ class ArticleFactory(factory.django.DjangoModelFactory):
 
         Arguments:
             create (bool): True for create strategy, False for build strategy.
-            extracted (object): Expect a list of Article objects to add. Else
+            extracted (list): Expect a list of Article objects to add. Else
             don't do anything.
         """
         # Do nothing for build strategy
@@ -198,6 +192,25 @@ class ArticleFactory(factory.django.DjangoModelFactory):
 
         for item in extracted:
             self.related.add(item)
+
+    @factory.post_generation
+    def fill_tags(self, create, extracted, **kwargs):
+        """
+        Add tags.
+
+        This can't works in build strategy since Taggit need to have an object primary
+        key to build its generic type relation.
+
+        Arguments:
+            create (bool): True for create strategy, False for build strategy.
+            extracted (list): Expect a list of Tag name (string) to add. Else don't
+            do anything.
+        """
+        if not create or not extracted:
+            return
+
+        if extracted:
+            self.tags.add(*extracted)
 
 
 def multilingual_article(**kwargs):

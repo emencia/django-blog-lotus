@@ -32,7 +32,7 @@ class ArticleAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Model choices querysets for create form gets all objects since there is no
+        # Model choices querysets for create form get all objects since there is no
         # data yet to constraint
         if not self.instance.pk:
             original_queryset = Article.objects.filter(original__isnull=True)
