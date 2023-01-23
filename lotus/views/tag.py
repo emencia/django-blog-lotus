@@ -28,7 +28,8 @@ class DisabledTagIndexView(View):
         raise Http404()
 
 
-class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin, ListView):
+class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
+                          ListView):
     """
     List of tags that are related from at least one article.
     """
@@ -127,6 +128,6 @@ TagIndexView = type("TagIndexView", (
     else (DisabledTagIndexView,)
 ), {})
 """
-This is the effective index class view which depend either the working index view or
-the dummy 404 view Tag index is enabled or not according to settings.
+This is the effective index class view which inherit either from the working index view
+or the dummy 404 view Tag index is enabled or not according to settings.
 """

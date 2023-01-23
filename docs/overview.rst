@@ -1,5 +1,6 @@
 .. _django-smart-media: https://github.com/sveetch/django-smart-media
 .. _django-view-breadcrumbs: https://github.com/tj-django/django-view-breadcrumbs
+.. _django-taggit: https://github.com/jazzband/django-taggit
 
 .. _intro_overview:
 
@@ -68,11 +69,23 @@ Author
     This is a simple **proxy object to Django user object**. They are assigned to
     articles as a simple references. Author does not have any additional contents to a
     Django user.
+
 Category
     A category is just a **container to organize your main article thematics**. It has
     a title, a cover and a free description.
 
-    Obviously, a category detail will list its related articles.
+    A category detail will list its related articles.
+
+Tag
+    This is **alike Category but serve another content structure purposes**. They are
+    managed with `django-taggit`_ and does not have any other content than a name and a
+    slug.
+
+    These tags can be shared with another applications using `django-taggit`_ but Lotus
+    views are made to only show tag related to articles in the current language.
+
+    A tag detail will list its related articles.
+
 Article
     The most important document kind. **An article have many content types** and relate
     to authors, categories and other articles (in the same language).
