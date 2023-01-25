@@ -18,7 +18,7 @@ from django.utils import timezone
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
-    ArticleFactory, CategoryFactory, multilingual_article,
+    ArticleFactory, CategoryFactory, TagFactory, multilingual_article,
 )
 from lotus.models import Article
 from lotus.utils.imaging import DjangoSampleImageCrafter
@@ -66,6 +66,14 @@ def test_article_creation(db):
     """
     ping = CategoryFactory(slug="ping")
     pong = CategoryFactory(slug="pong")
+    bingo = TagFactory(name="Bingo", slug="bingo")
+
+    # Article without fill_* should not generate any random objects
+    empty = ArticleFactory(slug="empty", language="fr")
+    assert empty.authors.count() == 0
+    assert empty.categories.count() == 0
+    assert empty.related.count() == 0
+    assert empty.tags.count() == 0
 
     # Just a dummy article
     dummy = ArticleFactory(slug="dummy", language="fr")
@@ -75,6 +83,7 @@ def test_article_creation(db):
         slug="foo",
         fill_categories=[ping, pong],
         fill_related=[dummy],
+        fill_tags=[bingo],
     )
     assert article.slug == "foo"
 
@@ -109,12 +118,24 @@ def test_article_creation(db):
     # Ensure 'related' is not symmetrical
     assert dummy.related.count() == 0
 
+    # Check related tags
+    results = queryset_values(
+        article.tags.all(),
+        names=["slug", "name"],
+        orders=["slug"]
+    )
+
+    assert results == [
+        {"name": "Bingo", "slug": "bingo"},
+    ]
+
     # Ensure no random relations are created when not specifically
     # required from "fill_****" methods
     article = ArticleFactory(slug="bar")
     assert article.authors.count() == 0
     assert article.categories.count() == 0
     assert article.related.count() == 0
+    assert article.tags.count() == 0
 
 
 def test_article_last_update(db):

@@ -2,11 +2,28 @@ from django.conf import settings
 
 from faker import Faker
 
+import factory
+
+from taggit.models import Tag
+
+
+class TagFactory(factory.django.DjangoModelFactory):
+    """
+    Factory to create instance of a Tag.
+    """
+    name = factory.Sequence(lambda n: "Tag {0}".format(n))
+    slug = factory.Sequence(lambda n: "tag-{0}".format(n))
+
+    class Meta:
+        model = Tag
+
 
 class TagsFactory:
     """
     Aint not a factory with factory boy but indeed provide a common way to build a
     batch of tags
+
+    TODO: Docstring to fill and should be renamed to TagsBuilder
 
     Keyword Arguments:
         language (string):

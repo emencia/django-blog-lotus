@@ -22,10 +22,6 @@ def test_article_managers(db):
     """
     Article manager should be able to correctly filter on language and
     publication.
-
-    TODO: Create a single author and use it in common kwargs to avoid factory to
-    create a new one for each article, this should speed up the tests. This is possibly
-    to port on other tests which create many articles.
     """
     utc = ZoneInfo("UTC")
 
@@ -135,7 +131,6 @@ def test_article_managers(db):
 
     # Check all unpublished
     assert Article.objects.get_unpublished().count() == 10
-
     # Check all english published
     q_en_published = Article.objects.get_published(language="en")
     assert queryset_values(q_en_published) == [

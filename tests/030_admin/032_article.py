@@ -148,6 +148,7 @@ def test_article_admin_change_form(db, admin_client):
         image=None,
         fill_categories=True,
         fill_authors=True,
+        fill_tags=True,
     )
 
     # Fields we don't want to post anything
@@ -162,7 +163,7 @@ def test_article_admin_change_form(db, admin_client):
     for name in fields:
         value = getattr(obj, name)
         # M2M are special ones since form expect only a list of IDs
-        if name in ("categories", "authors", "related"):
+        if name in ("categories", "authors", "related", "tags"):
             data[name] = value.values_list("id", flat=True)
         else:
             data[name] = value

@@ -18,7 +18,7 @@ from django.urls import reverse
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
-    ArticleFactory, AuthorFactory, CategoryFactory, multilingual_article,
+    ArticleFactory, AuthorFactory, CategoryFactory, TagFactory, multilingual_article,
 )
 from lotus.utils.tests import get_admin_change_url, html_pyquery
 
@@ -549,6 +549,9 @@ def test_article_view_detail_content(db, admin_client, enable_preview):
     CategoryFactory(title="cat_2")
     CategoryFactory(title="cat_3")
 
+    bingo = TagFactory(name="Bingo", slug="bingo")
+    TagFactory(name="Nope", slug="nope")
+
     ArticleFactory(title="Foo")
     article_2 = ArticleFactory(title="Bar")
     article_3 = ArticleFactory(
@@ -556,6 +559,7 @@ def test_article_view_detail_content(db, admin_client, enable_preview):
         fill_categories=[cat_1],
         fill_related=[article_2],
         fill_authors=[picsou],
+        fill_tags=[bingo],
         status=STATUS_DRAFT,
         pinned=True,
         featured=True,
@@ -573,14 +577,23 @@ def test_article_view_detail_content(db, admin_client, enable_preview):
     dom = html_pyquery(response)
     container = dom.find("#lotus-content .article-detail")[0]
 
-    categories = [item.text for item in dom.find("#lotus-content .categories li a")]
+    categories = [
+        item.text.strip()
+        for item in dom.find("#lotus-content .categories li a")
+    ]
     assert categories == ["cat_1"]
 
-    authors = [item.text for item in dom.find("#lotus-content .authors li a")]
+    authors = [item.text.strip() for item in dom.find("#lotus-content .authors li a")]
     assert authors == ["Picsou McDuck"]
 
-    relateds = [item.text for item in dom.find("#lotus-content .relateds li a")]
+    relateds = [
+        item.text.strip()
+        for item in dom.find("#lotus-content .relateds li a")
+    ]
     assert relateds == ["Bar"]
+
+    tags = [item.text.strip() for item in dom.find("#lotus-content .tags div a")]
+    assert tags == ["Bingo"]
 
     cover_link = dom.find("#lotus-content .cover a")[0].get("href")
     cover_img = dom.find("#lotus-content .cover img")[0].get("src")

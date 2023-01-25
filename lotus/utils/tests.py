@@ -172,7 +172,7 @@ def html_pyquery(content):
     """
     return pq(
         decode_response_or_string(content),
-        parser='html'
+        parser="html"
     )
 
 

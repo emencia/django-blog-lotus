@@ -19,7 +19,6 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-
 class DisabledTagIndexView(View):
     """
     A very basic view which always return the common Http404 page.
@@ -48,6 +47,9 @@ class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMix
         ]
 
     def get_queryset(self):
+        """
+        TODO: The current queryset is naive about publication criterias
+        """
         return Tag.objects.annotate(
             article_count=Count(
                 "article",

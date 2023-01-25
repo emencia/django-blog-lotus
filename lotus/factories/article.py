@@ -12,6 +12,7 @@ from ..utils.imaging import DjangoSampleImageCrafter
 
 from .author import AuthorFactory
 from .category import CategoryFactory
+from .tag import TagFactory
 
 
 class ArticleFactory(factory.django.DjangoModelFactory):
@@ -198,19 +199,29 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         """
         Add tags.
 
-        This can't works in build strategy since Taggit need to have an object primary
-        key to build its generic type relation.
+        .. Note::
+
+            This won't works in build strategy since Taggit need to have an object
+            primary key to build its generic type relation.
 
         Arguments:
             create (bool): True for create strategy, False for build strategy.
-            extracted (list): Expect a list of Tag name (string) to add. Else don't
-            do anything.
+            extracted (list):  If ``True``, will create a new random tag
+                object. If a list assume it's a list of Tag objects to add.
+                Else if empty don't do anything.
         """
         if not create or not extracted:
             return
 
-        if extracted:
-            self.tags.add(*extracted)
+        # Create a new random tag
+        if extracted is True:
+            tags = [TagFactory()]
+        # Take given tag objects
+        else:
+            tags = extracted
+
+        # Add tags
+        self.tags.add(*tags)
 
 
 def multilingual_article(**kwargs):
