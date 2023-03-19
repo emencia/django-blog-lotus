@@ -56,7 +56,8 @@ class ArticleFilterMixin:
         against as a reference for further usage (like in ``get_context_data``).
 
         Depend on ``allowed_preview_mode`` method as implemented in ``PreviewModeMixin``
-        which manage preview mode.
+        which manage preview mode and queryset must be for a model with a manage which
+        implement ``get_for_lang`` and ``get_published`` methods.
 
         Arguments:
             queryset (django.db.models.QuerySet): Base queryset to start on.

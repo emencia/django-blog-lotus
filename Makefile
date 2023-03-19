@@ -128,7 +128,7 @@ clean-frontend-install:
 
 clean-doc:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Clear documentation <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Cleaning documentation <---$(FORMATRESET)\n"
 	@echo ""
 	rm -Rf docs/_build
 .PHONY: clean-doc
@@ -138,7 +138,7 @@ clean: clean-var clean-doc clean-backend-install clean-backend-build clean-front
 
 venv:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Install virtual environment <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing virtual environment <---$(FORMATRESET)\n"
 	@echo ""
 	virtualenv -p $(PYTHON_INTERPRETER) $(VENV_PATH)
 	# This is required for those ones using old distribution
@@ -203,36 +203,36 @@ check-migrations:
 
 migrate:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Apply pending migrations <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Applying pending migrations <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTHON_BIN) $(DJANGO_MANAGE) migrate
 .PHONY: migrate
 
 superuser:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Create new superuser <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Creating new superuser <---$(FORMATRESET)\n"
 	@echo ""
 	$(PYTHON_BIN) $(DJANGO_MANAGE) createsuperuser
 .PHONY: superuser
 
 po:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Update PO from 'lotus' app <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Updating PO from 'lotus' app <---$(FORMATRESET)\n"
 	@echo ""
 	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot --no-obsolete
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Update PO from sandbox <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Updating PO from sandbox <---$(FORMATRESET)\n"
 	@echo ""
 	@cd $(SANDBOX_DIR); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot --no-obsolete
 .PHONY: po
 
 mo:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build MO from 'lotus' app <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building MO from 'lotus' app <---$(FORMATRESET)\n"
 	@echo ""
 	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages --verbosity 3
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build MO from sandbox <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building MO from sandbox <---$(FORMATRESET)\n"
 	@echo ""
 	@cd $(SANDBOX_DIR); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages --verbosity 3
 .PHONY: mo
@@ -254,7 +254,7 @@ run:
 
 css:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build CSS for development environment <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building CSS for development environment <---$(FORMATRESET)\n"
 	@echo ""
 	cd $(FRONTEND_DIR) && npm run-script css
 .PHONY: css
@@ -268,14 +268,14 @@ watch-sass:
 
 css-prod:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build CSS for production environment <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building CSS for production environment <---$(FORMATRESET)\n"
 	@echo ""
 	cd $(FRONTEND_DIR) && npm run-script css-prod
 .PHONY: css-prod
 
 js:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build distributed Javascript for development environment <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building distributed Javascript for development environment <---$(FORMATRESET)\n"
 	@echo ""
 	cd $(FRONTEND_DIR) && npm run js
 .PHONY: js
@@ -289,7 +289,7 @@ watch-js:
 
 js-prod:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build distributed Javascript for production environment <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building distributed Javascript for production environment <---$(FORMATRESET)\n"
 	@echo ""
 	cd $(FRONTEND_DIR) && npm run js-prod
 .PHONY: js-prod
@@ -302,7 +302,7 @@ frontend-prod: css-prod js-prod
 
 docs:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build documentation <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building documentation <---$(FORMATRESET)\n"
 	@echo ""
 	cd docs && make html
 .PHONY: docs
@@ -339,36 +339,36 @@ test-initial:
 
 freeze-dependencies:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Freeze backend dependencies versions <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Freezing backend dependencies versions <---$(FORMATRESET)\n"
 	@echo ""
-	$(VENV_PATH)/bin/python freezer.py
+	$(PYTHON_BIN) freezer.py
 .PHONY: freeze-dependencies
 
 tox:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Launch tests with Tox environments <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Launching tests with Tox environments <---$(FORMATRESET)\n"
 	@echo ""
 	$(TOX)
 .PHONY: tox
 
 build-package:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Build package <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building package <---$(FORMATRESET)\n"
 	@echo ""
 	rm -Rf dist
-	$(VENV_PATH)/bin/python setup.py sdist
+	$(PYTHON_BIN) setup.py sdist
 .PHONY: build-package
 
 release: build-package
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Release <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Releasing <---$(FORMATRESET)\n"
 	@echo ""
 	$(TWINE) upload dist/*
 .PHONY: release
 
 check-release: build-package
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Check package <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Checking package <---$(FORMATRESET)\n"
 	@echo ""
 	$(TWINE) check dist/*
 .PHONY: check-release
