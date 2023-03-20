@@ -3,16 +3,15 @@ import datetime
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
-from django.utils.translation import gettext_lazy as _
-from django.utils.translation import get_language
-from django.utils.translation import activate as translation_activate
-from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from django.urls import translate_url, reverse
+from django.utils.translation import get_language
 
 from taggit.managers import TaggableManager
 
-from smart_media.modelfields import SmartMediaField
 from smart_media.mixins import SmartFormatMixin
+from smart_media.modelfields import SmartMediaField
 from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
 
 from ..choices import get_status_choices, get_status_default, STATUS_PUBLISHED
@@ -307,23 +306,15 @@ class Article(SmartFormatMixin, Translated):
         Returns:
             string: Object absolute URL.
         """
-        # Force the article language to get the right url independently of the current
-        # browser language. This is not thread safe and we need to active again the
-        # current session language after
-        initial_language = get_language()
-        translation_activate(self.language)
-
-        url = reverse(urlname, kwargs={
-            "year": self.publish_date.year,
-            "month": self.publish_date.month,
-            "day": self.publish_date.day,
-            "slug": self.slug,
-        })
-
-        # Re-activate the current language
-        translation_activate(initial_language)
-
-        return url
+        return translate_url(
+            reverse(urlname, kwargs={
+                "year": self.publish_date.year,
+                "month": self.publish_date.month,
+                "day": self.publish_date.day,
+                "slug": self.slug,
+            }),
+            self.language
+        )
 
     def get_absolute_url(self):
         """

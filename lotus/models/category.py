@@ -1,12 +1,10 @@
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import get_language
-from django.utils.translation import activate as translation_activate
-from django.urls import reverse
+from django.urls import translate_url, reverse
 
-from smart_media.modelfields import SmartMediaField
 from smart_media.mixins import SmartFormatMixin
+from smart_media.modelfields import SmartMediaField
 from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
 
 from ..managers import CategoryManager
@@ -117,20 +115,12 @@ class Category(SmartFormatMixin, Translated):
         Returns:
             string: An URL.
         """
-        # Force the category language to get the right url independently of the current
-        # browser language. This is not thread safe and we need to active again the
-        # current session language after
-        initial_language = get_language()
-        translation_activate(self.language)
-
-        url = reverse("lotus:category-detail", kwargs={
-            "slug": self.slug,
-        })
-
-        # Re-activate the current language
-        translation_activate(initial_language)
-
-        return url
+        return translate_url(
+            reverse("lotus:category-detail", kwargs={
+                "slug": self.slug,
+            }),
+            self.language
+        )
 
     def get_cover_format(self):
         return self.media_format(self.cover)

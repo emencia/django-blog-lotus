@@ -705,10 +705,15 @@ def check_detail_links(client_obj, article):
     return link_edit, link_translate
 
 
-def test_article_view_detail_admin_links(db, admin_client, client, enable_preview):
+def test_article_view_detail_admin_links(db, settings, admin_client, client,
+                                         enable_preview):
     """
     Detail sidebar should have the right links for admin depending article status.
     """
+    # NOTE: A test playing with language and view requests must enforce default
+    # language since LANGUAGE_CODE may be altered between two tests.
+    settings.LANGUAGE_CODE = "en"
+
     # Create a single category used everywhere to avoid create multiple random ones
     # from factory
     ping = CategoryFactory(slug="ping")

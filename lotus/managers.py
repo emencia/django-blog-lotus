@@ -106,9 +106,8 @@ class BaseTranslatedQuerySet(models.QuerySet):
             queryset: Queryset to filter published entries.
         """
         prefix = prefix or ""
-        language = language or settings.LANGUAGE_CODE
 
-        return self.filter(**{prefix + "language": language})
+        return self.filter(**{prefix + "language": language or settings.LANGUAGE_CODE})
 
     def get_siblings(self, source):
         """

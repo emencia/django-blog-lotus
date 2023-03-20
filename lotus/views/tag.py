@@ -131,5 +131,5 @@ TagIndexView = type("TagIndexView", (
 ), {})
 """
 This is the effective index class view which inherit either from the working index view
-or the dummy 404 view Tag index is enabled or not according to settings.
+or the dummy 404 view if Tag index is enabled or not according to settings.
 """
