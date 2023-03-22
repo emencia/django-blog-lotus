@@ -705,8 +705,7 @@ def check_detail_links(client_obj, article):
     return link_edit, link_translate
 
 
-def test_article_view_detail_admin_links(db, settings, admin_client, client,
-                                         enable_preview):
+def test_article_view_detail_admin_links(db, settings, admin_client, client):
     """
     Detail sidebar should have the right links for admin depending article status.
     """

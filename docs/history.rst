@@ -18,6 +18,7 @@ Version 0.5.1 - Unreleased
 * Added Article tags feature with ``django-taggit``;
 * Changed models ``get_absolute_url`` method to use translate_url instead of
   ``translation_activate``;
+* Added ``lookups.LookupBuilder`` an abstraction to make complex lookups for publication/language criterias for Article and Category;
 
 
 Version 0.5.0 - 2023/01/16

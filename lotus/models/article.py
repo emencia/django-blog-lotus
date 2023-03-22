@@ -377,7 +377,7 @@ class Article(SmartFormatMixin, Translated):
         Return article tags.
 
         Returns:
-            queryset: List of 'taggit.models.Tag' objects.
+            queryset: List of related 'taggit.models.Tag' objects.
         """
         return self.tags.all()
 
@@ -401,11 +401,11 @@ class Article(SmartFormatMixin, Translated):
         been removed from setting.
 
         Keywords Arguments:
-            now (datetime.datetime): Commonly the current datetime now  (timezone aware)
-                which have been used in queryset lookup to check for publication
-                availability. It is used to determine if article publish start date is
-                to come next or if article publish end date is over the current date.
-                Empty by default, there will be no state about start/end dates.
+            now (datetime.datetime): Commonly the current datetime 'now' (timezone
+                aware) which have been used in queryset lookup to check for publication
+                availability. It is used to determine if article publish "start date"
+                is to come next or if article publish "end date" is over the current
+                date. Empty by default, there will be no state about start/end dates.
 
         Returns:
             datetime.datetime: Publish datetime.

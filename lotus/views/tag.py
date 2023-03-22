@@ -4,6 +4,7 @@ from django.db.models import Count, Q
 from django.http import Http404
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.views import View
@@ -27,8 +28,8 @@ class DisabledTagIndexView(View):
         raise Http404()
 
 
-class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
-                          ListView):
+class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
+                          PreviewModeMixin, ListView):
     """
     List of tags that are related from at least one article.
     """
@@ -48,12 +49,19 @@ class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMix
 
     def get_queryset(self):
         """
-        TODO: The current queryset is naive about publication criterias
+        Build complex queryset to get all tags which have published articles.
+
+        Published articles are determined with the common publication criterias.
         """
+        publication_criterias = self.build_article_lookups(
+            language=self.request.LANGUAGE_CODE,
+            prefix="article__",
+        )
+
         return Tag.objects.annotate(
             article_count=Count(
                 "article",
-                filter=Q(article__language=self.request.LANGUAGE_CODE)
+                filter=Q(*publication_criterias),
             )
         ).filter(article_count__gt=0).order_by("name")
 

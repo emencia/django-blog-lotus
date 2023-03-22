@@ -1,5 +1,8 @@
 from django.conf import settings
+from django.db import models
 from django.utils import timezone
+
+from ..lookups import LookupBuilder
 
 
 class NoOperationBreadcrumMixin:
@@ -44,10 +47,55 @@ class PreviewModeMixin:
         return context
 
 
-class ArticleFilterMixin:
+class ArticleFilterMixin(LookupBuilder):
     """
     A mixin to share Article filtering.
     """
+    def build_article_lookups(self, language, prefix=None):
+        """
+        Build complex lookups to apply common publication criterias.
+
+        Also set a ``self.target_date`` attribute to store the date checked
+        against as a reference for further usage (like in ``get_context_data``).
+
+        Depends on ``allowed_preview_mode`` method as implemented in ``PreviewModeMixin``
+        (that manage preview mode) and the queryset must be for a model with a manager
+        which implement ``get_for_lang`` and ``get_published`` methods.
+
+        Arguments:
+            language (string): Language code to filter on.
+
+        Returns:
+            tuple:
+        """
+        lookups = []
+        prefix = prefix or ""
+
+        self.target_date = timezone.now()
+
+        # Check for enabled preview mode
+        if self.allowed_preview_mode(self.request):
+            lookups.extend(
+                self.build_language_conditions(language, prefix=prefix)
+            )
+        # Default request instead
+        else:
+            lookups.extend(
+                self.build_publication_conditions(
+                    target_date=None,
+                    language=language,
+                    prefix=prefix,
+                )
+            )
+
+        # Avoid anonymous to see private content
+        if not self.request.user.is_authenticated:
+            lookups.append(
+                models.Q(**{prefix + "private": False})
+            )
+
+        return tuple(lookups)
+
     def apply_article_lookups(self, queryset, language):
         """
         Apply publication and language lookups to given queryset.
@@ -55,9 +103,9 @@ class ArticleFilterMixin:
         Also this will set a ``self.target_date`` attribute to store the date checked
         against as a reference for further usage (like in ``get_context_data``).
 
-        Depend on ``allowed_preview_mode`` method as implemented in ``PreviewModeMixin``
-        which manage preview mode and queryset must be for a model with a manage which
-        implement ``get_for_lang`` and ``get_published`` methods.
+        Depends on ``allowed_preview_mode`` method as implemented in ``PreviewModeMixin``
+        (that manage preview mode) and the queryset must be for a model with a manager
+        which implement ``get_for_lang`` and ``get_published`` methods.
 
         Arguments:
             queryset (django.db.models.QuerySet): Base queryset to start on.
@@ -90,7 +138,7 @@ class ArticleFilterMixin:
         Expose the date "now" used for publication filter.
         """
         context = super().get_context_data(**kwargs)
-        context["lotus_now"] = self.target_date
+        context["lotus_now"] = getattr(self, "target_date")
         return context
 
 

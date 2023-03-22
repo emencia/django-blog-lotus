@@ -1,20 +1,16 @@
-from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
-from .choices import STATUS_PUBLISHED
+from .lookups import LookupBuilder
 
 
-class BasePublishedQuerySet(models.QuerySet):
+class BasePublishedQuerySet(LookupBuilder, models.QuerySet):
     """
     Base queryset for publication methods.
     """
     def get_published(self, target_date=None, language=None, prefix=None):
         """
         Return a queryset with published entries selected.
-
-        This build a complex queryset about status, publish start date, publish start
-        time, publish end datetime and language.
 
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
@@ -29,24 +25,12 @@ class BasePublishedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
-        prefix = prefix or ""
-        target_date = target_date or timezone.now()
-
-        base_lookups = {
-            prefix + "status": STATUS_PUBLISHED,
-        }
-        if language:
-            base_lookups[prefix + "language"] = language
-
         return self.filter(
-            models.Q(**base_lookups),
-            models.Q(**{prefix + "publish_date__lt": target_date.date()}) |
-            models.Q(
-                models.Q(**{prefix + "publish_date": target_date.date()}),
-                models.Q(**{prefix + "publish_time__lte": target_date.time()})
-            ),
-            models.Q(**{prefix + "publish_end__gt": target_date}) |
-            models.Q(**{prefix + "publish_end": None}),
+            *self.build_publication_conditions(
+                target_date=target_date,
+                language=language,
+                prefix=prefix
+            )
         )
 
     def get_unpublished(self, target_date=None, language=None, prefix=None):
@@ -66,28 +50,16 @@ class BasePublishedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
-        prefix = prefix or ""
-        target_date = target_date or timezone.now()
-
-        base_lookups = {
-            prefix + "status": STATUS_PUBLISHED,
-        }
-        if language:
-            base_lookups[prefix + "language"] = language
-
         return self.exclude(
-            models.Q(**base_lookups),
-            models.Q(**{prefix + "publish_date__lt": target_date.date()}) |
-            models.Q(
-                models.Q(**{prefix + "publish_date": target_date.date()}),
-                models.Q(**{prefix + "publish_time__lte": target_date.time()})
-            ),
-            models.Q(**{prefix + "publish_end__gt": target_date}) |
-            models.Q(**{prefix + "publish_end": None}),
+            *self.build_publication_conditions(
+                target_date=target_date,
+                language=language,
+                prefix=prefix
+            )
         )
 
 
-class BaseTranslatedQuerySet(models.QuerySet):
+class BaseTranslatedQuerySet(LookupBuilder, models.QuerySet):
     """
     Base queryset for translation methods only.
     """
@@ -105,9 +77,9 @@ class BaseTranslatedQuerySet(models.QuerySet):
         Returns:
             queryset: Queryset to filter published entries.
         """
-        prefix = prefix or ""
-
-        return self.filter(**{prefix + "language": language or settings.LANGUAGE_CODE})
+        return self.filter(
+            *self.build_language_conditions(language, prefix=prefix)
+        )
 
     def get_siblings(self, source):
         """
@@ -123,18 +95,11 @@ class BaseTranslatedQuerySet(models.QuerySet):
             be all of its translations. For a translation article it will be its
             original article and all other original's translation articles.
         """
-        # Original has just translation relations
-        if source.original is None:
-            return self.filter(original=source)
-
         # Translations use complex lookups to regroup original and translations.
         return self.filter(
-            models.Q(**{"id": source.original_id}) |
-            models.Q(
-                models.Q(**{"original_id": source.original_id}),
-                ~models.Q(**{"id": source.id})
-            ),
+            *self.build_siblings_conditions(source)
         )
+
 
 
 class ArticleQuerySet(BasePublishedQuerySet, BaseTranslatedQuerySet):

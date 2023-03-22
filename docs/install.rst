@@ -4,7 +4,7 @@
 Install
 =======
 
-Install package with every extra features in your environment : ::
+Install package with every extra feature requirements in your environment : ::
 
     pip install django-blog-lotus[breadcrumbs]
 
@@ -29,7 +29,8 @@ Add it to your installed Django apps in settings : ::
         "lotus",
     )
 
-Remove the line with ``view_breadcrumbs`` if you didn't installed the full features.
+Remove the line with ``view_breadcrumbs`` if you didn't installed its extra
+requirement.
 
 Then load default application settings in your settings file: ::
 
