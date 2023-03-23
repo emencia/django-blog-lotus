@@ -220,7 +220,7 @@ def compact_form_errors(form):
     return errors
 
 
-def build_post_data_from_object(model, obj, ignore=["id"]):
+def build_post_data_from_object(model, obj, ignore=["id"], extra=None):
     """
     Build a payload suitable to a POST request from given object data.
 
@@ -230,17 +230,22 @@ def build_post_data_from_object(model, obj, ignore=["id"]):
     following build): ::
 
         foo = ArticleFactory.build(name="Foo", language="fr", relations="whatever")
-        data = build_post_data_from_object(Article, foo, ignore=["id", "relations"])
-        >>> {"name": "Foo", "language": "fr"}
+        data = build_post_data_from_object(
+            Article, foo, ignore=["id", "relations"], extra={"ping": "pong"}
+        )
+        >>> {"name": "Foo", "language": "fr", "ping": "pong"}
 
     Arguments:
         model (django.db.models.Model): A model object used to find object
             attributes to extract values.
         obj (object): A instance of given model or a dict (like the one returned
             by a factory ``build()`` method.
+
+    Keyword Arguments:
         ignore (list): List of field name to ignore for value extraction. Default to
             "id" but it will not be enough for any field with foreign keys, automatic
             primary keys, etc.. so you will have to specify them yourself.
+        extra (dict): A dictionnary of items to extend the built payload.
 
     Returns:
         dict: Payload data to use in POST request.
@@ -257,6 +262,9 @@ def build_post_data_from_object(model, obj, ignore=["id"]):
             data[name] = obj.get(name)
         else:
             data[name] = getattr(obj, name)
+
+    if extra:
+        data.update(extra)
 
     return data
 

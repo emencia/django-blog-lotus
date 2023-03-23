@@ -4,6 +4,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
+from dal import autocomplete
+
 from ..models import Article, Category
 
 from .translated import (
@@ -25,9 +27,18 @@ if CONFIG_NAME not in CKEDITOR_CONFIG:
     CONFIG_NAME = "default"
 
 
-class ArticleAdminForm(forms.ModelForm):
+class ArticleAdminForm(autocomplete.FutureModelForm):
     """
     Article form for admin.
+
+    NOTE:
+
+        DAL usage with dark mode is not compatible yet (have been fixed but not
+        released yet as of 3.9.4):
+
+        https://github.com/yourlabs/django-autocomplete-light/issues/1245
+
+        We currently patch it with a custom template with CSS overriding.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -145,7 +156,9 @@ class ArticleAdminForm(forms.ModelForm):
         widgets = {
             "introduction": CKEditorWidget(config_name=CONFIG_NAME),
             "content": CKEditorWidget(config_name=CONFIG_NAME),
+            "tags": autocomplete.TaggitSelect2("lotus:tag-autocomplete"),
         }
+
         exclude = [
             "last_update",
         ]

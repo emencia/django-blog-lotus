@@ -43,6 +43,18 @@ def test_article_admin_list(db, admin_client):
     assert response.status_code == 200
 
 
+def test_article_admin_detail(db, admin_client):
+    """
+    Article model admin detail view should not raise error on GET request.
+    """
+    obj = ArticleFactory()
+
+    url = get_admin_change_url(obj)
+    response = admin_client.get(url)
+
+    assert response.status_code == 200
+
+
 @freeze_time("2012-10-15 10:00:00")
 def test_article_admin_list_is_published(db, admin_client):
     """
@@ -125,18 +137,6 @@ def test_article_admin_list_is_published(db, admin_client):
     assert sorted(resulting_unpublished_ids) == sorted(expected_unpublished_ids)
 
 
-def test_article_admin_detail(db, admin_client):
-    """
-    Article model admin detail view should not raise error on GET request.
-    """
-    obj = ArticleFactory()
-
-    url = get_admin_change_url(obj)
-    response = admin_client.get(url)
-
-    assert response.status_code == 200
-
-
 def test_article_admin_change_form(db, admin_client):
     """
     Ensure the admin change form is working well (this should cover add form
@@ -152,7 +152,7 @@ def test_article_admin_change_form(db, admin_client):
     )
 
     # Fields we don't want to post anything
-    ignored_fields = ["id", "relations", "article"]
+    ignored_fields = ["id", "relations", "article", "tagged_items"]
 
     # Build POST data from object field values
     data = {}
@@ -163,8 +163,11 @@ def test_article_admin_change_form(db, admin_client):
     for name in fields:
         value = getattr(obj, name)
         # M2M are special ones since form expect only a list of IDs
-        if name in ("categories", "authors", "related", "tags"):
+        if name in ("categories", "authors", "related"):
             data[name] = value.values_list("id", flat=True)
+        # Tags is a very special field, a list of tag names is expected
+        elif name in ("tags",):
+            data[name] = list(value.names())
         else:
             data[name] = value
 
@@ -262,9 +265,11 @@ def test_article_admin_original_validation(db, admin_client):
 
     # Build initial POST data
     ignore = [
-        "id", "relations", "article", "authors", "related", "categories",
+        "id", "relations", "article", "authors", "related", "categories", "tags",
     ]
-    data = build_post_data_from_object(Article, obj_a, ignore=ignore)
+    data = build_post_data_from_object(
+        Article, obj_a, ignore=ignore, extra={"tags": []}
+    )
 
     # 1) Edit to set original on 'obj_b', everything is ok
     data["original"] = obj_b
@@ -301,9 +306,11 @@ def test_article_admin_original_add_validation(db, admin_client):
 
     # Build initial POST data
     ignore = [
-        "id", "relations", "article", "authors", "related", "categories",
+        "id", "relations", "article", "authors", "related", "categories", "tags",
     ]
-    data = build_post_data_from_object(Article, obj_fr, ignore=ignore)
+    data = build_post_data_from_object(
+        Article, obj_fr, ignore=ignore, extra={"tags": []}
+    )
 
     data["original"] = obj_en
 
@@ -327,9 +334,11 @@ def test_article_admin_original_change_validation(db, admin_client):
 
     # Build initial POST data
     ignore = [
-        "id", "relations", "article", "authors", "related", "categories",
+        "id", "relations", "article", "authors", "related", "categories", "tags",
     ]
-    data = build_post_data_from_object(Article, obj_fr, ignore=ignore)
+    data = build_post_data_from_object(
+        Article, obj_fr, ignore=ignore, extra={"tags": []}
+    )
 
     # Trying to switch language to 'EN' should not allow to keep the original
     # relation on 'obj_en' in 'EN' language
@@ -358,7 +367,9 @@ def test_article_admin_related_create_validation(db, admin_client):
     ignore = [
         "id", "relations", "article", "authors", "related", "categories", "tags",
     ]
-    data = build_post_data_from_object(Article, build_fr, ignore=ignore)
+    data = build_post_data_from_object(
+        Article, build_fr, ignore=ignore, extra={"tags": []}
+    )
 
     # 1) Try to add related article in different language, raise error
     data["related"] = [obj_en.id]
@@ -396,9 +407,11 @@ def test_article_admin_related_change_validation(db, admin_client):
 
     # Build initial POST data
     ignore = [
-        "id", "relations", "article", "authors", "related", "categories",
+        "id", "relations", "article", "authors", "related", "categories", "tags",
     ]
-    data = build_post_data_from_object(Article, obj_fr, ignore=ignore)
+    data = build_post_data_from_object(
+        Article, obj_fr, ignore=ignore, extra={"tags": []}
+    )
 
     # 1) Try to add related article in different language, raise error
     data["related"] = [obj_en.id]
@@ -462,7 +475,9 @@ def test_article_admin_category_create_validation(db, admin_client):
     ignore = [
         "id", "relations", "article", "authors", "related", "categories", "tags",
     ]
-    data = build_post_data_from_object(Article, build_fr, ignore=ignore)
+    data = build_post_data_from_object(
+        Article, build_fr, ignore=ignore, extra={"tags": []}
+    )
 
     # 1) Try to add category in different language, raise error
     data["categories"] = [cat_en.id]
@@ -498,9 +513,11 @@ def test_article_admin_category_change_validation(db, admin_client):
 
     # Build initial POST data
     ignore = [
-        "id", "relations", "article", "authors", "related", "categories",
+        "id", "relations", "article", "authors", "related", "categories", "tags",
     ]
-    data = build_post_data_from_object(Article, obj_fr, ignore=ignore)
+    data = build_post_data_from_object(
+        Article, obj_fr, ignore=ignore, extra={"tags": []}
+    )
 
     # 1) Try to add category in different language, raise error
     data["categories"] = [cat_en.id]
@@ -598,7 +615,7 @@ def test_article_preview_modelchoice_change_labels(db, admin_client):
     ArticleFactory(title="omelette", language="fr")
 
     # Build form and get its simple HTML representation to parse it
-    f = ArticleAdminForm({}, instance=obj_fr)
+    f = ArticleAdminForm({"tags": []}, instance=obj_fr)
     content = f.as_p()
     dom = html_pyquery(content)
 

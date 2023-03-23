@@ -35,8 +35,9 @@ class LookupBuilder:
                 from a relation like ``author__``. Default is empty.
 
         Returns:
-            tuple: Lookup conditions to apply publication criterias with a
-            ``filter(*conditions)`` or a complex condition ``models.Q(*conditions)``.
+            tuple: Lookup conditions to apply all publication criterias (publish dates,
+            language and private) with a ``filter(*conditions)`` or a complex condition
+            ``models.Q(*conditions)``.
         """
         prefix = prefix or ""
         target_date = target_date or timezone.now()

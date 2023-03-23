@@ -1,7 +1,8 @@
 from django.conf import settings
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Q
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 from django.utils import timezone
@@ -9,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.views import View
 
+from dal import autocomplete
 from taggit.models import Tag, TaggedItem
 
 from ..models import Article
@@ -130,6 +132,37 @@ class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
 
         # Let the ListView mechanics manage list pagination from given queryset
         return super().get(request, *args, **kwargs)
+
+
+class TagAutocompleteView(UserPassesTestMixin, autocomplete.Select2QuerySetView):
+    """
+    View to return JSON response for a tag list.
+
+    Default returns paginated list of all available tags. If request argument ``q`` is
+    given, the list may return tag items that match text from argument.
+
+    Worth to notice this is language agnostic, since a Tag does not have any specific
+    language.
+    """
+    def test_func(self):
+        """
+        Limit to admin only
+        """
+        return self.request.user.is_staff
+
+    def get_queryset(self):
+        qs = Tag.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs.order_by("name")
+
+    def post(self, request, *args, **kwargs):
+        """
+        POST request is forbidden since DAL would create a tag for a missing value.
+        """
+        return HttpResponseBadRequest()
 
 
 TagIndexView = type("TagIndexView", (

@@ -8,7 +8,7 @@ from .views import (
     AuthorIndexView, AuthorDetailView,
     CategoryIndexView, CategoryDetailView,
     PreviewTogglerView, PreviewArticleDetailView,
-    TagIndexView, TagDetailView,
+    TagIndexView, TagDetailView, TagAutocompleteView,
 )
 
 
@@ -54,6 +54,12 @@ urlpatterns = [
     ),
 
     path("tags/", TagIndexView.as_view(), name="tag-index"),
+    # TODO: autocomplete should be forbidden as a tag name
+    path(
+        "tags/autocomplete/",
+        TagAutocompleteView.as_view(),
+        name="tag-autocomplete",
+    ),
     path(
         "tags/<str:tag>/",
         TagDetailView.as_view(),
