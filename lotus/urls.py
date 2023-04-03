@@ -54,7 +54,6 @@ urlpatterns = [
     ),
 
     path("tags/", TagIndexView.as_view(), name="tag-index"),
-    # TODO: autocomplete should be forbidden as a tag name
     path(
         "tags/autocomplete/",
         TagAutocompleteView.as_view(),

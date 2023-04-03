@@ -18,9 +18,9 @@ Version 0.5.1 - Unreleased
 * Added Article tags feature with ``django-taggit``;
 * Added ``django-autocomplete-light`` for a nice widget on Article 'tags' field in
   admin;
-* Changed models ``get_absolute_url`` method to use translate_url instead of
+* Changed models ``get_absolute_url`` method to use ``translate_url`` instead of
   ``translation_activate``;
-* Added ``lookups.LookupBuilder`` an abstraction to make complex lookups for
+* Added ``lookups.LookupBuilder``, an abstraction to make complex lookups for
   publication/language criterias for Article and Category;
 
 

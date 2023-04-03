@@ -139,7 +139,7 @@ class TagAutocompleteView(UserPassesTestMixin, autocomplete.Select2QuerySetView)
     View to return JSON response for a tag list.
 
     Default returns paginated list of all available tags. If request argument ``q`` is
-    given, the list may return tag items that match text from argument.
+    given, the list will return tag items that start with text from argument.
 
     Worth to notice this is language agnostic, since a Tag does not have any specific
     language.

@@ -12,7 +12,7 @@ from django.utils.text import slugify
 from taggit.models import Tag
 
 from lotus.factories import (
-    ArticleFactory, AuthorFactory, CategoryFactory, TagsFactory,
+    ArticleFactory, AuthorFactory, CategoryFactory, TagNameBuilder,
 )
 from lotus.models import Article, Author, Category
 from lotus.choices import STATUS_DRAFT
@@ -293,7 +293,7 @@ class Command(BaseCommand):
             ))
         )
 
-        builder = TagsFactory(faker=faker)
+        builder = TagNameBuilder(faker=faker)
 
         return builder.build(self.tag_length)
 

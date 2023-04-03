@@ -139,8 +139,6 @@ TEMPLATES = [
 ]
 
 INSTALLED_APPS = [
-    "dal",
-    "dal_select2",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -150,7 +148,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.forms",
     "sorl.thumbnail",
-    "taggit",
     "smart_media",
     "lotus",
 ]
@@ -213,6 +210,18 @@ else:
     INSTALLED_APPS[0:0] = [
         "view_breadcrumbs",
     ]
+
+
+"""
+django-taggit part
+"""
+INSTALLED_APPS[0:0] = [
+    "dal",
+    "dal_select2",
+]
+INSTALLED_APPS.append(
+    "taggit",
+)
 
 
 """

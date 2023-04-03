@@ -18,16 +18,17 @@ class TagFactory(factory.django.DjangoModelFactory):
         model = Tag
 
 
-class TagsFactory:
+class TagNameBuilder:
     """
     Aint not a factory with factory boy but indeed provide a common way to build a
     batch of tags
 
-    TODO: Docstring to fill and should be renamed to TagsBuilder
-
     Keyword Arguments:
-        language (string):
-        faker (Faker):
+        language (string): Language code to use to create random content with Faker.
+            Default to the default ``settings.LANGUAGE_CODE``.
+        faker (Faker): A Faker instance to use. Default to a new Faker instance create
+            on the fly with given language. If a Faker instance is given, the language
+            argument is not used, since given Faker instance already got one.
     """
     def __init__(self, language=None, faker=None):
         self.language = language or settings.LANGUAGE_CODE
@@ -42,10 +43,10 @@ class TagsFactory:
         Create a list of random tag names with Faker.
 
         Arguments:
-            length (int):
+            length (int): Number of tags to create.
 
         Returns:
-            list:
+            list: A list of strings for built tag names (one word per tag).
         """
         self._built = [
             item.capitalize()
