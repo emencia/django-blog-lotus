@@ -160,6 +160,27 @@ INSTALLED_APPS = [
     "lotus",
 ]
 
+"""
+CKEditor part
+"""
+INSTALLED_APPS[0:0] = [
+    "ckeditor",
+    "ckeditor_uploader",
+]
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+"""
+django-taggit part
+"""
+INSTALLED_APPS[0:0] = [
+    "dal",
+    "dal_select2",
+]
+INSTALLED_APPS.append(
+    "taggit",
+)
+
 
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW

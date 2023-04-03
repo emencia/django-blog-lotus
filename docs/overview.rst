@@ -15,42 +15,49 @@ Here is a set of screenshots of all views, content are dummy since it comes from
 generated :ref:`intro_install_demo` being logged in as an administrator. As you will
 see Lotus include a very pretty basic layout from a barebone Bootstrap v5.
 
+.. |article-list| image:: _static/demo/article-list.png
+.. |article-detail| image:: _static/demo/article-detail.png
+.. |category-list| image:: _static/demo/category-list.png
+.. |category-detail| image:: _static/demo/category-detail.png
+.. |author-list| image:: _static/demo/author-list.png
+.. |author-detail| image:: _static/demo/author-detail.png
+
 .. list-table:: Click image to see larger version.
    :class: borderless
 
-   * - .. figure:: /_static/demo/thumbs/article-list.png
+   * - .. figure:: /_static/demo/thumb_article-list.png
           :align: center
-          :target: /_static/demo/article-list.png
+          :target: _images/article-detail.png
 
           Article list
 
-     - .. figure:: /_static/demo/thumbs/article-detail.png
+     - .. figure:: /_static/demo/thumb_article-detail.png
           :align: center
-          :target: /_static/demo/article-detail.png
+          :target: _images/article-detail.png
 
           Article detail
 
-     - .. figure:: /_static/demo/thumbs/category-list.png
+     - .. figure:: /_static/demo/thumb_category-list.png
           :align: center
-          :target: /_static/demo/category-list.png
+          :target: _images/category-list.png
 
           Category detail
 
-   * - .. figure:: /_static/demo/thumbs/category-detail.png
+   * - .. figure:: /_static/demo/thumb_category-detail.png
           :align: center
-          :target: /_static/demo/category-detail.png
+          :target: _images/category-detail.png
 
           Category detail
 
-     - .. figure:: /_static/demo/thumbs/author-list.png
+     - .. figure:: /_static/demo/thumb_author-list.png
           :align: center
-          :target: /_static/demo/author-list.png
+          :target: _images/author-list.png
 
           Author list
 
-     - .. figure:: /_static/demo/thumbs/author-detail.png
+     - .. figure:: /_static/demo/thumb_author-detail.png
           :align: center
-          :target: /_static/demo/author-detail.png
+          :target: _images/author-detail.png
 
           Author detail
 
