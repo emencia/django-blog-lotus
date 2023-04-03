@@ -17,6 +17,7 @@ Version 0.5.1 - Unreleased
   suffix;
 * Pinned requirements for RTFD to fix issue with rtd theme alike it was done in extra
   requirements "dev";
+* Fixed missing ``management/`` directory due to missing ``__init__.py`` files;
 * Added 'Translate' link to Article detail page along the 'Edit' link;
 * Changed models ``get_absolute_url`` method to use ``translate_url`` instead of
   ``translation_activate``;
