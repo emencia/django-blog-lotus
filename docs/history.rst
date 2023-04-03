@@ -23,6 +23,9 @@ Version 0.5.1 - Unreleased
   ``translation_activate``;
 * Added ``lookups.LookupBuilder``, an abstraction to make complex lookups for
   publication/language criterias for Article and Category;
+* Added ``lotus.contrib.django_configuration.LotusDefaultSettings`` class to use with
+  `django-configuration <https://django-configurations.readthedocs.io/en/stable/>`_ to
+  include default Lotus settings instead of ``from lotus.settings import *``;
 
 
 Version 0.5.0 - 2023/01/16

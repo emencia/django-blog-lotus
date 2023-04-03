@@ -18,28 +18,43 @@ For development install see :ref:`install_development`.
 Configuration from scratch
 **************************
 
-Add it to your installed Django apps in settings : ::
+Enable required applications in your settings : ::
 
     INSTALLED_APPS = (
         "dal",
         "dal_select2",
         # Here the builtin django apps ...
+        "sorl.thumbnail",
+        "smart_media",
         "ckeditor",
         "ckeditor_uploader",
         "view_breadcrumbs",
-        "sorl.thumbnail",
         "taggit",
-        "smart_media",
         "lotus",
     )
 
-Remove the line with ``view_breadcrumbs`` if you didn't installed its extra
-requirement. The lines with ``dal`` and ``dal_select2`` always need to be
-before ``django.contrib.admin``.
+.. Note::
+
+    * Remove the line with ``view_breadcrumbs`` if you didn't installed its extra
+      requirement;
+    * The lines with ``dal`` and ``dal_select2`` always need to be before
+      ``django.contrib.admin`` since it needs to be ready before admin;
+    * There may be conflicts if your project use also the "easy-thumbnail"
+      library. To avoid this you should put the lines with ``sorl.thumbnail`` and
+      ``smart_media`` just after the Django builtin apps and always before
+      "easy-thumbnail";
 
 Then load default application settings in your settings file: ::
 
     from lotus.settings import *
+
+.. Note::
+
+    Instead, if your project use
+    `django-configuration <https://django-configurations.readthedocs.io/en/stable/>`_,
+    your settings class can inherits from
+    ``lotus.contrib.django_configuration.LotusDefaultSettings`` (see it in
+    :ref:`intro_references_contrib`).
 
 Then add the required url parts in you project ``urls.py`` like this: ::
 
@@ -57,6 +72,12 @@ Then add the required url parts in you project ``urls.py`` like this: ::
     urlpatterns += i18n_patterns(
         path("", include("lotus.urls")),
     )
+
+
+.. Note::
+
+    Currently Lotus is a "i18n only" application so it is mandatory to mount its urls
+    inside a ``i18n_patterns``.
 
 And finally your project needs a ``skeleton.html`` template like this: ::
 

@@ -1,10 +1,6 @@
 """
-Default application settings
-----------------------------
-
 These are the default settings you can override in your own project settings
 right after the line which load the default app settings.
-
 """
 LOTUS_CATEGORY_PAGINATION = 5
 """
@@ -98,3 +94,5 @@ LOTUS_PREVIEW_SWITCH_TEMPLATE = "lotus/preview_switch.html"
 """
 Template path to use to render template tag ``preview_switch``.
 """
+
+_foobar = dir()
