@@ -17,6 +17,7 @@ Features
 ********
 
 * Multilingual articles and categories;
+* Tags for Articles;
 * Featuring, pinning, private and draft modes;
 * Configured CKEditor to write rich text in admin;
 * Preview mode for admins;

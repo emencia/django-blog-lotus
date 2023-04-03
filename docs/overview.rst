@@ -69,7 +69,7 @@ see Lotus include a very pretty basic layout from a barebone Bootstrap v5.
 Structure
 *********
 
-Lotus is a simple weblog engine that focus on proper content. There is three document
+Lotus is a simple weblog engine that focus on proper content. There is multiple content
 kinds:
 
 Author
@@ -89,13 +89,19 @@ Tag
     slug.
 
     These tags can be shared with another applications using `django-taggit`_ but Lotus
-    views are made to only show tag related to articles in the current language.
+    views are made to only show tag related to articles.
 
-    A tag detail will list its related articles.
+    A tag detail will list its related articles. Tags are not subject to translation or
+    language, a same tag can be shared throught differents languages.
+
+    .. Warning::
+
+        The tag slug ``autocomplete`` should be forbidden to create since this word
+        is used in some urls, therefore the Tag detail page would never be reachable.
 
 Article
     The most important document kind. **An article have many content types** and relate
-    to authors, categories and other articles (in the same language).
+    to authors, categories, tags and other articles (in the same language).
 
     In addition to **publication dates**, an article have many **state kinds** which
     **influence its visibility** and may be used to change its look in layout
@@ -230,6 +236,12 @@ States
     * **Private**: A private article is only displayed to any logged in users;
     * **Favorite**: This does not affect the visibility but can be used in custom layout
       to visually mark this article or used in some code to get them apart;
+
+.. Note::
+
+    Commonly, all querysets from views that use Article relation are subject to
+    criterias. For example, a Category detail view won't show private or draft articles
+    to an anonymous user.
 
 
 Image contents

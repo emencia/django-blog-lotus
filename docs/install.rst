@@ -21,7 +21,11 @@ Configuration from scratch
 Add it to your installed Django apps in settings : ::
 
     INSTALLED_APPS = (
-        ...
+        "dal",
+        "dal_select2",
+        # Here the builtin django apps ...
+        "ckeditor",
+        "ckeditor_uploader",
         "view_breadcrumbs",
         "sorl.thumbnail",
         "taggit",
@@ -30,7 +34,8 @@ Add it to your installed Django apps in settings : ::
     )
 
 Remove the line with ``view_breadcrumbs`` if you didn't installed its extra
-requirement.
+requirement. The lines with ``dal`` and ``dal_select2`` always need to be
+before ``django.contrib.admin``.
 
 Then load default application settings in your settings file: ::
 

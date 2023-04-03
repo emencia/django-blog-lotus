@@ -20,8 +20,7 @@ class TagFactory(factory.django.DjangoModelFactory):
 
 class TagNameBuilder:
     """
-    Aint not a factory with factory boy but indeed provide a common way to build a
-    batch of tags
+    A helper to create a batch valid Tag names to use for creating Tag objects.
 
     Keyword Arguments:
         language (string): Language code to use to create random content with Faker.
