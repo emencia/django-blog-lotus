@@ -58,9 +58,10 @@ class ArticleFilterMixin(LookupBuilder):
         Also set a ``self.target_date`` attribute to store the date checked
         against as a reference for further usage (like in ``get_context_data``).
 
-        Depends on ``allowed_preview_mode`` method as implemented in ``PreviewModeMixin``
-        (that manage preview mode) and the queryset must be for a model with a manager
-        which implement ``get_for_lang`` and ``get_published`` methods.
+        Depends on ``allowed_preview_mode`` method as implemented in
+        ``PreviewModeMixin`` (that manage preview mode) and the queryset must be for a
+        model with a manager which implement ``get_for_lang`` and ``get_published``
+        methods.
 
         Arguments:
             language (string): Language code to filter on.
@@ -103,9 +104,10 @@ class ArticleFilterMixin(LookupBuilder):
         Also this will set a ``self.target_date`` attribute to store the date checked
         against as a reference for further usage (like in ``get_context_data``).
 
-        Depends on ``allowed_preview_mode`` method as implemented in ``PreviewModeMixin``
-        (that manage preview mode) and the queryset must be for a model with a manager
-        which implement ``get_for_lang`` and ``get_published`` methods.
+        Depends on ``allowed_preview_mode`` method as implemented in
+        ``PreviewModeMixin`` (that manage preview mode) and the queryset must be for a
+        model with a manager which implement ``get_for_lang`` and ``get_published``
+        methods.
 
         Arguments:
             queryset (django.db.models.QuerySet): Base queryset to start on.

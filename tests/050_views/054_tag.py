@@ -1,8 +1,5 @@
-import json
 import datetime
-from pathlib import Path
 
-import pytest
 from freezegun import freeze_time
 
 # Try to use the builtin zoneinfo available since Python 3.9
@@ -16,7 +13,7 @@ from django.urls import translate_url, reverse
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
-    ArticleFactory, AuthorFactory, CategoryFactory, TagFactory, multilingual_article,
+    ArticleFactory, AuthorFactory, CategoryFactory, TagFactory,
 )
 from lotus.utils.tests import html_pyquery
 
@@ -40,42 +37,42 @@ def test_tag_view_index(db, admin_client, client, enable_preview, settings):
     utc = ZoneInfo("UTC")
     next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
 
-    picsou = AuthorFactory(first_name="Picsou", last_name="McDuck")
+    AuthorFactory(first_name="Picsou", last_name="McDuck")
 
-    cat_1 = CategoryFactory(title="cat_1")
+    CategoryFactory(title="cat_1")
 
     science = TagFactory(name="Science", slug="science")
-    sausage = TagFactory(name="Sausage", slug="sausage")
+    TagFactory(name="Sausage", slug="sausage")
     game = TagFactory(name="Game", slug="game")
     music = TagFactory(name="Music", slug="music")
     french_only = TagFactory(name="French only", slug="french-only")
     not_available = TagFactory(name="Not available", slug="not-available")
     TagFactory(name="Not used", slug="not-used")
 
-    article_foo = ArticleFactory(
+    ArticleFactory(
         title="Foo",
         fill_tags=[science, game, music],
     )
-    article_bar = ArticleFactory(
+    ArticleFactory(
         title="Bar",
         fill_tags=[science],
     )
-    article_france = ArticleFactory(
+    ArticleFactory(
         title="France",
         fill_tags=[game, french_only],
         language="fr",
     )
-    article_ping = ArticleFactory(
+    ArticleFactory(
         title="Ping",
         fill_tags=[science, not_available],
         status=STATUS_DRAFT,
     )
-    article_pong = ArticleFactory(
+    ArticleFactory(
         title="Pong",
         fill_tags=[game, not_available],
         private=True,
     )
-    article_pang = ArticleFactory(
+    ArticleFactory(
         title="Pang",
         fill_tags=[music, not_available],
         publish_date=next_hour.date(),
@@ -201,16 +198,17 @@ def test_tag_view_detail(db, admin_client, client, enable_preview, settings):
     utc = ZoneInfo("UTC")
     next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
 
-    picsou = AuthorFactory(first_name="Picsou", last_name="McDuck")
+    AuthorFactory(first_name="Picsou", last_name="McDuck")
 
-    cat_1 = CategoryFactory(title="cat_1")
+    CategoryFactory(title="cat_1")
 
     science = TagFactory(name="Science", slug="science")
     sausage = TagFactory(name="Sausage", slug="sausage")
     TagFactory(name="Not used", slug="not-used")
 
     ArticleFactory(title="Foo", fill_tags=[science])
-    ArticleFactory(title="Bar",fill_tags=[science])
+    ArticleFactory(title="Bar", fill_tags=[science])
+
     # Unavailable articles to anonymous
     ArticleFactory(
         title="France",
@@ -291,14 +289,14 @@ def test_tag_view_autocomplete(db, admin_client, client, enable_preview, setting
     """
     user = AuthorFactory()
 
-    science = TagFactory(name="Science theme", slug="science")
-    sausage = TagFactory(name="Sausage food", slug="sausage")
-    game = TagFactory(name="Game theme", slug="game")
-    ping = TagFactory(name="Ping", slug="ping")
-    pingpong = TagFactory(name="Ping pong", slug="ping-pong")
-    music = TagFactory(name="Music theme", slug="music")
-    french_only = TagFactory(name="French theme", slug="french")
-    not_available = TagFactory(name="Not available", slug="not-available")
+    TagFactory(name="Science theme", slug="science")
+    TagFactory(name="Sausage food", slug="sausage")
+    TagFactory(name="Game theme", slug="game")
+    TagFactory(name="Ping", slug="ping")
+    TagFactory(name="Ping pong", slug="ping-pong")
+    TagFactory(name="Music theme", slug="music")
+    TagFactory(name="French theme", slug="french")
+    TagFactory(name="Not available", slug="not-available")
 
     url = reverse("lotus:tag-autocomplete")
 

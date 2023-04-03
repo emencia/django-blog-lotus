@@ -19,6 +19,8 @@ __all__ = [
     "CategoryDetailView",
     "DisabledTagIndexView",
     "EnabledTagIndexView",
+    "PreviewArticleDetailView",
+    "PreviewTogglerView",
     "TagIndexView",
     "TagDetailView",
     "TagAutocompleteView",

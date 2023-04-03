@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 from .lookups import LookupBuilder
 
@@ -99,7 +98,6 @@ class BaseTranslatedQuerySet(LookupBuilder, models.QuerySet):
         return self.filter(
             *self.build_siblings_conditions(source)
         )
-
 
 
 class ArticleQuerySet(BasePublishedQuerySet, BaseTranslatedQuerySet):

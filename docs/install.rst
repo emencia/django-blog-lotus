@@ -1,3 +1,5 @@
+.. _django-smart-media: https://github.com/sveetch/django-smart-media
+
 .. _intro_install:
 
 =======
@@ -44,8 +46,9 @@ Enable required applications in your settings : ::
       ``smart_media`` just after the Django builtin apps and always before
       "easy-thumbnail";
 
-Then load default application settings in your settings file: ::
+Then load default applications settings in your settings file: ::
 
+    from smart_media.settings import *
     from lotus.settings import *
 
 .. Note::
@@ -54,7 +57,7 @@ Then load default application settings in your settings file: ::
     `django-configuration <https://django-configurations.readthedocs.io/en/stable/>`_,
     your settings class can inherits from
     ``lotus.contrib.django_configuration.LotusDefaultSettings`` (see it in
-    :ref:`intro_references_contrib`).
+    :ref:`intro_references_contrib`) and the settings class from `django-smart-media`_.
 
 Then add the required url parts in you project ``urls.py`` like this: ::
 

@@ -12,6 +12,7 @@ from ..settings import (
     LOTUS_PREVIEW_SWITCH_TEMPLATE,
 )
 
+
 class LotusDefaultSettings:
     """
     Default Lotus settings class to use with a "django-configuration" class.

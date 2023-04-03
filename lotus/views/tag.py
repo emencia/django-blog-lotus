@@ -1,17 +1,15 @@
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Q
 from django.http import Http404, HttpResponseBadRequest
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.views import View
 
 from dal import autocomplete
-from taggit.models import Tag, TaggedItem
+from taggit.models import Tag
 
 from ..models import Article
 from .mixins import PreviewModeMixin, ArticleFilterMixin, LotusContextStage

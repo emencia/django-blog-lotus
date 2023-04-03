@@ -5,7 +5,7 @@ History
 =======
 
 
-Version 0.5.1 - Unreleased
+Version 0.5.1 - 2023/04/04
 --------------------------
 
 * Added Article tags feature with ``django-taggit``;
