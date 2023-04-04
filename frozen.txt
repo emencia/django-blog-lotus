@@ -1,19 +1,19 @@
-# Frozen requirement versions from '0.5.1' installation
-Django==4.1.5
+# Frozen requirement versions from '0.5.2' installation
+Django==4.1.7
 django-autocomplete-light==3.9.4
 django-ckeditor==6.5.1
-django-smart-media==0.2.1
+django-smart-media==0.2.2
 django-taggit==3.1.0
 django-view-breadcrumbs==2.4.1
 factory-boy==3.2.1
 flake8==6.0.0
 freezegun==1.2.2
 livereload==2.6.3
-Pillow==9.4.0
+Pillow==9.5.0
 pyquery==2.0.0
-pytest==7.2.1
+pytest==7.2.2
 pytest-django==4.5.2
 Sphinx==5.3.0
 sphinx-rtd-theme==1.1.0
-tox==4.2.8
+tox==4.4.8
 twine==4.0.2

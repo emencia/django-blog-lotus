@@ -5,6 +5,12 @@ History
 =======
 
 
+Version 0.5.2 - 2023/04/04
+--------------------------
+
+A fix release to solve issue with ReadTheDocs building.
+
+
 Version 0.5.1 - 2023/04/04
 --------------------------
 
