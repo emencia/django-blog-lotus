@@ -94,5 +94,3 @@ LOTUS_PREVIEW_SWITCH_TEMPLATE = "lotus/preview_switch.html"
 """
 Template path to use to render template tag ``preview_switch``.
 """
-
-_foobar = dir()
