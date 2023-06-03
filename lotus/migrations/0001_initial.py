@@ -8,6 +8,10 @@ import smart_media.mixins
 import smart_media.modelfields
 import taggit.managers
 
+from ..choices import (
+    get_status_choices, get_status_default, get_language_choices, get_language_default
+)
+
 
 class Migration(migrations.Migration):
 
@@ -47,13 +51,9 @@ class Migration(migrations.Migration):
                 (
                     "language",
                     models.CharField(
-                        choices=[
-                            ("en", "English"),
-                            ("fr", "Français"),
-                            ("de", "Deutsche"),
-                        ],
+                        choices=get_language_choices(),
                         db_index=True,
-                        default="en",
+                        default=get_language_default(),
                         max_length=8,
                         verbose_name="language",
                     ),
@@ -119,13 +119,9 @@ class Migration(migrations.Migration):
                 (
                     "language",
                     models.CharField(
-                        choices=[
-                            ("en", "English"),
-                            ("fr", "Français"),
-                            ("de", "Deutsche"),
-                        ],
+                        choices=get_language_choices(),
                         db_index=True,
-                        default="en",
+                        default=get_language_default(),
                         max_length=8,
                         verbose_name="language",
                     ),
@@ -133,9 +129,9 @@ class Migration(migrations.Migration):
                 (
                     "status",
                     models.SmallIntegerField(
-                        choices=[(0, "draft"), (10, "available")],
+                        choices=get_status_choices(),
                         db_index=True,
-                        default=0,
+                        default=get_status_default(),
                         help_text="Publication status.",
                         verbose_name="status",
                     ),

@@ -5,6 +5,14 @@ History
 =======
 
 
+Version 0.5.2.1 - 2023/06/03
+----------------------------
+
+A fix release for migration missing callables for choices value and default
+which leaded Django to require a new Lotus migration when changing language or status
+settings.
+
+
 Version 0.5.2 - 2023/04/04
 --------------------------
 
