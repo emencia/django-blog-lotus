@@ -22,7 +22,7 @@ class ArticleIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixi
     template_name = "lotus/article/list.html"
     paginate_by = settings.LOTUS_ARTICLE_PAGINATION
     context_object_name = "article_list"
-    crumb_title = _("Articles")
+    crumb_title = settings.LOTUS_CRUMBS_TITLES["article-index"]
     crumb_urlname = "lotus:article-index"
     lotus_stage = "articles"
 

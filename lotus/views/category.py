@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..models import Article, Category
@@ -23,7 +22,7 @@ class CategoryIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin
     template_name = "lotus/category/list.html"
     paginate_by = settings.LOTUS_CATEGORY_PAGINATION
     context_object_name = "category_list"
-    crumb_title = _("Categories")
+    crumb_title = settings.LOTUS_CRUMBS_TITLES["category-index"]
     crumb_urlname = "lotus:category-index"
     lotus_stage = "categories"
 

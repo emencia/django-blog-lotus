@@ -266,6 +266,11 @@ to the current page if `django-view-breadcrumbs`_ has been installed as explaine
 :ref:`intro_install` document, read the `django-view-breadcrumbs`_ documentation for
 more informations on its available settings.
 
+.. Note::
+    View crumb titles can be changed from setting ``LOTUS_ENABLE_TAG_INDEX_VIEW``
+    except those ones which use an object title as their crumb title like the detail
+    views.
+
 
 Layout integration
 ******************

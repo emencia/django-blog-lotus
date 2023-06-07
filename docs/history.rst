@@ -5,6 +5,15 @@ History
 =======
 
 
+Version 0.5.3 - Unreleased
+--------------------------
+
+* Removed path prefix ``articles/`` from detail view since it is useless;
+* Added new setting ``LOTUS_CRUMBS_TITLES`` so crumb title for views can be customized
+  from settings. However this does not apply for detail views which directly use their
+  object title as the crumb title;
+
+
 Version 0.5.2.1 - 2023/06/03
 ----------------------------
 

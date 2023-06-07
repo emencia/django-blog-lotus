@@ -17,11 +17,6 @@ app_name = "lotus"
 
 urlpatterns = [
     path("", ArticleIndexView.as_view(), name="article-index"),
-    path(
-        "articles/<int:year>/<int:month>/<int:day>/<slug:slug>/",
-        ArticleDetailView.as_view(),
-        name="article-detail"
-    ),
 
     path("authors/", AuthorIndexView.as_view(), name="author-index"),
     path(
@@ -63,5 +58,11 @@ urlpatterns = [
         "tags/<str:tag>/",
         TagDetailView.as_view(),
         name="tag-detail"
+    ),
+
+    path(
+        "<int:year>/<int:month>/<int:day>/<slug:slug>/",
+        ArticleDetailView.as_view(),
+        name="article-detail"
     ),
 ]

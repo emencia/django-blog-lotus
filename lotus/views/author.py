@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..models import Article, Author
@@ -22,7 +21,7 @@ class AuthorIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
     template_name = "lotus/author/list.html"
     paginate_by = settings.LOTUS_AUTHOR_PAGINATION
     context_object_name = "author_list"
-    crumb_title = _("Authors")
+    crumb_title = settings.LOTUS_CRUMBS_TITLES["author-index"]
     crumb_urlname = "lotus:author-index"
     lotus_stage = "authors"
 

@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+
 """
 These are the default settings you can override in your own project settings
 right after the line which load the default app settings.
@@ -93,4 +95,21 @@ Template context variable name to set the preview mode in views.
 LOTUS_PREVIEW_SWITCH_TEMPLATE = "lotus/preview_switch.html"
 """
 Template path to use to render template tag ``preview_switch``.
+"""
+
+LOTUS_CRUMBS_TITLES = {
+    "article-index": _("Articles"),
+    "author-index": _("Authors"),
+    "category-index": _("Categories"),
+    "tag-index": _("Tags"),
+}
+"""
+Crumb title to use for views breadcrumbs, for each item key uses the url name and value
+is the title to display. You must not remove any of these, just change the value.
+
+.. Note::
+
+    Not all views have a static crumb title, like all detail views use directly the
+    object title as a crumb title, so they won't be editable from this setting.
+
 """

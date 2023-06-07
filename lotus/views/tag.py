@@ -4,7 +4,6 @@ from django.db.models import Count, Q
 from django.http import Http404, HttpResponseBadRequest
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.views import View
 
@@ -37,7 +36,7 @@ class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterM
     template_name = "lotus/tag/list.html"
     paginate_by = settings.LOTUS_TAG_PAGINATION
     context_object_name = "tag_list"
-    crumb_title = _("Tags")
+    crumb_title = settings.LOTUS_CRUMBS_TITLES["tag-index"]
     crumb_urlname = "lotus:tag-index"
     lotus_stage = "tags"
 
