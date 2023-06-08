@@ -5,7 +5,12 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..models import Article
-from .mixins import PreviewModeMixin, ArticleFilterMixin, LotusContextStage
+from .mixins import (
+    ArticleFilterMixin,
+    LanguageMixin,
+    LotusContextStage,
+    PreviewModeMixin,
+)
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -14,7 +19,7 @@ except ImportError:
 
 
 class ArticleIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                       PreviewModeMixin, ListView):
+                       PreviewModeMixin, LanguageMixin, ListView):
     """
     Paginated list of articles.
     """
@@ -33,13 +38,13 @@ class ArticleIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixi
         ]
 
     def get_queryset(self):
-        q = self.apply_article_lookups(self.model.objects, self.request.LANGUAGE_CODE)
+        q = self.apply_article_lookups(self.model.objects, self.get_language_code())
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
 class ArticleDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                        PreviewModeMixin, DetailView):
+                        PreviewModeMixin, LanguageMixin, DetailView):
     """
     Article detail.
     """
@@ -77,7 +82,7 @@ class ArticleDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMix
 
         Also apply lookup for "private" mode for non authenticated users.
         """
-        q = self.apply_article_lookups(self.model.objects, self.request.LANGUAGE_CODE)
+        q = self.apply_article_lookups(self.model.objects, self.get_language_code())
 
         return q
 

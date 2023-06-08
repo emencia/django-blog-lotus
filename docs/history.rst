@@ -12,6 +12,8 @@ Version 0.5.3 - Unreleased
 * Added new setting ``LOTUS_CRUMBS_TITLES`` so crumb title for views can be customized
   from settings. However this does not apply for detail views which directly use their
   object title as the crumb title;
+* Changed view so Lotus is compatible with single language project (when middleware
+  ``LocaleMiddleware`` is disabled);
 
 
 Version 0.5.2.1 - 2023/06/03

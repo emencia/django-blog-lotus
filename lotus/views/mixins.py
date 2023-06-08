@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 from ..lookups import LookupBuilder
+from ..utils.language import get_language_code
 
 
 class NoOperationBreadcrumMixin:
@@ -172,3 +173,20 @@ class LotusContextStage:
         context = super().get_context_data(**kwargs)
         context["lotus_stage"] = self.get_lotus_stage()
         return context
+
+
+class LanguageMixin:
+    """
+    A mixin to provide very common logic related to language.
+    """
+    def get_language_code(self):
+        """
+        Shortand to ``get_language_code`` function that already give the request object.
+
+        .. Warning::
+            This should not be used in view code before request attribute have been set.
+
+        Returns:
+            string: Language code retrieved either from request object or settings.
+        """
+        return get_language_code(self.request)

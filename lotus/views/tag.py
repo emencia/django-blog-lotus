@@ -11,7 +11,12 @@ from dal import autocomplete
 from taggit.models import Tag
 
 from ..models import Article
-from .mixins import PreviewModeMixin, ArticleFilterMixin, LotusContextStage
+from .mixins import (
+    ArticleFilterMixin,
+    LanguageMixin,
+    LotusContextStage,
+    PreviewModeMixin,
+)
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -28,7 +33,7 @@ class DisabledTagIndexView(View):
 
 
 class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                          PreviewModeMixin, ListView):
+                          PreviewModeMixin, LanguageMixin, ListView):
     """
     List of tags that are related from at least one article.
     """
@@ -53,7 +58,7 @@ class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterM
         Published articles are determined with the common publication criterias.
         """
         publication_criterias = self.build_article_lookups(
-            language=self.request.LANGUAGE_CODE,
+            language=self.get_language_code(),
             prefix="article__",
         )
 
@@ -66,7 +71,7 @@ class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterM
 
 
 class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                    PreviewModeMixin, SingleObjectMixin, ListView):
+                    PreviewModeMixin, LanguageMixin, SingleObjectMixin, ListView):
     """
     Tag detail and its related article list.
 
@@ -118,7 +123,7 @@ class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
             self.listed_model.objects.filter(
                 tags__id__in=[self.object.id]
             ),
-            self.request.LANGUAGE_CODE,
+            self.get_language_code(),
         )
 
         return q.order_by(*self.listed_model.COMMON_ORDER_BY)

@@ -5,7 +5,12 @@ from django.urls import reverse
 
 from ..models import Article, Category
 
-from .mixins import PreviewModeMixin, ArticleFilterMixin, LotusContextStage
+from .mixins import (
+    ArticleFilterMixin,
+    LanguageMixin,
+    LotusContextStage,
+    PreviewModeMixin,
+)
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -14,7 +19,7 @@ except ImportError:
 
 
 class CategoryIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
-                        ListView):
+                        LanguageMixin, ListView):
     """
     List of categories
     """
@@ -36,13 +41,13 @@ class CategoryIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin
         """
         Build queryset base with language filtering to list categories.
         """
-        q = self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
+        q = self.model.objects.get_for_lang(self.get_language_code())
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
 class CategoryDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                         PreviewModeMixin, SingleObjectMixin, ListView):
+                         PreviewModeMixin, LanguageMixin, SingleObjectMixin, ListView):
     """
     Category detail and its related article list.
     """
@@ -74,7 +79,7 @@ class CategoryDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMi
         """
         Build queryset base with language filtering to get Category.
         """
-        return self.model.objects.get_for_lang(self.request.LANGUAGE_CODE)
+        return self.model.objects.get_for_lang(self.get_language_code())
 
     def get_queryset(self):
         """

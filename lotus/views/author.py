@@ -4,7 +4,12 @@ from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
 
 from ..models import Article, Author
-from .mixins import PreviewModeMixin, ArticleFilterMixin, LotusContextStage
+from .mixins import (
+    ArticleFilterMixin,
+    LanguageMixin,
+    LotusContextStage,
+    PreviewModeMixin,
+)
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -13,7 +18,7 @@ except ImportError:
 
 
 class AuthorIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
-                      ListView):
+                      LanguageMixin, ListView):
     """
     List of authors which have contributed at least to one article.
     """
@@ -32,13 +37,13 @@ class AuthorIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
         ]
 
     def get_queryset(self):
-        q = self.model.lotus_objects.get_active(language=self.request.LANGUAGE_CODE)
+        q = self.model.lotus_objects.get_active(language=self.get_language_code())
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
 class AuthorDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                       PreviewModeMixin, SingleObjectMixin, ListView):
+                       PreviewModeMixin, LanguageMixin, SingleObjectMixin, ListView):
     """
     Author detail and its related article list.
 
@@ -84,7 +89,7 @@ class AuthorDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixi
         """
         q = self.apply_article_lookups(
             self.object.articles,
-            self.request.LANGUAGE_CODE,
+            self.get_language_code(),
         )
 
         return q.order_by(*self.listed_model.COMMON_ORDER_BY)
