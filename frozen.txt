@@ -1,4 +1,4 @@
-# Frozen requirement versions from '0.5.3rc4' installation
+# Frozen requirement versions from '0.5.3rc5' installation
 Django==4.1.9
 django-autocomplete-light==3.9.4
 django-ckeditor==6.5.1

@@ -45,6 +45,10 @@ class ArticleAdmin(SmartModelAdmin):
     ordering = Article.COMMON_ORDER_BY
     search_fields = [
         "title",
+        "seo_title",
+        "lead",
+        "introduction",
+        "content",
     ]
     filter_horizontal = (
         "categories",

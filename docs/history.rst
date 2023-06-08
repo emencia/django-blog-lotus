@@ -16,6 +16,9 @@ Version 0.5.3 - Unreleased
   ``LocaleMiddleware`` is disabled);
 * Fixed admin views for Article and Category to not fail when there is an object saved
   with language that are not available anymore;
+* Added ``seo_title``, ``lead``, ``introduction``, ``content`` to seachable fields in
+  Article admin list;
+* Added ``lead``, ``description`` to seachable fields in Category admin list;
 
 
 Version 0.5.2.1 - 2023/06/03

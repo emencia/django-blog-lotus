@@ -38,6 +38,8 @@ class CategoryAdmin(SmartModelAdmin):
     ordering = Category.COMMON_ORDER_BY
     search_fields = [
         "title",
+        "lead",
+        "description",
     ]
     fieldsets = (
         (
