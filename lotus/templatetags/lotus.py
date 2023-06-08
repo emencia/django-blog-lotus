@@ -303,3 +303,39 @@ def preview_switch(context):
         "current_mode": current_mode,
         "redirection": redirection,
     }
+
+
+@register.simple_tag(takes_context=True)
+def check_object_lang_availability(context, source, **kwargs):
+    """
+    Determine if an object has a language that are not available from ``LANGUAGES``
+    setting.
+
+    Example:
+        This tag does not expect any argument: ::
+
+            {% load lotus %}
+            {% check_object_lang_availability article_object as object_lang_availability %}
+
+    Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variables. It is not used from this tag.
+        source (object): Any object with an attribute ``language`` that will be checked
+            against ``settings.LANGUAGES`` however the tag will fails silently for
+            given source that does not have this attribute.
+
+    Returns:
+        dict: A dictionnary with summary informations of object language and its
+            availability.
+    """  # noqa: E501
+    is_available = False
+
+    if getattr(source, "language", None):
+        is_available = source.language in [k for k, v in settings.LANGUAGES]
+
+    return {
+        "is_available": is_available,
+        "languages": settings.LANGUAGES,
+        "language_keys": [k for k, v in settings.LANGUAGES],
+        "language_labels": [v for k, v in settings.LANGUAGES],
+    }

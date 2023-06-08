@@ -22,7 +22,7 @@ def get_language_code(request=None):
     Returns:
         string: Language code retrieved either from request object or settings.
     """
-    if request and  hasattr(request, "LANGUAGE_CODE"):
+    if request and hasattr(request, "LANGUAGE_CODE"):
         return request.LANGUAGE_CODE
 
     return settings.LANGUAGE_CODE

@@ -11,6 +11,7 @@ NOTE:
     {% if change %}
         {% if not is_popup %}
             {% translation_siblings original preview=True as sibling_stats %}
+            {% check_object_lang_availability original as object_lang_availability %}
 
             <ul class="object-tools">
                 {% block object-tools-items %}
@@ -22,6 +23,12 @@ NOTE:
                     {% change_form_object_tools %}
                 {% endblock %}
             </ul>
+
+            {% if not object_lang_availability.is_available %}
+            <p class="lotus-language-availability errornote">
+                {% blocktranslate with object_lang=original.language available_langs=object_lang_availability.language_keys|join:", " %}<strong>Category language '{{ object_lang }}' is not in available project languages: {{ available_langs }}</strong>. In this state, this category won't reachable from your site.<br><br>You may be able to edit this category but it will change language to an available one and you may have to change some related fields.{% endblocktranslate %}
+            </p>
+            {% endif %}
 
             {% if sibling_stats.siblings %}
             <p class="lotus-siblings-resume"><em>

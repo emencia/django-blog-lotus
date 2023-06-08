@@ -14,6 +14,8 @@ Version 0.5.3 - Unreleased
   object title as the crumb title;
 * Changed view so Lotus is compatible with single language project (when middleware
   ``LocaleMiddleware`` is disabled);
+* Fixed admin views for Article and Category to not fail when there is an object saved
+  with language that are not available anymore;
 
 
 Version 0.5.2.1 - 2023/06/03

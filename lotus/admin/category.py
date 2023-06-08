@@ -73,7 +73,9 @@ class CategoryAdmin(SmartModelAdmin):
     )
 
     def language_name(self, obj):
-        return LANGUAGE_NAMES[obj.language]
+        if obj.language in LANGUAGE_NAMES:
+            return LANGUAGE_NAMES[obj.language]
+        return "{} (disabled)".format(obj.language)
     language_name.short_description = _("language")
     language_name.admin_order_field = "language"
 
