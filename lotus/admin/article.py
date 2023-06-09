@@ -9,7 +9,11 @@ from ..forms import ArticleAdminForm
 from ..models import Article
 from ..views.admin import ArticleAdminTranslateView
 
-from .translated import LanguageListFilter, TranslationStateListFilter
+from ..admin_filters import (
+    LanguageListFilter,
+    PublicationFilter,
+    TranslationStateListFilter,
+)
 
 
 LANGUAGE_NAMES = dict(settings.LANGUAGES)
@@ -35,6 +39,7 @@ class ArticleAdmin(SmartModelAdmin):
     list_filter = (
         LanguageListFilter,
         TranslationStateListFilter,
+        PublicationFilter,
         "pinned",
         "featured",
         "private",

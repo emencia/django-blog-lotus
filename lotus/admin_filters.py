@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from ..choices import get_language_choices
+from .choices import get_language_choices
 
 
 class LanguageListFilter(admin.SimpleListFilter):
@@ -48,3 +48,32 @@ class TranslationStateListFilter(admin.SimpleListFilter):
 
         if self.value() == "translation":
             return queryset.exclude(original__isnull=True)
+
+
+class PublicationFilter(admin.SimpleListFilter):
+    """
+    Filter on article publication state.
+    """
+    title = _("publication state")
+
+    # Parameter for the filter that will be used in the URL query.
+    parameter_name = "is_published"
+
+    def lookups(self, request, model_admin):
+        """
+        Build choices from available languages.
+        """
+        return (
+            ("true", _("Is published")),
+            ("false", _("Is not published")),
+        )
+
+    def queryset(self, request, queryset):
+        """
+        Filter on published or unpublished article depending value is true or false.
+        """
+        if self.value() == "true":
+            return queryset.get_published()
+
+        if self.value() == "false":
+            return queryset.get_unpublished()

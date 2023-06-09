@@ -59,7 +59,9 @@ def test_article_admin_detail(db, admin_client):
 def test_article_admin_list_is_published(db, admin_client):
     """
     Article model admin list view should have the right content for item column
-    "is_published" depending item is published or not (following publication criterias).
+    "is_published" depending item is published or not (following publication criterias)
+    and 'PublicationFilter' should correctly filter list items on published/unpublished
+    criterias.
     """
     # Date references
     utc = ZoneInfo("UTC")
@@ -77,6 +79,12 @@ def test_article_admin_list_is_published(db, admin_client):
         title="basic published",
         publish_date=today.date(),
         publish_time=today.time(),
+    )
+    published_private = ArticleFactory(
+        title="published but private",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        private=True,
     )
     published_notyet = ArticleFactory(
         title="not yet published",
@@ -105,16 +113,16 @@ def test_article_admin_list_is_published(db, admin_client):
     )
 
     # Collect published and not published id apart
-    expected_published_ids = [basic.id]
+    expected_published_ids = [basic.id, published_private.id]
     expected_unpublished_ids = [
         draft.id,
         published_notyet.id,
         published_passed.id,
         published_private_passed.id,
-        draft_passed.id
+        draft_passed.id,
     ]
 
-    # Get list view response
+    # Get default list view response
     url = get_admin_list_url(Article)
     response = admin_client.get(url)
     assert response.status_code == 200
@@ -134,6 +142,44 @@ def test_article_admin_list_is_published(db, admin_client):
             resulting_unpublished_ids.append(int(article_id))
 
     assert sorted(resulting_published_ids) == sorted(expected_published_ids)
+    assert sorted(resulting_unpublished_ids) == sorted(expected_unpublished_ids)
+
+    # Get list view filter on published items
+    url = get_admin_list_url(Article)
+    response = admin_client.get(url, {"is_published": "true"})
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    items = dom.find("#result_list tbody tr")
+    assert len(items) == len(expected_published_ids)
+    resulting_published_ids = []
+    for row in dom.find("#result_list tbody tr"):
+        article_id = row.cssselect(
+            "td.action-checkbox input.action-select"
+        )[0].get("value")
+        article_published = row.cssselect("td.field-is_published img")[0].get("alt")
+        if article_published == "True":
+            resulting_published_ids.append(int(article_id))
+
+    assert sorted(resulting_published_ids) == sorted(expected_published_ids)
+
+    # Get list view filter on unpublished items
+    url = get_admin_list_url(Article)
+    response = admin_client.get(url, {"is_published": "false"})
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    items = dom.find("#result_list tbody tr")
+    assert len(items) == len(expected_unpublished_ids)
+    resulting_unpublished_ids = []
+    for row in dom.find("#result_list tbody tr"):
+        article_id = row.cssselect(
+            "td.action-checkbox input.action-select"
+        )[0].get("value")
+        article_published = row.cssselect("td.field-is_published img")[0].get("alt")
+        if article_published == "False":
+            resulting_unpublished_ids.append(int(article_id))
+
     assert sorted(resulting_unpublished_ids) == sorted(expected_unpublished_ids)
 
 

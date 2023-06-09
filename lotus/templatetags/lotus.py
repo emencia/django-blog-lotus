@@ -311,6 +311,8 @@ def check_object_lang_availability(context, source, **kwargs):
     Determine if an object has a language that are not available from ``LANGUAGES``
     setting.
 
+    TODO: Basic test coverage.
+
     Example:
         This tag does not expect any argument: ::
 

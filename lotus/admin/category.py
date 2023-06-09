@@ -9,7 +9,7 @@ from ..forms import CategoryAdminForm
 from ..models import Category
 from ..views.admin import CategoryAdminTranslateView
 
-from .translated import LanguageListFilter, TranslationStateListFilter
+from ..admin_filters import LanguageListFilter, TranslationStateListFilter
 
 
 LANGUAGE_NAMES = dict(settings.LANGUAGES)
