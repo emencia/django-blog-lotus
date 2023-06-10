@@ -8,6 +8,7 @@ History
 Version 0.5.3 - Unreleased
 --------------------------
 
+* **Added Django 4.2 support**;
 * Removed path prefix ``articles/`` from detail view URL since it is useless;
 * Added new setting ``LOTUS_CRUMBS_TITLES`` so crumb title for views can be customized
   from settings. However this does not apply for detail views which directly use their
