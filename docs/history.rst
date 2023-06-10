@@ -18,8 +18,16 @@ Version 0.5.3 - Unreleased
   with language that are not available anymore;
 * Added ``seo_title``, ``lead``, ``introduction``, ``content`` to seachable fields in
   Article admin list;
-* Added ``lead``, ``description`` to seachable fields in Category admin list;
+* Added ``lead``, ``description`` to searchable fields in Category admin list;
 * Added new filter to Article admin list to filter on published or unpublished items;
+* Added logo and favicon to documentation and sandbox;
+* Renamed some template blocks:
+
+  * ``head_title`` to ``header-title``;
+  * ``head_metas`` to ``metas``;
+  * ``head_styles`` to ``header-resource``;
+  * ``javascript`` to ``body-javascript``;
+
 * Moved admin filters from ``lotus.admin.translated`` to ``lotus.admin_filters``;
 * Upgraded to ``django-autocomplete-light>=3.9.7``;
 * Removed temporary fix for DAL in Article admin change view template;

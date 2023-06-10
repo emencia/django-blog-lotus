@@ -14,7 +14,9 @@ __pycache__/
 # Site media and builded statics
 /var/
 /sandbox/static
-/sandbox/static-sources
+/sandbox/static-sources/js
+/sandbox/static-sources/css
+/sandbox/static-sources/fonts
 
 # Settings
 localsettings.py

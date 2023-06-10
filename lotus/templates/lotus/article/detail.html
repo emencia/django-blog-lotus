@@ -1,12 +1,12 @@
 {% extends "lotus/base.html" %}
 {% load i18n lotus smart_image %}
 
-{% block head_title %}{% if article_object.seo_title %}{{ article_object.seo_title }}{% else %}{{ article_object.title }}{% endif %}{% endblock head_title %}
-{% block head_metas %}
+{% block header-title %}{% if article_object.seo_title %}{{ article_object.seo_title }}{% else %}{{ article_object.title }}{% endif %}{% endblock header-title %}
+{% block metas %}
     {% if article_object.lead %}
         <meta name="description" content="{{ article_object.lead|striptags }}">
     {% endif %}
-{% endblock head_metas %}
+{% endblock metas %}
 
 {% block lotus_content %}{% spaceless %}
 {% translation_siblings article_object as sibling_stats %}

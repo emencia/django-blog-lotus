@@ -1,10 +1,10 @@
 {% extends "lotus/base.html" %}
 {% load i18n smart_image %}
 
-{% block head_title %}{{ category_object.title }}{% endblock head_title %}
-{% block head_metas %}
+{% block header-title %}{{ category_object.title }}{% endblock header-title %}
+{% block metas %}
     {% if category_object.lead %}<meta name="description" content="{{ category_object.lead|striptags }}">{% endif %}
-{% endblock head_metas %}
+{% endblock metas %}
 
 {% block lotus_content %}{% spaceless %}
 <div class="category-detail">

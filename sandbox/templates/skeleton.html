@@ -3,11 +3,14 @@
 <head>{% spaceless %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block head_title %}{% trans "Lotus weblog" %}{% endblock head_title %}</title>
-    {% block head_metas %}{% endblock head_metas %}
-    {% block head_styles %}
+    <title>{% block header-title %}{% trans "Lotus weblog" %}{% endblock header-title %}</title>
+    {% block metas %}{% endblock metas %}
+    {% block header-manifest %}
+        {% include "partials/site_manifest.html" %}
+    {% endblock header-manifest %}
+    {% block header-resource %}
     <link href="{% static "css/main.css" %}" rel="stylesheet">
-    {% endblock head_styles %}
+    {% endblock header-resource %}
 {% endspaceless %}
 </head>
 
@@ -16,7 +19,10 @@
 <div class="d-grid gap-3 p-3">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">{% trans "Lotus weblog" %}</a>
+            <a class="navbar-brand" href="/">
+                <img src="{% static "images/logo.svg" %}" width="50" height="50" alt="{% trans "Lotus weblog" %}">
+                {% trans "Lotus weblog" %}
+            </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navbar-toggler" aria-controls="main-navbar-toggler" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -61,8 +67,8 @@
     </div>
 </div>
 
-{% block javascript %}
+{% block body-javascript %}
     <script src="{% static "js/main.js" %}"></script>
-{% endblock javascript %}
+{% endblock body-javascript %}
 {% endspaceless %}</body>
 </html>
