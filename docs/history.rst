@@ -21,6 +21,8 @@ Version 0.5.3 - Unreleased
 * Added ``lead``, ``description`` to seachable fields in Category admin list;
 * Added new filter to Article admin list to filter on published or unpublished items;
 * Moved admin filters from ``lotus.admin.translated`` to ``lotus.admin_filters``;
+* Upgraded to ``django-autocomplete-light>=3.9.7``;
+* Removed temporary fix for DAL in Article admin change view template;
 
 
 Version 0.5.2.1 - 2023/06/03

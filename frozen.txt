@@ -1,6 +1,6 @@
-# Frozen requirement versions from '0.5.3rc7' installation
+# Frozen requirement versions from '0.5.3rc8' installation
 Django==4.1.9
-django-autocomplete-light==3.9.4
+django-autocomplete-light==3.9.7
 django-ckeditor==6.5.1
 django-smart-media==0.2.2
 django-taggit==3.1.0
