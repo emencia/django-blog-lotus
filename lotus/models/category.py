@@ -122,6 +122,15 @@ class Category(SmartFormatMixin, Translated):
             self.language
         )
 
+    def get_edit_url(self):
+        """
+        Return absolute URL to edit article from admin.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("admin:lotus_category_change", args=(self.id,))
+
     def get_cover_format(self):
         return self.media_format(self.cover)
 

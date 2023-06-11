@@ -1,9 +1,23 @@
-{% spaceless %}
+{% load i18n %}{% spaceless %}
     {% if siblings %}
         <ul class="article-siblings list-group list-group-flush">
             {% for article in siblings %}
                 <li class="sibling list-group-item">
                     <a href="{{ article.get_absolute_url }}">{{ article.language }}</a>
+                    <span class="badge text-bg-light fw-normal">
+                        {% if article.is_published %}
+                            {% translate "Published" %}
+                        {% else %}
+                            {% translate "Not published" %}
+                        {% endif %}
+                    </span>
+                    <span class="badge text-bg-light fw-normal">
+                        {% if not article.original %}
+                            {% translate "Is original" %}
+                        {% else %}
+                            {% translate "Is not original" %}
+                        {% endif %}
+                    </span>
                 </li>
             {% endfor %}
         </ul>

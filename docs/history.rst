@@ -32,6 +32,10 @@ Version 0.6.0 - Unreleased
 * Moved admin filters from ``lotus.admin.translated`` to ``lotus.admin_filters``;
 * Upgraded to ``django-autocomplete-light>=3.9.7``;
 * Removed temporary fix for DAL in Article admin change view template;
+* Upgraded Sandbox frontend to ``bootstrap==5.2.3``;
+* Added sidebar to Category detail to include some useful infos and links;
+* Added publication state to part "Available in languages" in details;
+
 
 Migrating from previous version
 ...............................

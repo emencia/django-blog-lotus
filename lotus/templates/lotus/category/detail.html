@@ -1,5 +1,5 @@
 {% extends "lotus/base.html" %}
-{% load i18n smart_image %}
+{% load i18n lotus smart_image %}
 
 {% block header-title %}{{ category_object.title }}{% endblock header-title %}
 {% block metas %}
@@ -7,33 +7,66 @@
 {% endblock metas %}
 
 {% block lotus_content %}{% spaceless %}
+{% translation_siblings category_object as sibling_stats %}
 <div class="category-detail">
-    <div class="detail mb-4">
-        <h1 class="title">{{ category_object.title }}</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-lg-9">
+                <div class="detail mb-4">
+                    <h1 class="title">{{ category_object.title }}</h1>
 
-        <div class="cover bg-light rounded text-center mb-2 p-2">
-            {% if category_object.cover %}
-                <a href="{{ category_object.cover.url }}" target="_blank">
-                    {% media_thumb category_object.cover "800x640" crop="center" as cover_thumb %}
-                    <img src="{{ cover_thumb.url }}" class="rounded img-fluid" alt="">
-                </a>
-            {% endif %}
-        </div>
+                    <div class="cover bg-light rounded text-center mb-2 p-2">
+                        {% if category_object.cover %}
+                            <a href="{{ category_object.cover.url }}" target="_blank">
+                                {% media_thumb category_object.cover "800x640" crop="center" as cover_thumb %}
+                                <img src="{{ cover_thumb.url }}" class="rounded img-fluid" alt="">
+                            </a>
+                        {% endif %}
+                    </div>
 
-        <div class="description p-2 fs-5">{{ category_object.description|safe }}</div>
-    </div>
-
-    <div class="articles container">
-        <h2>{% trans "Articles" %}</h2>
-
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for article in object_list %}
-                <div class="col">
-                    {% include "lotus/article/partials/item.html" with article_object=article from="category-detail" %}
+                    <div class="description p-2 fs-5">{{ category_object.description|safe }}</div>
                 </div>
-            {% endfor %}
+
+                <div class="articles container">
+                    <h2>{% trans "Articles" %}</h2>
+
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        {% for article in object_list %}
+                            <div class="col">
+                                {% include "lotus/article/partials/item.html" with article_object=article from="category-detail" %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% include "lotus/pagination.html" %}
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-3">
+                {% if user.is_authenticated and user.is_staff %}
+                    <div class="d-grid mb-4">
+                        <a class="detail-edit btn btn-primary" href="{{ category_object.get_edit_url }}" target="_blank">
+                            {% trans "Edit" %}
+                        </a>
+                        {% if sibling_stats.available_languages %}
+                            <a class="detail-translate btn btn-primary mt-1"
+                               href="{% url "admin:lotus_category_translate_original" id=category_object.id %}"
+                               target="_blank">
+                                {% trans "Translate" %}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                {% if sibling_stats.siblings %}
+                    <div class="siblings card mb-4">
+                        <div class="card-header">
+                            <strong>{% trans "Available in languages" %}</strong>
+                        </div>
+                        {% include "lotus/category/partials/siblings.html" with siblings=sibling_stats.siblings %}
+                    </div>
+                {% endif %}
+            </div>
         </div>
-        {% include "lotus/pagination.html" %}
     </div>
 </div>
 {% endspaceless %}{% endblock lotus_content %}

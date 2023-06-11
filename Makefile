@@ -151,7 +151,6 @@ create-var-dirs:
 	@mkdir -p var/media
 	@mkdir -p var/static
 	@mkdir -p $(SANDBOX_DIR)/media
-	@mkdir -p $(STATICFILES_DIR)/fonts
 .PHONY: create-var-dirs
 
 icon-font:
@@ -174,6 +173,7 @@ install-frontend:
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing frontend requirements <---$(FORMATRESET)\n"
 	@echo ""
 	cd $(FRONTEND_DIR) && npm install
+	@mkdir -p $(STATICFILES_DIR)/fonts
 	${MAKE} icon-font
 .PHONY: install-frontend
 
