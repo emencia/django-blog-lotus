@@ -10,13 +10,13 @@
 Django Blog Lotus
 =================
 
-A Django weblog application with builtin multilingual content and inspired from
-deceased Zinnia weblog.
+A Django weblog application with builtin multilingual content and some other features.
+
 
 Features
 ********
 
-* Multilingual articles and categories;
+* Multilingual articles and categories (but still compatible with single language site);
 * Tags for Articles;
 * Featuring, pinning, private and draft modes;
 * Configured CKEditor to write rich text in admin;

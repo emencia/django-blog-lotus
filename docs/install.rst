@@ -46,6 +46,25 @@ Enable required applications in your settings : ::
       ``smart_media`` just after the Django builtin apps and always before
       "easy-thumbnail";
 
+Then to properly enable multiple language you need to enable the middleware
+``LocaleMiddleware`` (see Django documentation to now how to place it correctly): ::
+
+    MIDDLEWARE = [
+        ...
+        "django.middleware.locale.LocaleMiddleware",
+        ...
+    ]
+
+And then to enable some languages like so: ::
+
+    LANGUAGE_CODE = "en"
+
+    LANGUAGES = (
+        ("en", "English"),
+        ("fr", "Français"),
+        ("de", "Deutsche"),
+    )
+
 Then load default applications settings in your settings file: ::
 
     from smart_media.settings import *
@@ -78,9 +97,13 @@ Then add the required url parts in you project ``urls.py`` like this: ::
 
 
 .. Note::
+    This URL configuration mount Lotus URLs at root of your site, it may override other
+    possible applications URLs. In this case mount Lotus under a specific path like: ::
 
-    Currently Lotus is a "i18n only" application so it is mandatory to mount its urls
-    inside a ``i18n_patterns``.
+        path("blog/", include("lotus.urls")),
+
+    Now you will reach lotus from path ``/blog/``.
+
 
 And finally your project needs a ``skeleton.html`` template like this: ::
 
@@ -88,7 +111,8 @@ And finally your project needs a ``skeleton.html`` template like this: ::
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block head_title %}{% trans "Lotus weblog" %}{% endblock head_title %}</title>
+        <title>{% block header-title %}{% trans "Lotus weblog" %}{% endblock header-title %}</title>
+        {% block metas %}{% endblock metas %}
     </head>
 
     <body>
@@ -105,36 +129,33 @@ And finally your project needs a ``skeleton.html`` template like this: ::
     </body>
     </html>
 
-Only the ``content block`` is required and the ``breadcrumbs`` one also if you
+Only the ``content`` block is required and the ``breadcrumbs`` one also if you
 installed Lotus with breadcrumb extra requirement.
 
 Once finished, you can run the Django command to apply the Lotus migrations. Also, you
 will need to create a superuser or an admin to write contents from Django admin.
 
+Single language site
+--------------------
 
-.. _intro_install_settings:
-
-Settings
-********
-
-.. automodule:: lotus.settings
-   :members:
+If you don't plan to use other languages, avoid the step about adding middleware and
+only set the same language from settings ``LANGUAGE_CODE`` into ``LANGUAGES`` and
+finally don't mount Lotus urls with ``i18n_patterns``.
 
 .. _intro_install_demo:
 
 Demonstration
 *************
 
-You may also install the full demonstration which implement all the feature in a ready
-to start Django project. This requires Git, pip, virtualenv and make tools. Copy this
-repository where you want, enter in repository directory and use the Makefile task: ::
+You may also install the full demonstration which implements all the features in a
+Django project ready to start. This requires Git, pip, virtualenv, recent Node.js and
+make tools. Clone this repository where you want, enter in repository directory and use
+the Makefile task: ::
 
-    make install
+    make install frontend superuser
 
-This installs everything to run and develop. When done you may first create a
-superuser: ::
-
-    make superuser
+This installs everything to run and develop then build frontend assets and creates
+a superuser.
 
 And finally automatically fill some demonstration Author, Article and Category
 objects using command ``lotus_demo`` with default values: ::

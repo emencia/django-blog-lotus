@@ -10,6 +10,7 @@ User’s Guide
    :maxdepth: 2
 
    install.rst
+   settings.rst
    overview.rst
    core/index.rst
 

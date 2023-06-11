@@ -5,7 +5,7 @@ History
 =======
 
 
-Version 0.5.3 - Unreleased
+Version 0.6.0 - Unreleased
 --------------------------
 
 * **Added Django 4.2 support**;
@@ -33,6 +33,20 @@ Version 0.5.3 - Unreleased
 * Upgraded to ``django-autocomplete-light>=3.9.7``;
 * Removed temporary fix for DAL in Article admin change view template;
 
+Migrating from previous version
+...............................
+
+* Upgrade ``django-autocomplete-light``;
+* Use the new template block names if you override some of lotus list, details
+  templates;
+* If you mounted Lotus on root url path and standing on removed ``articles/`` path to
+  not pollute root path, you need to mount Lotus on path like ``blog/`` or even
+  ``articles/``;
+* If you used Lotus on a single language site, now you may be able to disable
+  ``LocaleMiddleware``;
+* Now you are able to edit Lotus crumb titles for index views, see settings
+  documentation for ``LOTUS_CRUMBS_TITLES``;
+
 
 Version 0.5.2.1 - 2023/06/03
 ----------------------------
@@ -40,6 +54,14 @@ Version 0.5.2.1 - 2023/06/03
 A fix release for migration missing callables for choices value and default
 which leaded Django to require a new Lotus migration when changing language or status
 settings.
+
+Migrating from previous version
+...............................
+
+If you updated to the previous version and runned the wrong pending migration (which
+should start with ``0002``) previously raised by Django, you need to remove it from
+you migration history since the current version has fixed this invalid pending
+migration.
 
 
 Version 0.5.2 - 2023/04/04
