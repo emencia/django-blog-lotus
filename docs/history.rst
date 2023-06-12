@@ -46,7 +46,7 @@ Migrating from previous version
 * If you mounted Lotus on root url path and standing on removed ``articles/`` path to
   not pollute root path, you need to mount Lotus on path like ``blog/`` or even
   ``articles/``;
-* If you used Lotus on a single language site, now you may be able to disable
+* If you used Lotus for a single language site, now you may be able to disable
   ``LocaleMiddleware``;
 * Now you are able to edit Lotus crumb titles for index views, see settings
   documentation for ``LOTUS_CRUMBS_TITLES``;
