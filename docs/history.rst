@@ -5,7 +5,7 @@ History
 =======
 
 
-Version 0.6.0 - Unreleased
+Version 0.6.0 - 2023/06/12
 --------------------------
 
 * **Added Django 4.2 support**;
