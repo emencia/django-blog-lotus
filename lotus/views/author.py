@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from ..models import Article, Author
 from .mixins import (
-    ArticleFilterMixin,
+    ArticleFilterAbstractView,
     LanguageMixin,
     LotusContextStage,
     PreviewModeMixin,
@@ -37,13 +37,16 @@ class AuthorIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
         ]
 
     def get_queryset(self):
-        q = self.model.lotus_objects.get_active(language=self.get_language_code())
+        q = self.model.lotus_objects.get_active(
+            language=self.get_language_code(),
+            private=None if self.request.user.is_authenticated else False,
+        )
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class AuthorDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                       PreviewModeMixin, LanguageMixin, SingleObjectMixin, ListView):
+class AuthorDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView,
+                       SingleObjectMixin, ListView):
     """
     Author detail and its related article list.
 

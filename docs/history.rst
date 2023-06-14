@@ -4,6 +4,20 @@
 History
 =======
 
+Version 0.7.0 - Unreleased
+--------------------------
+
+* Added API with Django REST framework (DRF):
+
+  * API is in beta stage for now, some improvements may come later;
+  * API is optional depending DRF is installed or not;
+  * API is read only, at least for now;
+  * Article, Author and Category have their own entrypoint;
+  * Listing and details use different serializers to avoid too large responses;
+  * Publication criteria and language filtering is properly implemented alike in HTML
+    frontend;
+
+
 Version 0.6.1 - 2023/08/18
 --------------------------
 

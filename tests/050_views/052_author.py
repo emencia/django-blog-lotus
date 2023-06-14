@@ -41,10 +41,14 @@ def test_author_view_list(db, client):
     # Author need at least a published article to be "active"
     ArticleFactory(title="Sample", fill_authors=authors)
 
-    # Additional author which are invisible because it does not have any published
-    # article
-    nietman = AuthorFactory(username="niet")
-    ArticleFactory(title="Nope", status=STATUS_DRAFT, fill_authors=[nietman])
+    # Additional authors that are invisibles because they does not have any published
+    # article for anonymous
+    ArticleFactory(title="Nope", status=STATUS_DRAFT, fill_authors=[
+        AuthorFactory(username="niet")
+    ])
+    ArticleFactory(title="Private", private=True, fill_authors=[
+        AuthorFactory(username="spy")
+    ])
 
     # Expected items in page are simply ordered on name
     expected_item_page_1 = [

@@ -6,10 +6,7 @@ from django.urls import reverse
 
 from ..models import Article
 from .mixins import (
-    ArticleFilterMixin,
-    LanguageMixin,
-    LotusContextStage,
-    PreviewModeMixin,
+    ArticleFilterAbstractView,
 )
 
 try:
@@ -18,8 +15,7 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-class ArticleIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                       PreviewModeMixin, LanguageMixin, ListView):
+class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterAbstractView, ListView):
     """
     Paginated list of articles.
     """
@@ -43,8 +39,7 @@ class ArticleIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixi
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class ArticleDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                        PreviewModeMixin, LanguageMixin, DetailView):
+class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView, DetailView):
     """
     Article detail.
     """
@@ -80,7 +75,7 @@ class ArticleDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMix
         Preview mode is enabled from a flag in session and only for staff user. If it is
         disabled publication criterias are applied on lookups.
 
-        Also apply lookup for "private" mode for non authenticated users.
+        Also apply lookup against "preview" mode.
         """
         q = self.apply_article_lookups(self.model.objects, self.get_language_code())
 

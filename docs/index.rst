@@ -22,8 +22,3 @@ Developer’s Guide
 
    development.rst
    history.rst
-
-Credits
-*******
-
-Logo vector and icon by `SVG Repo <https://www.svgrepo.com>`_.

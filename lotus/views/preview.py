@@ -16,7 +16,7 @@ class PreviewTogglerView(RedirectView):
     The redirection url can not be one of the preview toggler url, this is to avoid
     malicious redirection loop.
 
-    Only authenticated admin user can reach is allowed to use this view and an URL
+    Only authenticated admin user is allowed to use this view and an URL
     argument "next" is required to be given and not relative (not starting with ``/``)
     else it is assumed as a bad operation.
     """

@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.db import models
 from django.utils import timezone
 
 from ..lookups import LookupBuilder
@@ -38,7 +37,7 @@ class PreviewModeMixin:
 
     def get_context_data(self, **kwargs):
         """
-        Expose the preview mode state.
+        Expose the preview mode state to template.
         """
         context = super().get_context_data(**kwargs)
         context[settings.LOTUS_PREVIEW_VARNAME] = self.allowed_preview_mode(
@@ -51,7 +50,17 @@ class PreviewModeMixin:
 class ArticleFilterMixin(LookupBuilder):
     """
     A mixin to share Article filtering.
+
+    TODO: Rewrite docstrings since allowed_preview_mode deps is not required
+    anymore, only optional.
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # TODO:  Documentate this new attribute and why it exists here instead of
+        # previously in method build/apply lookup
+        self.target_date = timezone.now()
+
     def build_article_lookups(self, language, prefix=None):
         """
         Build complex lookups to apply common publication criterias.
@@ -73,10 +82,15 @@ class ArticleFilterMixin(LookupBuilder):
         lookups = []
         prefix = prefix or ""
 
-        self.target_date = timezone.now()
+        # Define target_date attribute if it does not exists yet
+        if not hasattr(self, "target_date"):
+            self.target_date = timezone.now()
 
         # Check for enabled preview mode
-        if self.allowed_preview_mode(self.request):
+        if (
+            hasattr(self, "allowed_preview_mode") and
+            self.allowed_preview_mode(self.request)
+        ):
             lookups.extend(
                 self.build_language_conditions(language, prefix=prefix)
             )
@@ -86,14 +100,9 @@ class ArticleFilterMixin(LookupBuilder):
                 self.build_publication_conditions(
                     target_date=None,
                     language=language,
+                    private=None if self.request.user.is_authenticated else False,
                     prefix=prefix,
                 )
-            )
-
-        # Avoid anonymous to see private content
-        if not self.request.user.is_authenticated:
-            lookups.append(
-                models.Q(**{prefix + "private": False})
             )
 
         return tuple(lookups)
@@ -102,13 +111,13 @@ class ArticleFilterMixin(LookupBuilder):
         """
         Apply publication and language lookups to given queryset.
 
-        Also this will set a ``self.target_date`` attribute to store the date checked
+        This will set a ``self.target_date`` attribute to store the date checked
         against as a reference for further usage (like in ``get_context_data``).
 
-        Depends on ``allowed_preview_mode`` method as implemented in
-        ``PreviewModeMixin`` (that manage preview mode) and the queryset must be for a
-        model with a manager which implement ``get_for_lang`` and ``get_published``
-        methods.
+        The queryset must be for a model with a manager which implement
+        ``get_for_lang`` and ``get_published`` methods. This support also
+        ``allowed_preview_mode`` method as implemented in ``PreviewModeMixin``
+        (that manage preview mode) if it is available.
 
         Arguments:
             queryset (django.db.models.QuerySet): Base queryset to start on.
@@ -118,31 +127,42 @@ class ArticleFilterMixin(LookupBuilder):
             django.db.models.QuerySet: Improved queryset with required filtering
             lookups.
         """
-        self.target_date = timezone.now()
+        # Define target_date attribute if it does not exists yet
+        if not hasattr(self, "target_date"):
+            self.target_date = timezone.now()
 
         # Check for enabled preview mode
-        if self.allowed_preview_mode(self.request):
+        if (
+            hasattr(self, "allowed_preview_mode") and
+            self.allowed_preview_mode(self.request)
+        ):
             queryset = queryset.get_for_lang(language=language)
         # Default request instead
         else:
             queryset = queryset.get_published(
                 target_date=self.target_date,
                 language=language,
+                private=None if self.request.user.is_authenticated else False,
             )
-
-        # Avoid anonymous to see private content
-        if not self.request.user.is_authenticated:
-            queryset = queryset.filter(private=False)
 
         return queryset
 
-    def get_context_data(self, **kwargs):
+
+class LanguageMixin:
+    """
+    A mixin to provide very common logic related to language.
+    """
+    def get_language_code(self):
         """
-        Expose the date "now" used for publication filter.
+        Shortand to ``get_language_code`` function that already give the request object.
+
+        .. Warning::
+            This should not be used in view code before request attribute have been set.
+
+        Returns:
+            string: Language code retrieved either from request object or settings.
         """
-        context = super().get_context_data(**kwargs)
-        context["lotus_now"] = getattr(self, "target_date")
-        return context
+        return get_language_code(self.request)
 
 
 class LotusContextStage:
@@ -175,18 +195,18 @@ class LotusContextStage:
         return context
 
 
-class LanguageMixin:
+class ArticleFilterAbstractView(LotusContextStage, ArticleFilterMixin,
+                                PreviewModeMixin, LanguageMixin):
     """
-    A mixin to provide very common logic related to language.
+    Abstract class which gather all the classes needed to implement filtering on
+    criterias.
     """
-    def get_language_code(self):
+    def get_context_data(self, **kwargs):
         """
-        Shortand to ``get_language_code`` function that already give the request object.
-
-        .. Warning::
-            This should not be used in view code before request attribute have been set.
-
-        Returns:
-            string: Language code retrieved either from request object or settings.
+        Expose the date "now" used for publication filter and the article filtering.
+        function
         """
-        return get_language_code(self.request)
+        context = super().get_context_data(**kwargs)
+        context["article_filter_func"] = getattr(self, "apply_article_lookups")
+        context["lotus_now"] = getattr(self, "target_date")
+        return context

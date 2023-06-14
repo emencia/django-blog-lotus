@@ -2,7 +2,6 @@ from .article import ArticleIndexView, ArticleDetailView, PreviewArticleDetailVi
 from .author import AuthorIndexView, AuthorDetailView
 from .category import CategoryIndexView, CategoryDetailView
 from .preview import PreviewTogglerView
-from .mixins import ArticleFilterMixin
 from .tag import (
     DisabledTagIndexView, EnabledTagIndexView, TagIndexView, TagDetailView,
     TagAutocompleteView,
@@ -10,7 +9,6 @@ from .tag import (
 
 
 __all__ = [
-    "ArticleFilterMixin",
     "ArticleIndexView",
     "ArticleDetailView",
     "AuthorIndexView",

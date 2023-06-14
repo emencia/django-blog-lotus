@@ -297,7 +297,9 @@ class Article(SmartFormatMixin, Translated):
 
     def build_absolute_url(self, urlname):
         """
-        Build object absolute URL for url name.
+        Build object absolute URL with language prefix for url name.
+
+        Language is forced on article language.
 
         Arguments:
             urlname (string): The URL name to reverse with kwargs to get absolute URL.
@@ -323,6 +325,15 @@ class Article(SmartFormatMixin, Translated):
             string: An URL.
         """
         return self.build_absolute_url("lotus:article-detail")
+
+    def get_absolute_api_url(self):
+        """
+        Return absolute URL to the article detail viewset from API.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("lotus-api:article-detail", kwargs={"pk": self.id})
 
     def get_absolute_preview_url(self):
         """
@@ -360,16 +371,35 @@ class Article(SmartFormatMixin, Translated):
         """
         return self.categories.get_for_lang(self.language).order_by("title")
 
-    def get_related(self):
+    def get_related(self, filter_func=None):
         """
-        Return article related articles, results are enforced on article language.
+        Return article related articles.
+
+        .. Warning::
+            On  default without ``filter_func`` defined this won't apply any
+            publication criteria, only the language filtering.
+
+            You would need to give it a proper filtering function to ensure about
+            results.
+
+        TODO: Concretely for now, the 'filter_func' is not used in HTML frontend but it
+        should, either from a variable context or a template tag.
+
+        Keyword Arguments:
+            filter_func (function): A function used to create a queryset for related
+                articles filtered. It has been done to be given
+                ``ArticleFilterMixin.apply_article_lookups`` so any other given
+                function should at least expect the same arguments.
 
         Returns:
             queryset: List of related articles.
         """
-        return self.related.get_for_lang(self.language).order_by(
-            *self.COMMON_ORDER_BY
-        )
+        if filter_func:
+            q = filter_func(self.related, self.language)
+        else:
+            q = self.related.get_for_lang(self.language)
+
+        return q.order_by(*self.COMMON_ORDER_BY)
 
     def get_tags(self):
         """

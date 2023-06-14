@@ -165,7 +165,7 @@ install-backend:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing backend requirements <---$(FORMATRESET)\n"
 	@echo ""
-	$(PIP) install -e .[breadcrumbs,dev,quality,doc]
+	$(PIP) install -e .[api,breadcrumbs,dev,quality,doc]
 .PHONY: install-backend
 
 install-frontend:
