@@ -1,7 +1,9 @@
 """
 Application URLs
 """
-from django.urls import path
+from django.urls import path, include
+
+from rest_framework import routers
 
 from .views import (
     ArticleIndexView, ArticleDetailView,
@@ -10,12 +12,34 @@ from .views import (
     PreviewTogglerView, PreviewArticleDetailView,
     TagIndexView, TagDetailView, TagAutocompleteView,
 )
+from .viewsets import ArticleViewSet, AuthorViewSet, CategoryViewSet
 
 
 app_name = "lotus"
 
 
+# API router
+router = routers.DefaultRouter()
+router.register(
+    r"article",
+    ArticleViewSet,
+    basename="api-article"
+)
+router.register(
+    r"author",
+    AuthorViewSet,
+    basename="api-author"
+)
+router.register(
+    r"category",
+    CategoryViewSet,
+    basename="api-category"
+)
+
+
 urlpatterns = [
+    path("api/", include(router.urls)),
+
     path("", ArticleIndexView.as_view(), name="article-index"),
 
     path("authors/", AuthorIndexView.as_view(), name="author-index"),

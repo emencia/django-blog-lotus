@@ -223,7 +223,29 @@ INSTALLED_APPS.append(
     "taggit",
 )
 
+"""
+DRF
+"""
+INSTALLED_APPS.extend([
+    "rest_framework",
+    #"django_filters",
+])
 
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        # Use Django"s standard `django.contrib.auth` permissions,
+        # or allow read-only access for unauthenticated users.
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+        # Only Django"s standard `django.contrib.auth` permissions, every
+        # authenticated user can read and anonymous are never allowed
+        # "rest_framework.permissions.DjangoModelPermissions",
+    ],
+    # "DEFAULT_FILTER_BACKENDS": [
+    #    "django_filters.rest_framework.DjangoFilterBackend",
+    # ]
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 20
+}
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW
 """
