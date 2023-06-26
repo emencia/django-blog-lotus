@@ -4,7 +4,10 @@ from ..models import Category
 
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
-    id = serializers.ReadOnlyField()
+    """
+    TODO: Missing related article list
+    """
+
     original = serializers.HyperlinkedRelatedField(
         many=False,
         read_only=True,
@@ -26,3 +29,24 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         Return the HTML detail view URL.
         """
         return obj.get_absolute_url()
+
+
+class CategoryResumeSerializer(CategorySerializer):
+
+    class Meta:
+        model = Category
+        fields = [
+            "url",
+            "detail_url",
+            "language",
+            "title",
+            "lead",
+            "cover",
+            "description",
+        ]
+        extra_kwargs = {
+            "url": {
+                "view_name": "lotus:api-category-detail"
+            },
+        }
+

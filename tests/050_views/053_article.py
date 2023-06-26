@@ -288,6 +288,9 @@ def test_article_view_list_publication(
     * authenticated basic user trying to use preview mode;
     * admin without preview mode;
     * admin with preview mode;
+
+    NOTE: This test may be speeded up by using single pre-crafted author, category
+    and other relation to avoid each object to create random ones.
     """
     # Available Django clients as a dict to be able to switch on
     client_for = {

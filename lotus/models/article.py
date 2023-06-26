@@ -364,6 +364,8 @@ class Article(SmartFormatMixin, Translated):
         """
         Return article related articles, results are enforced on article language.
 
+        WARNING: This does not apply any publication criteria.
+
         Returns:
             queryset: List of related articles.
         """
