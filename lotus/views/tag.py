@@ -12,7 +12,7 @@ from taggit.models import Tag
 
 from ..models import Article
 from .mixins import (
-    ArticleFilterMixin,
+    ArticleFilterAbstractView,
     LanguageMixin,
     LotusContextStage,
     PreviewModeMixin,
@@ -32,8 +32,7 @@ class DisabledTagIndexView(View):
         raise Http404()
 
 
-class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                          PreviewModeMixin, LanguageMixin, ListView):
+class EnabledTagIndexView(BaseBreadcrumbMixin, ArticleFilterAbstractView, ListView):
     """
     List of tags that are related from at least one article.
     """
@@ -70,8 +69,8 @@ class EnabledTagIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterM
         ).filter(article_count__gt=0).order_by("name")
 
 
-class TagDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                    PreviewModeMixin, LanguageMixin, SingleObjectMixin, ListView):
+class TagDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView,
+                    SingleObjectMixin, ListView):
     """
     Tag detail and its related article list.
 

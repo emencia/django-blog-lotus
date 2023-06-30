@@ -6,7 +6,7 @@ from django.urls import reverse
 
 from ..models import Article
 from .mixins import (
-    ArticleFilterMixin,
+    ArticleFilterAbstractView,
     LanguageMixin,
     LotusContextStage,
     PreviewModeMixin,
@@ -18,8 +18,7 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-class ArticleIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                       PreviewModeMixin, LanguageMixin, ListView):
+class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterAbstractView, ListView):
     """
     Paginated list of articles.
     """
@@ -43,8 +42,7 @@ class ArticleIndexView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixi
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class ArticleDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                        PreviewModeMixin, LanguageMixin, DetailView):
+class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView, DetailView):
     """
     Article detail.
     """

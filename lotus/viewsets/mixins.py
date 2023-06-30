@@ -1,3 +1,13 @@
+from ..views.mixins import ArticleFilterMixin, LanguageMixin
+
+
+class ArticleFilterAbstractViewset(ArticleFilterMixin, LanguageMixin):
+    """
+    TODO:
+    """
+    pass
+
+
 class MultiSerializerViewSetMixin:
     """
     A mixin to allow for selectable serializer per action in a viewset.

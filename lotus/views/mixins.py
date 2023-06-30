@@ -51,6 +51,9 @@ class PreviewModeMixin:
 class ArticleFilterMixin(LookupBuilder):
     """
     A mixin to share Article filtering.
+
+    TODO: Rewrite docstrings since allowed_preview_mode deps is not required
+    anymore, only optional.
     """
     def build_article_lookups(self, language, prefix=None):
         """
@@ -76,7 +79,10 @@ class ArticleFilterMixin(LookupBuilder):
         self.target_date = timezone.now()
 
         # Check for enabled preview mode
-        if self.allowed_preview_mode(self.request):
+        if(
+            hasattr(self, "allowed_preview_mode") and
+            self.allowed_preview_mode(self.request)
+        ):
             lookups.extend(
                 self.build_language_conditions(language, prefix=prefix)
             )
@@ -121,7 +127,10 @@ class ArticleFilterMixin(LookupBuilder):
         self.target_date = timezone.now()
 
         # Check for enabled preview mode
-        if self.allowed_preview_mode(self.request):
+        if(
+            hasattr(self, "allowed_preview_mode") and
+            self.allowed_preview_mode(self.request)
+        ):
             queryset = queryset.get_for_lang(language=language)
         # Default request instead
         else:
@@ -136,13 +145,22 @@ class ArticleFilterMixin(LookupBuilder):
 
         return queryset
 
-    def get_context_data(self, **kwargs):
+
+class LanguageMixin:
+    """
+    A mixin to provide very common logic related to language.
+    """
+    def get_language_code(self):
         """
-        Expose the date "now" used for publication filter.
+        Shortand to ``get_language_code`` function that already give the request object.
+
+        .. Warning::
+            This should not be used in view code before request attribute have been set.
+
+        Returns:
+            string: Language code retrieved either from request object or settings.
         """
-        context = super().get_context_data(**kwargs)
-        context["lotus_now"] = getattr(self, "target_date")
-        return context
+        return get_language_code(self.request)
 
 
 class LotusContextStage:
@@ -175,18 +193,15 @@ class LotusContextStage:
         return context
 
 
-class LanguageMixin:
+class ArticleFilterAbstractView(LotusContextStage, ArticleFilterMixin,
+                                PreviewModeMixin, LanguageMixin):
     """
-    A mixin to provide very common logic related to language.
+    TODO:
     """
-    def get_language_code(self):
+    def get_context_data(self, **kwargs):
         """
-        Shortand to ``get_language_code`` function that already give the request object.
-
-        .. Warning::
-            This should not be used in view code before request attribute have been set.
-
-        Returns:
-            string: Language code retrieved either from request object or settings.
+        Expose the date "now" used for publication filter.
         """
-        return get_language_code(self.request)
+        context = super().get_context_data(**kwargs)
+        context["lotus_now"] = getattr(self, "target_date")
+        return context

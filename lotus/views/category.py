@@ -6,7 +6,7 @@ from django.urls import reverse
 from ..models import Article, Category
 
 from .mixins import (
-    ArticleFilterMixin,
+    ArticleFilterAbstractView,
     LanguageMixin,
     LotusContextStage,
     PreviewModeMixin,
@@ -46,8 +46,8 @@ class CategoryIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class CategoryDetailView(BaseBreadcrumbMixin, LotusContextStage, ArticleFilterMixin,
-                         PreviewModeMixin, LanguageMixin, SingleObjectMixin, ListView):
+class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView,
+                         SingleObjectMixin, ListView):
     """
     Category detail and its related article list.
     """
