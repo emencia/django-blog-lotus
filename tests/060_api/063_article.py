@@ -1,5 +1,6 @@
 import datetime
 import json
+from pathlib import Path
 
 import pytest
 from freezegun import freeze_time
@@ -12,9 +13,8 @@ except ModuleNotFoundError:
     from backports.zoneinfo import ZoneInfo
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.urls import reverse
-
-from rest_framework.test import APIClient
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
@@ -23,11 +23,198 @@ from lotus.factories import (
 from lotus.utils.tests import get_admin_change_url, html_pyquery
 
 
+# Shortcuts for shorter variable names
+STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
+STATE_PREFIX = "article--"
+
+
 @freeze_time("2012-10-15 10:00:00")
-def test_article_view_list_publication(db, client):
+def test_article_viewset_list_payload(db, settings, api_client):
+    """
+    Article list item payload should contain fields as expected
+    """
+    cover_path = settings.LOTUS_API_TEST_BASEURL + "/media/lotus/article/cover/"
+
+    # Date references
+    utc = ZoneInfo("UTC")
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
+
+    author = AuthorFactory(first_name="Picsou", last_name="McDuck")
+    category = CategoryFactory(title="cat_1")
+    tag = TagFactory(name="Bingo", slug="bingo")
+
+    article = ArticleFactory(
+        title="Hello",
+        publish_date=yesterday.date(),
+        publish_time=yesterday.time(),
+        fill_categories=[category],
+        fill_authors=[author],
+        fill_tags=[tag],
+    )
+
+    url = reverse("lotus:api-article-list")
+
+    response = api_client.get(url)
+    assert response.status_code == 200
+
+    json_data = response.json()
+    print()
+    print(json.dumps(json_data, indent=4))
+
+    assert json_data["count"] == 1
+    payload_item = json_data["results"][0]
+
+    # Test categories fields
+    categories = payload_item.pop("categories")
+    assert len(categories) == 1
+    assert list(categories[0].keys()) == [
+        "url", "detail_url", "language", "title", "lead", "cover", "description"
+    ]
+
+    # Test authors fields
+    authors = payload_item.pop("authors")
+    assert len(authors) == 1
+    assert list(authors[0].keys()) == [
+        "url", "detail_url", "username", "first_name", "last_name"
+    ]
+
+    # Test tag names
+    tags = payload_item.pop("tags")
+    assert len(tags) == 1
+    assert isinstance(tags[0], str) is True
+
+    # Test cover path apart
+    cover = payload_item.pop("cover")
+    assert cover.startswith(cover_path) is True
+
+    # Test remaining fields
+    assert payload_item == {
+        "detail_url": article.get_absolute_url(),
+        "introduction": article.introduction,
+        "language": article.language,
+        "publish_datetime": article.publish_datetime().isoformat(),
+        "seo_title": article.seo_title,
+        "slug": article.slug,
+        "states": [STATES["status_available"]],
+        "title": article.title,
+        "url": settings.LOTUS_API_TEST_BASEURL + "/en/api/article/1/",
+    }
+
+
+@freeze_time("2012-10-15 10:00:00")
+@pytest.mark.parametrize("user_kind, with_preview, expected", [
+    (
+        "anonymous",
+        False,
+        [
+            # Expected title and CSS classes
+            [
+                "05. pinned, published past hour",
+                [STATES["pinned"], STATES["status_available"]],
+            ],
+            [
+                "04. published past hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "06. featured, published past hour",
+                [STATES["featured"], STATES["status_available"]],
+            ],
+            [
+                "08. published past hour, end next hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "02. published yesterday",
+                [STATES["status_available"]]
+            ],
+        ],
+    ),
+    (
+        "user",
+        False,
+        [
+            # Expected title and CSS classes
+            [
+                "05. pinned, published past hour",
+                [STATES["pinned"], STATES["status_available"]],
+            ],
+            [
+                "04. published past hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "06. featured, published past hour",
+                [STATES["featured"], STATES["status_available"]],
+            ],
+            [
+                "07. private, published past hour",
+                [STATES["private"], STATES["status_available"]],
+            ],
+            [
+                "08. published past hour, end next hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "02. published yesterday",
+                [STATES["status_available"]]
+            ],
+        ],
+    ),
+    (
+        "admin",
+        False,
+        [
+            # Expected title and CSS classes
+            [
+                "05. pinned, published past hour",
+                [STATES["pinned"], STATES["status_available"]],
+            ],
+            [
+                "04. published past hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "06. featured, published past hour",
+                [STATES["featured"], STATES["status_available"]],
+            ],
+            [
+                "07. private, published past hour",
+                [STATES["private"], STATES["status_available"]],
+            ],
+            [
+                "08. published past hour, end next hour",
+                [STATES["status_available"]]
+            ],
+            [
+                "02. published yesterday",
+                [STATES["status_available"]]
+            ],
+        ],
+    ),
+])
+def test_article_viewset_list_publication(db, api_client, user_kind, with_preview,
+                                          expected):
     """
     TODO
+
+    This is alike 'test_article_view_list_publication' except preview mode is not
+    checked.
     """
+    # We have to force authentication for user or admin
+    if user_kind == "user":
+        user = AuthorFactory()
+        api_client.force_authenticate(user=user)
+    elif user_kind == "admin":
+        user = AuthorFactory(flag_is_admin=True)
+        api_client.force_authenticate(user=user)
+
+    # Available article state CSS class names to look for
+    available_state_classes = [
+        v
+        for k, v in STATES.items()
+    ]
+
     # Date references
     utc = ZoneInfo("UTC")
     yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
@@ -97,15 +284,23 @@ def test_article_view_list_publication(db, client):
         publish_end=tomorrow,
     )
 
-    client = APIClient()
     url = reverse("lotus:api-article-list")
     print("url:", url)
 
-    response = client.get(url)
+    response = api_client.get(url)
+    assert response.status_code == 200
+
     json_data = response.json()
     print()
     print(json.dumps(json_data, indent=4))
+    assert json_data["count"] == len(expected)
+    # This test never have enough items to trigger pagination
+    assert json_data["next"] is None
+    assert json_data["previous"] is None
 
-    assert response.status_code == 200
+    #assert [
+        #[item["title"], []]
+        #for item in json_data["results"]
+    #] == expected
 
-    assert 1 == 42
+    #assert 1 == 42

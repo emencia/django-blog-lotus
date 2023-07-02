@@ -113,7 +113,7 @@ def disable_preview(settings):
 @pytest.fixture(scope="module")
 def font(tests_settings):
     """
-    Return a PIL ImageFont using embedded TrueType font in data fixtures directory.
+    Returns a PIL ImageFont using embedded TrueType font in data fixtures directory.
 
     Font will be loaded with hardcoded 12px font size.
     """
@@ -121,3 +121,12 @@ def font(tests_settings):
         str(tests_settings.fixtures_path / "font" / "VeraMono.ttf"),
         12
     )
+
+
+@pytest.fixture(scope="function")
+def api_client():
+    """
+    Shortcut to get a DRF API client instance.
+    """
+    from rest_framework.test import APIClient
+    return APIClient()

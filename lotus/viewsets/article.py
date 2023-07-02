@@ -33,4 +33,4 @@ class ArticleViewSet(MultiSerializerViewSetMixin, ArticleFilterAbstractViewset,
         """
         q = self.apply_article_lookups(self.model.objects, self.get_language_code())
 
-        return q
+        return q.order_by(*self.model.COMMON_ORDER_BY)

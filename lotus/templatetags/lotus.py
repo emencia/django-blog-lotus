@@ -312,7 +312,7 @@ def check_object_lang_availability(context, source, **kwargs):
     setting.
 
     Example:
-        This tag does not expect any argument: ::
+        This tag does not expect any other argument than ``source``: ::
 
             {% load lotus %}
             {% check_object_lang_availability article_object as object_lang_availability %}

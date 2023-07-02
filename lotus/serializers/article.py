@@ -5,12 +5,12 @@ from taggit.serializers import TagListSerializerField, TaggitSerializer
 from ..models import Article
 from .author import AuthorResumeSerializer
 from .category import CategoryResumeSerializer
+from ..templatetags.lotus import article_state_list
 
 
 class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
     """
-    This is the serializer for full payload (opposed to the resumed one) which should
-    be reserved for detail only.
+    This is the serializer for full payload which implement every possible fields.
 
     TODO:
 
@@ -27,6 +27,7 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
     categories = serializers.SerializerMethodField()
     publish_datetime = serializers.SerializerMethodField()
     related = serializers.SerializerMethodField()
+    states = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
@@ -44,7 +45,7 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         return obj.get_absolute_url()
 
     def get_publish_datetime(self, obj):
-        return obj.publish_datetime()
+        return obj.publish_datetime().isoformat()
 
     def get_authors(self, obj):
         return AuthorResumeSerializer(obj.authors, many=True, context=self.context).data
@@ -53,7 +54,10 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         return CategoryResumeSerializer(obj.categories, many=True, context=self.context).data
 
     def get_related(self, obj):
-        return ArticleResumeSerializer(obj.get_related(), many=True, context=self.context).data
+        return ArticleMinimalSerializer(obj.get_related(), many=True, context=self.context).data
+
+    def get_states(self, obj):
+        return article_state_list({}, obj)
 
 
 class ArticleResumeSerializer(ArticleSerializer):
@@ -63,36 +67,55 @@ class ArticleResumeSerializer(ArticleSerializer):
     This should be the common serializer, the other complete one would be better in
     detail.
 
-    TODO: White list of fields to implement
+    .. Note::
 
-    * url
-    * detail_url
-    * title
-    * slug
-    * cover
-    * status resume
-    * publish date (condensed date and time? could be done at ArticleSerializer level)
-    * introduction
-    * authors (with resumed serializer)
-    * categories (with resumed serializer)
-    * related (with resumed serializer)
-    * tags (with resumed serializer)
-    * seo_title
+        Field ``related`` is not allowed since this serializer is used into list and
+        it could lead to too many recursions.
 
     """
 
     class Meta:
         model = Article
         fields = [
-            "url",
-            "detail_url",
-            "language",
-            "slug",
-            "publish_datetime",
-            "title",
-            "seo_title",
+            "authors",
+            "categories",
             "cover",
+            "detail_url",
             "introduction",
+            "language",
+            "publish_datetime",
+            "seo_title",
+            "slug",
+            "states",
+            "tags",
+            "title",
+            "url",
+        ]
+        extra_kwargs = {
+            "url": {
+                "view_name": "lotus:api-article-detail"
+            },
+        }
+
+
+class ArticleMinimalSerializer(ArticleSerializer):
+    """
+    Minimal article serializer
+
+    Only contain the minimal article informations, mostly used to list 'Article.related'
+    """
+
+    class Meta:
+        model = Article
+        fields = [
+            "cover",
+            "detail_url",
+            "introduction",
+            "language",
+            "publish_datetime",
+            "states",
+            "title",
+            "url",
         ]
         extra_kwargs = {
             "url": {
