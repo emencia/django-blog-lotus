@@ -26,10 +26,10 @@ class ArticleViewSet(MultiSerializerViewSetMixin, ArticleFilterAbstractViewset,
         Get the base queryset which may include the basic publication filter
         depending preview mode.
 
-        Preview mode is enabled from a flag in session and only for staff user. If it is
-        disabled publication criterias are applied on lookups.
-
         Also apply lookup for "private" mode for non authenticated users.
+
+        .. Note::
+            Opposed to HTML views, this does not support (yet) the preview mode.
         """
         q = self.apply_article_lookups(self.model.objects, self.get_language_code())
 

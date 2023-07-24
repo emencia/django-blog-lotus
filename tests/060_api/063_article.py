@@ -196,8 +196,6 @@ def test_article_viewset_list_payload(db, settings, api_client):
 def test_article_viewset_list_publication(db, api_client, user_kind, with_preview,
                                           expected):
     """
-    TODO
-
     This is alike 'test_article_view_list_publication' except preview mode is not
     checked.
     """
@@ -285,22 +283,17 @@ def test_article_viewset_list_publication(db, api_client, user_kind, with_previe
     )
 
     url = reverse("lotus:api-article-list")
-    print("url:", url)
 
     response = api_client.get(url)
     assert response.status_code == 200
 
     json_data = response.json()
-    print()
-    print(json.dumps(json_data, indent=4))
     assert json_data["count"] == len(expected)
     # This test never have enough items to trigger pagination
     assert json_data["next"] is None
     assert json_data["previous"] is None
 
-    #assert [
-        #[item["title"], []]
-        #for item in json_data["results"]
-    #] == expected
-
-    #assert 1 == 42
+    assert [
+        [item["title"], item["states"]]
+        for item in json_data["results"]
+    ] == expected

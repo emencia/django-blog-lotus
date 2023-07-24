@@ -11,10 +11,6 @@ from ..templatetags.lotus import article_state_list
 class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
     """
     This is the serializer for full payload which implement every possible fields.
-
-    TODO:
-
-    * May include media formats;
     """
     detail_url = serializers.SerializerMethodField()
     original = serializers.HyperlinkedRelatedField(
@@ -70,7 +66,7 @@ class ArticleResumeSerializer(ArticleSerializer):
     .. Note::
 
         Field ``related`` is not allowed since this serializer is used into list and
-        it could lead to too many recursions.
+        it could lead on too many recursions.
 
     """
 
@@ -102,7 +98,8 @@ class ArticleMinimalSerializer(ArticleSerializer):
     """
     Minimal article serializer
 
-    Only contain the minimal article informations, mostly used to list 'Article.related'
+    Only contain the minimal article informations, mostly used to list article items
+    with possible recursions like on 'Article.related'.
     """
 
     class Meta:
