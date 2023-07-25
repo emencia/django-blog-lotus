@@ -44,16 +44,28 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         return obj.publish_datetime().isoformat()
 
     def get_authors(self, obj):
-        return AuthorResumeSerializer(obj.authors, many=True, context=self.context).data
+        return AuthorResumeSerializer(
+            obj.authors,
+            many=True,
+            context=self.context
+        ).data
 
     def get_categories(self, obj):
-        return CategoryResumeSerializer(obj.categories, many=True, context=self.context).data
+        return CategoryResumeSerializer(
+            obj.categories,
+            many=True,
+            context=self.context
+        ).data
 
     def get_related(self, obj):
-        return ArticleMinimalSerializer(obj.get_related(), many=True, context=self.context).data
+        return ArticleMinimalSerializer(
+            obj.get_related(),
+            many=True,
+            context=self.context
+        ).data
 
     def get_states(self, obj):
-        return article_state_list({}, obj)
+        return article_state_list({}, obj, now=self.context.get("lotus_now", None))
 
 
 class ArticleResumeSerializer(ArticleSerializer):
