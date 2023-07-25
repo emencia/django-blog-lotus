@@ -8,7 +8,7 @@ class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     Author serializer only share a few fields since we don't want to expose security
     concern informations about users.
 
-    TODO: Missing related article list
+    TODO: Missing related article list for details only ?
     """
     detail_url = serializers.SerializerMethodField()
 

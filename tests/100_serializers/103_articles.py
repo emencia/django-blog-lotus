@@ -1,8 +1,6 @@
 import datetime
 import json
-from pathlib import Path
 
-import pytest
 from freezegun import freeze_time
 
 # Try to use the builtin zoneinfo available since Python 3.9
@@ -13,8 +11,6 @@ except ModuleNotFoundError:
     from backports.zoneinfo import ZoneInfo
 
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.urls import reverse
 
 from rest_framework.test import APIRequestFactory
 from rest_framework.renderers import JSONRenderer
@@ -69,7 +65,6 @@ def test_article_articleserializer(db, settings, api_client):
         "cover": None,
         "image": None
     }
-
 
     # Date references
     utc = ZoneInfo("UTC")

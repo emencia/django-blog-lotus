@@ -13,9 +13,6 @@ from taggit.models import Tag
 from ..models import Article
 from .mixins import (
     ArticleFilterAbstractView,
-    LanguageMixin,
-    LotusContextStage,
-    PreviewModeMixin,
 )
 
 try:

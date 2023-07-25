@@ -5,7 +5,8 @@ from ..models import Category
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     """
-    TODO: Missing related article list
+    TODO: Missing related article list, however this is not something we want to have
+    in all payload, only for the details.
     """
 
     original = serializers.HyperlinkedRelatedField(
@@ -49,4 +50,3 @@ class CategoryResumeSerializer(CategorySerializer):
                 "view_name": "lotus:api-category-detail"
             },
         }
-

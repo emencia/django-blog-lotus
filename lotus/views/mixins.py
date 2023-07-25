@@ -79,7 +79,7 @@ class ArticleFilterMixin(LookupBuilder):
         self.target_date = timezone.now()
 
         # Check for enabled preview mode
-        if(
+        if (
             hasattr(self, "allowed_preview_mode") and
             self.allowed_preview_mode(self.request)
         ):
@@ -127,7 +127,7 @@ class ArticleFilterMixin(LookupBuilder):
         self.target_date = timezone.now()
 
         # Check for enabled preview mode
-        if(
+        if (
             hasattr(self, "allowed_preview_mode") and
             self.allowed_preview_mode(self.request)
         ):

@@ -228,7 +228,7 @@ DRF
 """
 INSTALLED_APPS.extend([
     "rest_framework",
-    #"django_filters",
+    # "django_filters",
 ])
 
 REST_FRAMEWORK = {

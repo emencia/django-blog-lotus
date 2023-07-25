@@ -1,6 +1,5 @@
 import datetime
 import json
-from pathlib import Path
 
 import pytest
 from freezegun import freeze_time
@@ -13,14 +12,12 @@ except ModuleNotFoundError:
     from backports.zoneinfo import ZoneInfo
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.urls import reverse
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
     ArticleFactory, AuthorFactory, CategoryFactory, TagFactory,
 )
-from lotus.utils.tests import get_admin_change_url, html_pyquery
 
 
 # Shortcuts for shorter variable names
@@ -206,12 +203,6 @@ def test_article_viewset_list_publication(db, api_client, user_kind, with_previe
     elif user_kind == "admin":
         user = AuthorFactory(flag_is_admin=True)
         api_client.force_authenticate(user=user)
-
-    # Available article state CSS class names to look for
-    available_state_classes = [
-        v
-        for k, v in STATES.items()
-    ]
 
     # Date references
     utc = ZoneInfo("UTC")

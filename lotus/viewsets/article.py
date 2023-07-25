@@ -18,9 +18,6 @@ class ArticleViewSet(MultiSerializerViewSetMixin, ArticleFilterAbstractViewset,
         "retrieve": ArticleSerializer,
     }
 
-    #def get_queryset(self):
-        #return self.model.objects.all()
-
     def get_queryset(self):
         """
         Get the base queryset which may include the basic publication filter
