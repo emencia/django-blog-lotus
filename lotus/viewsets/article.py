@@ -9,7 +9,7 @@ from .mixins import ArticleFilterAbstractViewset, MultiSerializerViewSetMixin
 class ArticleViewSet(MultiSerializerViewSetMixin, ArticleFilterAbstractViewset,
                      viewsets.ReadOnlyModelViewSet):
     """
-    TODO: Implemented lookup criteria, now test it
+    TODO: language criteria with tests
     """
 
     model = Article

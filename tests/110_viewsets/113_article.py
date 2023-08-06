@@ -16,7 +16,7 @@ from django.urls import reverse
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
-    ArticleFactory, AuthorFactory, CategoryFactory, TagFactory,
+    ArticleFactory, AuthorFactory, CategoryFactory, TagFactory, multilingual_article,
 )
 
 
@@ -288,3 +288,71 @@ def test_article_viewset_list_publication(db, api_client, user_kind, with_previe
         [item["title"], item["states"]]
         for item in json_data["results"]
     ] == expected
+
+
+def test_article_viewset_list_language(db, settings, api_client):
+    """
+    TODO
+    Viewset should return article in the right language depending the one given by
+    client request.
+    """
+    # NOTE: A test playing with language and view requests must enforce default
+    # language since LANGUAGE_CODE may be altered between two tests.
+    settings.LANGUAGE_CODE = "en"
+
+    # Create a single category used everywhere to avoid create multiple random ones
+    # from factory
+    ping = CategoryFactory(slug="ping")
+
+    # Create bread articles with published FR translation
+    created_bread = multilingual_article(
+        title="Bread",
+        slug="bread",
+        langs=["fr"],
+        fill_categories=[ping],
+        contents={
+            "fr": {
+                "title": "Pain",
+                "slug": "pain",
+                "fill_categories": [ping],
+            },
+        },
+    )
+
+    # Create cheese articles with published FR and DE translations
+    created_cheese = multilingual_article(
+        title="Cheese",
+        slug="cheese",
+        langs=["fr", "de"],
+        fill_categories=[ping],
+        contents={
+            "fr": {
+                "title": "Fromage",
+                "slug": "fromage",
+                "fill_categories": [ping],
+            },
+            "de": {
+                "title": "Käse",
+                "slug": "kase",
+                "fill_categories": [ping],
+            }
+        },
+    )
+
+    url = reverse("lotus:api-article-list")
+
+    response = api_client.get(url)
+    assert response.status_code == 200
+
+    json_data = response.json()
+    print()
+    print(json.dumps(json_data, indent=4))
+
+    assert len(json_data["results"]) == 2
+    assert len([
+        article
+        for article in json_data["results"]
+        if article["language"] == "en"
+    ]) == 2
+
+    # TODO: Check for other language

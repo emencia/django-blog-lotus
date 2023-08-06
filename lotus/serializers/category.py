@@ -33,7 +33,10 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CategoryResumeSerializer(CategorySerializer):
-
+    """
+    TODO: description should not be in this payload or then we need a minimal
+          serializer alike article
+    """
     class Meta:
         model = Category
         fields = [

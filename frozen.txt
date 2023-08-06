@@ -5,6 +5,7 @@ django-ckeditor==6.5.1
 django-smart-media==0.2.2
 django-taggit==3.1.0
 django-view-breadcrumbs==2.4.1
+djangorestframework==3.14.0
 factory-boy==3.2.1
 flake8==6.0.0
 freezegun==1.2.2
