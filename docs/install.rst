@@ -89,6 +89,7 @@ Then add the required url parts in you project ``urls.py`` like this: ::
         path("admin/", admin.site.urls),
         path("ckeditor/", include("ckeditor_uploader.urls")),
         path("i18n/", include("django.conf.urls.i18n")),
+        path("api/", include("lotus.api_urls")),
     ]
 
     urlpatterns += i18n_patterns(
@@ -98,11 +99,13 @@ Then add the required url parts in you project ``urls.py`` like this: ::
 
 .. Note::
     This URL configuration mount Lotus URLs at root of your site, it may override other
-    possible applications URLs. In this case mount Lotus under a specific path like: ::
+    possible applications URLs. In this case you should mount Lotus under a specific
+    path like: ::
 
         path("blog/", include("lotus.urls")),
 
-    Now you will reach lotus from path ``/blog/``.
+    Now you will reach lotus from path ``/blog/``. This is the same for API urls on
+    ``api/``, feel free to mount it with another path.
 
 
 And finally your project needs a ``skeleton.html`` template like this: ::

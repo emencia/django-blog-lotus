@@ -125,15 +125,15 @@ def test_article_articleserializer(db, settings, api_client):
     payload["related"] = [related_item]
 
     assert payload == {
-        "url": "http://testserver/en/api/article/3/",
+        "url": "http://testserver/api/article/3/",
         "detail_url": article.get_absolute_url(),
-        "original": "http://testserver/en/api/article/1/",
+        "original": "http://testserver/api/article/1/",
         "tags": [
             "Bingo"
         ],
         "authors": [
             {
-                "url": "http://testserver/en/api/author/1/",
+                "url": "http://testserver/api/author/1/",
                 "detail_url": picsou.get_absolute_url(),
                 "username": picsou.username,
                 "first_name": picsou.first_name,
@@ -142,7 +142,7 @@ def test_article_articleserializer(db, settings, api_client):
         ],
         "categories": [
             {
-                "url": "http://testserver/en/api/category/1/",
+                "url": "http://testserver/api/category/1/",
                 "detail_url": ping.get_absolute_url(),
                 "language": ping.language,
                 "title": ping.title,
@@ -161,7 +161,7 @@ def test_article_articleserializer(db, settings, api_client):
                     "available"
                 ],
                 "title": related.title,
-                "url": "http://testserver/en/api/article/2/"
+                "url": "http://testserver/api/article/2/"
             }
         ],
         "states": [
@@ -310,7 +310,7 @@ def test_article_articleresumeserializer(db, settings, api_client):
         ],
         "tags": [],
         "title": article.title,
-        "url": "http://testserver/en/api/article/1/"
+        "url": "http://testserver/api/article/1/"
     }
 
     # Just checking file fields are not empty and start with the right path
@@ -363,7 +363,7 @@ def test_article_articleminimalserializer(db, settings, api_client):
             "draft"
         ],
         "title": article.title,
-        "url": "http://testserver/en/api/article/1/"
+        "url": "http://testserver/api/article/1/"
     }
 
     # Just checking file fields are not empty and start with the right path

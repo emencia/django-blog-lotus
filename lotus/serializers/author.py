@@ -23,7 +23,7 @@ class AuthorSerializer(serializers.HyperlinkedModelSerializer):
         ]
         extra_kwargs = {
             "url": {
-                "view_name": "lotus:api-author-detail"
+                "view_name": "lotus-api:author-detail"
             },
         }
 
@@ -47,6 +47,6 @@ class AuthorResumeSerializer(AuthorSerializer):
         ]
         extra_kwargs = {
             "url": {
-                "view_name": "lotus:api-author-detail"
+                "view_name": "lotus-api:author-detail"
             },
         }

@@ -49,7 +49,7 @@ def test_article_viewset_list_payload(db, settings, api_client):
         fill_tags=[tag],
     )
 
-    url = reverse("lotus:api-article-list")
+    url = reverse("lotus-api:article-list")
 
     response = api_client.get(url)
     assert response.status_code == 200
@@ -94,7 +94,7 @@ def test_article_viewset_list_payload(db, settings, api_client):
         "slug": article.slug,
         "states": [STATES["status_available"]],
         "title": article.title,
-        "url": settings.LOTUS_API_TEST_BASEURL + "/en/api/article/1/",
+        "url": settings.LOTUS_API_TEST_BASEURL + "/api/article/1/",
     }
 
 
@@ -273,7 +273,7 @@ def test_article_viewset_list_publication(db, api_client, user_kind, with_previe
         publish_end=tomorrow,
     )
 
-    url = reverse("lotus:api-article-list")
+    url = reverse("lotus-api:article-list")
 
     response = api_client.get(url)
     assert response.status_code == 200
@@ -339,7 +339,7 @@ def test_article_viewset_list_language(db, settings, api_client):
         },
     )
 
-    url = reverse("lotus:api-article-list")
+    url = reverse("lotus-api:article-list")
 
     response = api_client.get(url)
     assert response.status_code == 200

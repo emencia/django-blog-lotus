@@ -12,6 +12,7 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("ckeditor/", include("ckeditor_uploader.urls")),
+    path("api/", include("lotus.api_urls")),
     path("i18n/", include("django.conf.urls.i18n")),
 ]
 

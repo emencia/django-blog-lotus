@@ -16,7 +16,7 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
     original = serializers.HyperlinkedRelatedField(
         many=False,
         read_only=True,
-        view_name='lotus:api-article-detail'
+        view_name="lotus-api:article-detail"
     )
     tags = TagListSerializerField()
     authors = serializers.SerializerMethodField()
@@ -30,7 +30,7 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         fields = "__all__"
         extra_kwargs = {
             "url": {
-                "view_name": "lotus:api-article-detail"
+                "view_name": "lotus-api:article-detail"
             },
         }
 
@@ -101,7 +101,7 @@ class ArticleResumeSerializer(ArticleSerializer):
         ]
         extra_kwargs = {
             "url": {
-                "view_name": "lotus:api-article-detail"
+                "view_name": "lotus-api:article-detail"
             },
         }
 
@@ -128,6 +128,6 @@ class ArticleMinimalSerializer(ArticleSerializer):
         ]
         extra_kwargs = {
             "url": {
-                "view_name": "lotus:api-article-detail"
+                "view_name": "lotus-api:article-detail"
             },
         }

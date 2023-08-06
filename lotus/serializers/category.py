@@ -12,7 +12,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
     original = serializers.HyperlinkedRelatedField(
         many=False,
         read_only=True,
-        view_name='lotus:api-category-detail'
+        view_name="lotus-api:category-detail"
     )
     detail_url = serializers.SerializerMethodField()
 
@@ -21,7 +21,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         fields = "__all__"
         extra_kwargs = {
             "url": {
-                "view_name": "lotus:api-category-detail"
+                "view_name": "lotus-api:category-detail"
             },
         }
 
@@ -50,6 +50,6 @@ class CategoryResumeSerializer(CategorySerializer):
         ]
         extra_kwargs = {
             "url": {
-                "view_name": "lotus:api-category-detail"
+                "view_name": "lotus-api:category-detail"
             },
         }
