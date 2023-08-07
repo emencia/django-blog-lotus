@@ -41,9 +41,15 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         return obj.get_absolute_url()
 
     def get_publish_datetime(self, obj):
+        """
+        Return the consolidated published datetime in ISO format.
+        """
         return obj.publish_datetime().isoformat()
 
     def get_authors(self, obj):
+        """
+        Return list of related authors.
+        """
         return AuthorResumeSerializer(
             obj.authors,
             many=True,
@@ -51,14 +57,21 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         ).data
 
     def get_categories(self, obj):
-        # TODO: This should be filtered to the article language
+        """
+        Return list of related categories.
+
+        Categories with different language than the article one are filtered out.
+        """
         return CategoryResumeSerializer(
-            obj.categories,
+            obj.categories.filter(language=obj.language),
             many=True,
             context=self.context
         ).data
 
     def get_related(self, obj):
+        """
+        Return list of related articles.
+        """
         return ArticleMinimalSerializer(
             obj.get_related(),
             many=True,
@@ -66,6 +79,10 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         ).data
 
     def get_states(self, obj):
+        """
+        Return a list of article state computed from some of its field according to
+        ``article_state_list()`` behavior.
+        """
         return article_state_list({}, obj, now=self.context.get("lotus_now", None))
 
 

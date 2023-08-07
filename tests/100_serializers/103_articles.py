@@ -74,6 +74,8 @@ def test_article_articleserializer(db, settings, api_client):
     ping = CategoryFactory(slug="ping")
     bingo = TagFactory(name="Bingo", slug="bingo")
     picsou = AuthorFactory(first_name="Picsou", last_name="McDuck")
+    # This is not expected in result since different language should be filtered out
+    pang = CategoryFactory(slug="pang", language="fr")
 
     original = ArticleFactory(
         title="Original",
@@ -95,7 +97,7 @@ def test_article_articleserializer(db, settings, api_client):
         publish_date=tomorrow.date(),
         publish_time=tomorrow.time(),
         featured=True,
-        fill_categories=[ping],
+        fill_categories=[ping, pang],
         fill_related=[related],
         fill_tags=[bingo],
         fill_authors=[picsou],
@@ -111,18 +113,6 @@ def test_article_articleserializer(db, settings, api_client):
     # Use JSON render that will flatten data (turn OrderedDict as simple dict) to
     # ease assert and manipulation
     payload = json.loads(JSONRenderer().render(serialized.data))
-    # Put away images that have unpredictable UID in their filenames
-    cover = payload.pop("cover")
-    image = payload.pop("image")
-    # We need to perform tricky patch to put away images. Taking away 'categories' item,
-    # put away cover and add again 'categories' item
-    ping_item = payload.pop("categories")[0]
-    ping_cover = ping_item.pop("cover")
-    payload["categories"] = [ping_item]
-
-    related_item = payload.pop("related")[0]
-    related_cover = related_item.pop("cover")
-    payload["related"] = [related_item]
 
     assert payload == {
         "url": "http://testserver/api/article/3/",
@@ -148,6 +138,7 @@ def test_article_articleserializer(db, settings, api_client):
                 "title": ping.title,
                 "lead": ping.lead,
                 "description": ping.description,
+                "cover": "http://testserver" + ping.cover.url,
             }
         ],
         "publish_datetime": "2012-10-16T10:00:00+00:00",
@@ -161,7 +152,8 @@ def test_article_articleserializer(db, settings, api_client):
                     "available"
                 ],
                 "title": related.title,
-                "url": "http://testserver/api/article/2/"
+                "url": "http://testserver/api/article/2/",
+                "cover": "http://testserver" + related.cover.url,
             }
         ],
         "states": [
@@ -184,13 +176,9 @@ def test_article_articleserializer(db, settings, api_client):
         "lead": article.lead,
         "introduction": article.introduction,
         "content": article.content,
+        "cover": "http://testserver" + article.cover.url,
+        "image": "http://testserver" + article.image.url,
     }
-
-    # Just checking file fields are not empty and start with the right path
-    assert cover.startswith(cover_uploadpath) is True
-    assert image.startswith(image_uploadpath) is True
-    assert ping_cover.startswith(category_cover_uploadpath) is True
-    assert related_cover.startswith(cover_uploadpath) is True
 
 
 @freeze_time("2012-10-15 10:00:00")
@@ -292,9 +280,6 @@ def test_article_articleresumeserializer(db, settings, api_client):
     })
 
     payload = serialized.data
-    # Put away images that have unpredictable UID in their filenames
-    cover = payload.pop("cover")
-
     assert payload == {
         "authors": [],
         "categories": [],
@@ -310,11 +295,9 @@ def test_article_articleresumeserializer(db, settings, api_client):
         ],
         "tags": [],
         "title": article.title,
-        "url": "http://testserver/api/article/1/"
+        "url": "http://testserver/api/article/1/",
+        "cover": "http://testserver" + article.cover.url,
     }
-
-    # Just checking file fields are not empty and start with the right path
-    assert cover.startswith(cover_uploadpath) is True
 
 
 @freeze_time("2012-10-15 10:00:00")
@@ -351,8 +334,6 @@ def test_article_articleminimalserializer(db, settings, api_client):
     serialized = ArticleMinimalSerializer(article, context={"request": request})
 
     payload = serialized.data
-    # Put away images that have unpredictable UID in their filenames
-    cover = payload.pop("cover")
 
     assert payload == {
         "detail_url": article.get_absolute_url(),
@@ -363,8 +344,6 @@ def test_article_articleminimalserializer(db, settings, api_client):
             "draft"
         ],
         "title": article.title,
-        "url": "http://testserver/api/article/1/"
+        "url": "http://testserver/api/article/1/",
+        "cover": "http://testserver" + article.cover.url,
     }
-
-    # Just checking file fields are not empty and start with the right path
-    assert cover.startswith(cover_uploadpath) is True
