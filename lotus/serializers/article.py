@@ -51,6 +51,7 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         ).data
 
     def get_categories(self, obj):
+        # TODO: This should be filtered to the article language
         return CategoryResumeSerializer(
             obj.categories,
             many=True,
@@ -70,7 +71,7 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
 
 class ArticleResumeSerializer(ArticleSerializer):
     """
-    Enlighted article serializer
+    Reduced article serializer
 
     This should be the common serializer, the other complete one would be better in
     detail.

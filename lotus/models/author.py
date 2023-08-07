@@ -48,6 +48,15 @@ class Author(safe_get_user_model(), AuthorManagerEnabled):
         except AttributeError:
             return reverse("lotus:author-detail", args=[self.get_username()])
 
+    def get_absolute_api_url(self):
+        """
+        Return absolute URL to the author detail viewset from API.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("lotus-api:author-detail", kwargs={"pk": self.id})
+
     COMMON_ORDER_BY = ["first_name", "last_name"]
     """
     List of field order commonly used in frontend view/api

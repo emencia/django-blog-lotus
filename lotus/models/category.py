@@ -116,11 +116,18 @@ class Category(SmartFormatMixin, Translated):
             string: An URL.
         """
         return translate_url(
-            reverse("lotus:category-detail", kwargs={
-                "slug": self.slug,
-            }),
+            reverse("lotus:category-detail", kwargs={"slug": self.slug}),
             self.language
         )
+
+    def get_absolute_api_url(self):
+        """
+        Return absolute URL to the author detail viewset from API.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("lotus-api:category-detail", kwargs={"pk": self.id})
 
     def get_edit_url(self):
         """

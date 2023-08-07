@@ -297,7 +297,9 @@ class Article(SmartFormatMixin, Translated):
 
     def build_absolute_url(self, urlname):
         """
-        Build object absolute URL for url name.
+        Build object absolute URL with language prefix for url name.
+
+        Language is forced on article language.
 
         Arguments:
             urlname (string): The URL name to reverse with kwargs to get absolute URL.
@@ -323,6 +325,15 @@ class Article(SmartFormatMixin, Translated):
             string: An URL.
         """
         return self.build_absolute_url("lotus:article-detail")
+
+    def get_absolute_api_url(self):
+        """
+        Return absolute URL to the article detail viewset from API.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("lotus-api:article-detail", kwargs={"pk": self.id})
 
     def get_absolute_preview_url(self):
         """
@@ -364,7 +375,8 @@ class Article(SmartFormatMixin, Translated):
         """
         Return article related articles, results are enforced on article language.
 
-        WARNING: This does not apply any publication criteria.
+        WARNING: This does not apply any publication criteria. This is a flaw:
+        https://github.com/emencia/django-blog-lotus/issues/56
 
         Returns:
             queryset: List of related articles.

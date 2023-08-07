@@ -4,7 +4,11 @@ from .article import (
     ArticleResumeSerializer
 )
 from .author import AuthorSerializer, AuthorResumeSerializer
-from .category import CategorySerializer, CategoryResumeSerializer
+from .category import (
+    CategorySerializer,
+    CategoryResumeSerializer,
+    CategoryMinimalSerializer
+)
 
 
 __all__ = [
@@ -15,4 +19,5 @@ __all__ = [
     "AuthorResumeSerializer",
     "CategorySerializer",
     "CategoryResumeSerializer",
+    "CategoryMinimalSerializer",
 ]

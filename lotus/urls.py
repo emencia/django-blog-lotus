@@ -1,7 +1,7 @@
 """
 Application URLs
 """
-from django.urls import path, include
+from django.urls import path
 
 from .views import (
     ArticleIndexView, ArticleDetailView,

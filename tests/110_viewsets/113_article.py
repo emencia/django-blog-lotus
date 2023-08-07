@@ -290,11 +290,15 @@ def test_article_viewset_list_publication(db, api_client, user_kind, with_previe
     ] == expected
 
 
-def test_article_viewset_list_language(db, settings, api_client):
+def test_article_viewset_language(db, settings, api_client):
     """
-    TODO
-    Viewset should return article in the right language depending the one given by
-    client request.
+    Viewset should returns content for required language by client.
+
+    This also demonstrate the way to ask for language in a request to Lotus API with
+    the HTTP header 'Accept-Language'.
+
+    TODO: We may make this tests faster with not creating bread, it's probably useless
+    to care about multiple articles.
     """
     # NOTE: A test playing with language and view requests must enforce default
     # language since LANGUAGE_CODE may be altered between two tests.
@@ -305,7 +309,7 @@ def test_article_viewset_list_language(db, settings, api_client):
     ping = CategoryFactory(slug="ping")
 
     # Create bread articles with published FR translation
-    created_bread = multilingual_article(
+    multilingual_article(
         title="Bread",
         slug="bread",
         langs=["fr"],
@@ -344,10 +348,10 @@ def test_article_viewset_list_language(db, settings, api_client):
     response = api_client.get(url)
     assert response.status_code == 200
 
+    # List result for default language (english)
     json_data = response.json()
-    print()
-    print(json.dumps(json_data, indent=4))
-
+    # print()
+    # print(json.dumps(json_data, indent=4))
     assert len(json_data["results"]) == 2
     assert len([
         article
@@ -355,4 +359,62 @@ def test_article_viewset_list_language(db, settings, api_client):
         if article["language"] == "en"
     ]) == 2
 
-    # TODO: Check for other language
+    # List result for french language returns only french article
+    response = api_client.get(url, HTTP_ACCEPT_LANGUAGE="fr")
+    json_data = response.json()
+    assert response.status_code == 200
+    assert len(json_data["results"]) == 2
+    assert len([
+        article
+        for article in json_data["results"]
+        if article["language"] == "fr"
+    ]) == 2
+
+    # List result for deutsch language returns only deutsch article
+    response = api_client.get(url, HTTP_ACCEPT_LANGUAGE="de")
+    json_data = response.json()
+    assert response.status_code == 200
+    assert len(json_data["results"]) == 1
+    assert len([
+        article
+        for article in json_data["results"]
+        if article["language"] == "de"
+    ]) == 1
+
+    # List result for unavailable language fallback on default site language
+    response = api_client.get(url, HTTP_ACCEPT_LANGUAGE="zh")
+    json_data = response.json()
+    assert response.status_code == 200
+    assert len(json_data["results"]) == 2
+    assert len([
+        article
+        for article in json_data["results"]
+        if article["language"] == "en"
+    ]) == 2
+
+    # Details result with default language
+    detail_url = created_cheese["original"].get_absolute_api_url()
+    response = api_client.get(detail_url)
+    assert response.status_code == 200
+    json_data = response.json()
+    assert isinstance(json_data, dict) is True
+    assert json_data["url"] == "http://testserver" + detail_url
+    assert json_data["language"] == created_cheese["original"].language
+    assert json_data["title"] == created_cheese["original"].title
+
+    # Details result for french language
+    detail_url = created_cheese["translations"]["fr"].get_absolute_api_url()
+    response = api_client.get(detail_url, HTTP_ACCEPT_LANGUAGE="fr")
+    assert response.status_code == 200
+    json_data = response.json()
+    assert isinstance(json_data, dict) is True
+    assert json_data["url"] == "http://testserver" + detail_url
+    assert json_data["language"] == created_cheese["translations"]["fr"].language
+    assert json_data["title"] == created_cheese["translations"]["fr"].title
+
+    # Details result for a different language than targeted article returns a 404
+    detail_url = created_cheese["original"].get_absolute_api_url()
+    response = api_client.get(detail_url, HTTP_ACCEPT_LANGUAGE="fr")
+    assert response.status_code == 404
+    response = api_client.get(detail_url, HTTP_ACCEPT_LANGUAGE="de")
+    assert response.status_code == 404

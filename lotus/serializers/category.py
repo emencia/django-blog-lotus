@@ -34,8 +34,10 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
 class CategoryResumeSerializer(CategorySerializer):
     """
-    TODO: description should not be in this payload or then we need a minimal
-          serializer alike article
+    Reduced category serializer
+
+    This should be the common serializer, the other complete one would be better in
+    detail.
     """
     class Meta:
         model = Category
@@ -47,6 +49,29 @@ class CategoryResumeSerializer(CategorySerializer):
             "lead",
             "cover",
             "description",
+        ]
+        extra_kwargs = {
+            "url": {
+                "view_name": "lotus-api:category-detail"
+            },
+        }
+
+
+class CategoryMinimalSerializer(CategorySerializer):
+    """
+    Minimal category serializer
+
+    Only contain the minimal category informations, mostly used to list category items.
+    """
+    class Meta:
+        model = Category
+        fields = [
+            "url",
+            "detail_url",
+            "language",
+            "title",
+            "lead",
+            "cover",
         ]
         extra_kwargs = {
             "url": {
