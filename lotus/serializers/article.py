@@ -4,7 +4,7 @@ from taggit.serializers import TagListSerializerField, TaggitSerializer
 
 from ..models import Article
 from .author import AuthorResumeSerializer
-from .category import CategoryResumeSerializer
+from .category import CategoryMinimalSerializer
 from ..templatetags.lotus import article_state_list
 
 
@@ -62,7 +62,7 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
 
         Categories with different language than the article one are filtered out.
         """
-        return CategoryResumeSerializer(
+        return CategoryMinimalSerializer(
             obj.categories.filter(language=obj.language),
             many=True,
             context=self.context

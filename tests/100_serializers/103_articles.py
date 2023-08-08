@@ -137,7 +137,6 @@ def test_article_articleserializer(db, settings, api_client):
                 "language": ping.language,
                 "title": ping.title,
                 "lead": ping.lead,
-                "description": ping.description,
                 "cover": "http://testserver" + ping.cover.url,
             }
         ],

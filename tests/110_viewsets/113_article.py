@@ -65,7 +65,7 @@ def test_article_viewset_list_payload(db, settings, api_client):
     categories = payload_item.pop("categories")
     assert len(categories) == 1
     assert list(categories[0].keys()) == [
-        "url", "detail_url", "language", "title", "lead", "cover", "description"
+        "url", "detail_url", "language", "title", "lead", "cover"
     ]
 
     # Test authors fields
