@@ -228,7 +228,6 @@ DRF
 """
 INSTALLED_APPS.extend([
     "rest_framework",
-    # "django_filters",
 ])
 
 REST_FRAMEWORK = {
@@ -240,9 +239,6 @@ REST_FRAMEWORK = {
         # authenticated user can read and anonymous are never allowed
         # "rest_framework.permissions.DjangoModelPermissions",
     ],
-    # "DEFAULT_FILTER_BACKENDS": [
-    #    "django_filters.rest_framework.DjangoFilterBackend",
-    # ]
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 20
 }

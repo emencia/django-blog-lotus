@@ -34,12 +34,6 @@ def test_article_articleserializer(db, settings, api_client):
     """
     Serializer 'ArticleSerializer' should returns the full payload as expected.
     """
-    cover_uploadpath = settings.LOTUS_API_TEST_BASEURL + "/media/lotus/article/cover/"
-    image_uploadpath = settings.LOTUS_API_TEST_BASEURL + "/media/lotus/article/image/"
-    category_cover_uploadpath = (
-        settings.LOTUS_API_TEST_BASEURL + "/media/lotus/category/cover/"
-    )
-
     request_factory = APIRequestFactory()
     request = request_factory.get("/")
 
@@ -245,8 +239,6 @@ def test_article_articleresumeserializer(db, settings, api_client):
     """
     Serializer 'ArticleResumeSerializer' should returns the resumed payload as expected.
     """
-    cover_uploadpath = settings.LOTUS_API_TEST_BASEURL + "/media/lotus/article/cover/"
-
     request_factory = APIRequestFactory()
     request = request_factory.get("/")
 
@@ -305,8 +297,6 @@ def test_article_articleminimalserializer(db, settings, api_client):
     Serializer 'ArticleMinimalSerializer' should returns the very minimal payload as
     expected.
     """
-    cover_uploadpath = settings.LOTUS_API_TEST_BASEURL + "/media/lotus/article/cover/"
-
     request_factory = APIRequestFactory()
     request = request_factory.get("/")
 
