@@ -43,6 +43,7 @@ class ArticleAdmin(SmartModelAdmin):
         "pinned",
         "featured",
         "private",
+        "categories",
     )
     prepopulated_fields = {
         "slug": ("title",),

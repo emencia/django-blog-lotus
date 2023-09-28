@@ -1,5 +1,6 @@
 from django.conf import settings
-from django.template import TemplateSyntaxError, Library, loader
+from django.template import Library, TemplateSyntaxError, loader
+from django.utils.translation import get_language
 
 from ..models import Article, Category
 
@@ -325,8 +326,7 @@ def check_object_lang_availability(context, source, **kwargs):
             given source that does not have this attribute.
 
     Returns:
-        dict: A dictionnary with summary informations of object language and its
-            availability.
+        dict: A dictionnary with summary informations of object language and its availability.
     """  # noqa: E501
     is_available = False
 
@@ -370,3 +370,55 @@ def article_get_related(context, article, **kwargs):
     filter_func = context.get("article_filter_func", None)
 
     return article.get_related(filter_func=filter_func)
+
+
+@register.inclusion_tag("templatetags/categories.html", name="news_categories")
+def article_categories():
+    """
+    Generates and returns a list of news categories based on the current language
+    setting.
+
+    This template tag retrieves the list of news categories that are available in the
+    user's current language. Each category in the list includes its title and a URL for
+    its detailed view.
+
+    Example:
+        This tag does not expect any argument: ::
+
+            {% load lotus %}
+            {% news_categories %}
+
+    Arguments:
+        None
+
+    Returns:
+        dict: A dictionary containing a list of dictionaries, each of which has the
+        `title` and `url` of a category.
+
+    Example return format:
+    : ::
+        {
+            "categories": [
+                {
+                    "title": "Category1",
+                    "url": "categories/category1_slug/"
+                },
+                {
+                    "title": "Category2",
+                    "url": "categories/category2_slug/"
+                }
+            ]
+        }
+    """
+    category_lang = get_language()
+    qs = Category.objects.get_for_lang(category_lang)
+
+    return {
+        "categories": [
+            {
+                "title": category.title,
+                "url": category.get_absolute_url()
+            }
+            for category in qs
+        ]
+    }
