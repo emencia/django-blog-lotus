@@ -373,24 +373,17 @@ class Article(SmartFormatMixin, Translated):
 
     def get_related(self, filter_func=None):
         """
-        Return article related articles, results are enforced on article language.
-
-        TODO:
-            - In API, the viewset should pass
-              ``ArticleFilterMixin.apply_article_lookups`` into its context named as
-              ``article_filter_func``, then serializer have to search them into context
-              to pass it to get_related.
-            - In HTML frontend, we have to stop using get_related directly in template
-              and either use a templatetag or build relateds into view context using
-              ``apply_article_lookups``.
-            - Finally Article detail view test have to be improved to ensure filtering
-              is ok;
+        Return article related articles.
 
         .. Warning::
-            On  default without ``filter_func`` this won't apply any publication
-            criteria, only the language filtering.
+            On  default without ``filter_func`` defined this won't apply any
+            publication criteria, only the language filtering.
 
-            This is was flaw: https://github.com/emencia/django-blog-lotus/issues/56
+            You would need to give it a proper filtering function to ensure about
+            results.
+
+        TODO: Concretely for now, the 'filter_func' is not used in HTML frontend but it
+        should, either from a variable context or a template tag.
 
         Keyword Arguments:
             filter_func (function): A function used to create a queryset for related

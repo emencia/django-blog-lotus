@@ -79,8 +79,15 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         TODO: There is not applied any publication criteria, only language filter, see
         ``Article.get_related()``
         """
+        if self.context.get("article_filter_func"):
+            queryset = obj.get_related(
+                filter_func=self.context.get("article_filter_func")
+            )
+        else:
+            queryset = obj.get_related()
+
         return ArticleMinimalSerializer(
-            obj.get_related(),
+            queryset,
             many=True,
             context=self.context
         ).data

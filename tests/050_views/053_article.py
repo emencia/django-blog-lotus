@@ -14,6 +14,7 @@ except ModuleNotFoundError:
 from sorl.thumbnail.conf import settings as sorl_settings
 
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
 
 from lotus.choices import STATUS_DRAFT
@@ -21,6 +22,7 @@ from lotus.factories import (
     ArticleFactory, AuthorFactory, CategoryFactory, TagFactory, multilingual_article,
 )
 from lotus.utils.tests import get_admin_change_url, html_pyquery
+from lotus.views.mixins import ArticleFilterAbstractView
 
 
 # Shortcuts for shorter variable names
@@ -826,3 +828,65 @@ def test_article_view_detail_admin_links(db, settings, admin_client, client):
             created_bread["translations"]["fr"].pk
         ]
     )
+
+
+@freeze_time("2012-10-15 10:00:00")
+def test_article_model_get_related_publication_filtered(db, rf):
+    """
+    'Article.get_related' method is able to use a filtering function to filter
+    queryset on more than language.
+
+    There is a test for default filter behavior in article model tests.
+    """
+    settings.LANGUAGE_CODE = "en"
+
+    # Build a dummy request, we don't care about requested URL.
+    request = rf.get("/")
+
+    # Craft a proper view class with a request and that can be used to give
+    # a working filtering function
+    filternator = ArticleFilterAbstractView()
+    filternator.request = request
+    filternator.request.user = AnonymousUser()
+
+    # Date references
+    utc = ZoneInfo("UTC")
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
+    next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
+
+    draft = ArticleFactory(
+        title="draft",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        status=STATUS_DRAFT,
+    )
+    published_yesterday = ArticleFactory(
+        title="published yesterday",
+        publish_date=yesterday.date(),
+        publish_time=yesterday.time(),
+    )
+    published_notyet = ArticleFactory(
+        title="not yet published",
+        publish_date=next_hour.date(),
+        publish_time=next_hour.time(),
+    )
+    french = ArticleFactory(
+        title="french",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        language="fr",
+    )
+
+    basic = ArticleFactory(
+        title="basic published",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        fill_related=[draft, published_yesterday, published_notyet, french],
+    )
+
+    results = sorted([
+        item.title
+        for item in basic.get_related(filter_func=filternator.apply_article_lookups)
+    ])
+    assert results == ["published yesterday"]

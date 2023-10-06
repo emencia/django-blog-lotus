@@ -21,7 +21,6 @@ from lotus.factories import (
 from lotus.serializers import (
     CategorySerializer, CategoryMinimalSerializer, CategoryResumeSerializer,
 )
-
 from lotus.viewsets.mixins import ArticleFilterAbstractViewset
 
 
@@ -31,6 +30,7 @@ def test_category_categoryserializer(db, api_client):
     Serializer 'CategorySerializer' should returns the full payload as expected
     depending serializer has been given (from context) a filtering function or not.
     """
+    # Build a dummy request, we don't care about requested URL.
     request_factory = APIRequestFactory()
     request = request_factory.get("/")
 

@@ -11,6 +11,7 @@ except ModuleNotFoundError:
     from backports.zoneinfo import ZoneInfo
 
 from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
 
 from rest_framework.test import APIRequestFactory
 from rest_framework.renderers import JSONRenderer
@@ -22,6 +23,7 @@ from lotus.factories import (
 from lotus.serializers import (
     ArticleSerializer, ArticleMinimalSerializer, ArticleResumeSerializer,
 )
+from lotus.viewsets.mixins import ArticleFilterAbstractViewset
 
 
 # Shortcuts for shorter variable names
@@ -30,7 +32,7 @@ STATE_PREFIX = "article--"
 
 
 @freeze_time("2012-10-15 10:00:00")
-def test_article_articleserializer(db, settings, api_client):
+def test_article_articleserializer(db, api_client):
     """
     Serializer 'ArticleSerializer' should returns the full payload as expected.
     """
@@ -171,7 +173,7 @@ def test_article_articleserializer(db, settings, api_client):
 
 
 @freeze_time("2012-10-15 10:00:00")
-def test_article_articleserializer_states(db, settings, api_client):
+def test_article_articleserializer_states(db, api_client):
     """
     Serializer 'ArticleSerializer' payload should have the right states.
     """
@@ -230,7 +232,7 @@ def test_article_articleserializer_states(db, settings, api_client):
 
 
 @freeze_time("2012-10-15 10:00:00")
-def test_article_articleresumeserializer(db, settings, api_client):
+def test_article_articleresumeserializer(db, api_client):
     """
     Serializer 'ArticleResumeSerializer' should returns the resumed payload as expected.
     """
@@ -286,7 +288,7 @@ def test_article_articleresumeserializer(db, settings, api_client):
 
 
 @freeze_time("2012-10-15 10:00:00")
-def test_article_articleminimalserializer(db, settings, api_client):
+def test_article_articleminimalserializer(db, api_client):
     """
     Serializer 'ArticleMinimalSerializer' should returns the very minimal payload as
     expected.
@@ -329,3 +331,88 @@ def test_article_articleminimalserializer(db, settings, api_client):
         "url": "http://testserver/api/article/1/",
         "cover": "http://testserver" + article.cover.url,
     }
+
+
+@freeze_time("2012-10-15 10:00:00")
+def test_article_articleserializer_get_related(db, api_client):
+    """
+    Related articles from payload should be properly filtered depending serializer has
+    a filtering function or not.
+    """
+    request_factory = APIRequestFactory()
+    request = request_factory.get("/")
+
+    # Date references
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=ZoneInfo("UTC"))
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=ZoneInfo("UTC"))
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
+
+    draft = ArticleFactory(
+        title="draft",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        status=STATUS_DRAFT,
+    )
+    published_yesterday = ArticleFactory(
+        title="published yesterday",
+        publish_date=yesterday.date(),
+        publish_time=yesterday.time(),
+    )
+    published_notyet = ArticleFactory(
+        title="not yet published",
+        publish_date=tomorrow.date(),
+        publish_time=tomorrow.time(),
+    )
+    french = ArticleFactory(
+        title="french",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        language="fr",
+    )
+
+    article = ArticleFactory(
+        title="Lorem ipsum",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        fill_related=[draft, published_yesterday, published_notyet, french],
+    )
+
+    # Without filtering function, only language is filtered
+    serialized = ArticleSerializer(article, context={
+        "request": request,
+        "lotus_now": now,
+    })
+
+    # Use JSON render that will flatten data (turn OrderedDict as simple dict) to
+    # ease assert and manipulation
+    results = sorted([
+        item["title"]
+        for item in json.loads(json.dumps(serialized.data["related"]))
+    ])
+    assert results == [
+        "draft",
+        "not yet published",
+        "published yesterday",
+    ]
+
+    # Craft a proper viewset class with a request and that can be used to give
+    # a working filtering function
+    filternator = ArticleFilterAbstractViewset()
+    filternator.request = request
+    filternator.request.user = AnonymousUser()
+
+    # With a given filtering function
+    serialized = ArticleSerializer(article, context={
+        "request": request,
+        "lotus_now": now,
+        "article_filter_func": filternator.apply_article_lookups,
+    })
+
+    # Use JSON render that will flatten data (turn OrderedDict as simple dict) to
+    # ease assert and manipulation
+    results = sorted([
+        item["title"]
+        for item in json.loads(json.dumps(serialized.data["related"]))
+    ])
+    assert results == ["published yesterday"]

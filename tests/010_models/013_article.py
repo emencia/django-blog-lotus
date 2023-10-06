@@ -592,3 +592,58 @@ def test_article_model_is_published(db):
     assert published_passed.is_published(now) is False
     assert published_private_passed.is_published(now) is False
     assert draft_passed.is_published(now) is False
+
+
+def test_article_model_get_related_default(db):
+    """
+    On default, 'Article.get_related' method should return a queryset only filtered on
+    language.
+
+    Since the filter function behavior imply some view stuff, there is another
+    dedicated test for this in article views tests.
+    """
+    settings.LANGUAGE_CODE = "en"
+
+    # Date references
+    utc = ZoneInfo("UTC")
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
+    yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
+    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
+    next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
+
+    draft = ArticleFactory(
+        title="draft",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        status=STATUS_DRAFT,
+    )
+    published_yesterday = ArticleFactory(
+        title="published yesterday",
+        publish_date=yesterday.date(),
+        publish_time=yesterday.time(),
+    )
+    published_notyet = ArticleFactory(
+        title="not yet published",
+        publish_date=next_hour.date(),
+        publish_time=next_hour.time(),
+    )
+    french = ArticleFactory(
+        title="french",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        language="fr",
+    )
+
+    basic = ArticleFactory(
+        title="basic published",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        fill_related=[draft, published_yesterday, published_notyet, french],
+    )
+
+    assert sorted([item.title for item in basic.get_related()]) == [
+        "draft",
+        "not yet published",
+        "published yesterday",
+    ]
