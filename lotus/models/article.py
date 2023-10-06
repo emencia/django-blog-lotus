@@ -371,19 +371,42 @@ class Article(SmartFormatMixin, Translated):
         """
         return self.categories.get_for_lang(self.language).order_by("title")
 
-    def get_related(self):
+    def get_related(self, filter_func=None):
         """
         Return article related articles, results are enforced on article language.
 
-        WARNING: This does not apply any publication criteria. This is a flaw:
-        https://github.com/emencia/django-blog-lotus/issues/56
+        TODO:
+            - In API, the viewset should pass
+              ``ArticleFilterMixin.apply_article_lookups`` into its context named as
+              ``article_filter_func``, then serializer have to search them into context
+              to pass it to get_related.
+            - In HTML frontend, we have to stop using get_related directly in template
+              and either use a templatetag or build relateds into view context using
+              ``apply_article_lookups``.
+            - Finally Article detail view test have to be improved to ensure filtering
+              is ok;
+
+        .. Warning::
+            On  default without ``filter_func`` this won't apply any publication
+            criteria, only the language filtering.
+
+            This is was flaw: https://github.com/emencia/django-blog-lotus/issues/56
+
+        Keyword Arguments:
+            filter_func (function): A function used to create a queryset for related
+                articles filtered. It has been done to be given
+                ``ArticleFilterMixin.apply_article_lookups`` so any other given
+                function should at least expect the same arguments.
 
         Returns:
             queryset: List of related articles.
         """
-        return self.related.get_for_lang(self.language).order_by(
-            *self.COMMON_ORDER_BY
-        )
+        if filter_func:
+            q = filter_func(self.related, self.language)
+        else:
+            q = self.related.get_for_lang(self.language)
+
+        return q.order_by(*self.COMMON_ORDER_BY)
 
     def get_tags(self):
         """

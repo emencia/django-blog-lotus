@@ -27,7 +27,7 @@ Features
 * Full test coverage;
 
 
-Dependancies
+Dependencies
 ************
 
 * `Python`_>=3.8;
@@ -44,3 +44,9 @@ Links
 * Read the documentation on `Read the docs <https://django-blog-lotus.readthedocs.io/>`_;
 * Download its `PyPi package <https://pypi.python.org/pypi/django-blog-lotus>`_;
 * Clone it on its `Github repository <https://github.com/emencia/django-blog-lotus>`_;
+
+
+Credits
+*******
+
+Logo vector and icon by `SVG Repo <https://www.svgrepo.com>`_.

@@ -3,12 +3,17 @@ from rest_framework import viewsets
 from ..models import Category
 from ..serializers import CategorySerializer, CategoryResumeSerializer
 
-from .mixins import MultiSerializerViewSetMixin
+from .mixins import ArticleFilterAbstractViewset, MultiSerializerViewSetMixin
 
 
-class CategoryViewSet(MultiSerializerViewSetMixin, viewsets.ReadOnlyModelViewSet):
+class CategoryViewSet(MultiSerializerViewSetMixin, ArticleFilterAbstractViewset,
+                      viewsets.ReadOnlyModelViewSet):
     """
-    TODO: Must implement lookup criterions
+    Entrypoint for Category listing and detail.
+
+    TODO:
+
+    - Test on basics and language filtering
     """
 
     model = Category
@@ -18,4 +23,9 @@ class CategoryViewSet(MultiSerializerViewSetMixin, viewsets.ReadOnlyModelViewSet
     }
 
     def get_queryset(self):
-        return self.model.objects.all()
+        """
+        Build queryset base with language filtering to list categories.
+        """
+        q = self.model.objects.get_for_lang(self.get_language_code())
+
+        return q.order_by(*self.model.COMMON_ORDER_BY)

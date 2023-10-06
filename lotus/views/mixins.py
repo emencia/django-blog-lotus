@@ -108,13 +108,13 @@ class ArticleFilterMixin(LookupBuilder):
         """
         Apply publication and language lookups to given queryset.
 
-        Also this will set a ``self.target_date`` attribute to store the date checked
+        This will set a ``self.target_date`` attribute to store the date checked
         against as a reference for further usage (like in ``get_context_data``).
 
-        Depends on ``allowed_preview_mode`` method as implemented in
-        ``PreviewModeMixin`` (that manage preview mode) and the queryset must be for a
-        model with a manager which implement ``get_for_lang`` and ``get_published``
-        methods.
+        The queryset must be for a model with a manager which implement
+        ``get_for_lang`` and ``get_published`` methods. This support also
+        ``allowed_preview_mode`` method as implemented in ``PreviewModeMixin``
+        (that manage preview mode) if it is available.
 
         Arguments:
             queryset (django.db.models.QuerySet): Base queryset to start on.
@@ -196,12 +196,17 @@ class LotusContextStage:
 class ArticleFilterAbstractView(LotusContextStage, ArticleFilterMixin,
                                 PreviewModeMixin, LanguageMixin):
     """
-    TODO:
+    Abstract class which gather all the classes needed to implement filtering on
+    criterias.
     """
     def get_context_data(self, **kwargs):
         """
         Expose the date "now" used for publication filter.
+
+        TODO: This should be the place where to set in context the article filtering
+        function
         """
         context = super().get_context_data(**kwargs)
+        context["article_filter_func"] = getattr(self, "apply_article_lookups")
         context["lotus_now"] = getattr(self, "target_date")
         return context

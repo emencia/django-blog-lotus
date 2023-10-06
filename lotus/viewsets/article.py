@@ -9,9 +9,8 @@ from .mixins import ArticleFilterAbstractViewset, MultiSerializerViewSetMixin
 class ArticleViewSet(MultiSerializerViewSetMixin, ArticleFilterAbstractViewset,
                      viewsets.ReadOnlyModelViewSet):
     """
-    TODO: language criteria with tests
+    Entrypoint for Article listing and detail.
     """
-
     model = Article
     serializer_class = ArticleResumeSerializer
     serializer_action_classes = {

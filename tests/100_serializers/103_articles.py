@@ -61,9 +61,8 @@ def test_article_articleserializer(db, settings, api_client):
     }
 
     # Date references
-    utc = ZoneInfo("UTC")
-    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
-    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=ZoneInfo("UTC"))
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
 
     ping = CategoryFactory(slug="ping")
     bingo = TagFactory(name="Bingo", slug="bingo")
@@ -101,23 +100,20 @@ def test_article_articleserializer(db, settings, api_client):
         "request": request,
         "lotus_now": now,
     })
-
     # print(json.dumps(serialized.data, indent=4))
 
     # Use JSON render that will flatten data (turn OrderedDict as simple dict) to
     # ease assert and manipulation
-    payload = json.loads(JSONRenderer().render(serialized.data))
-
-    assert payload == {
-        "url": "http://testserver/api/article/3/",
+    assert json.loads(JSONRenderer().render(serialized.data)) == {
+        "url": "http://testserver/api/article/{}/".format(article.id),
         "detail_url": article.get_absolute_url(),
-        "original": "http://testserver/api/article/1/",
+        "original": "http://testserver/api/article/{}/".format(original.id),
         "tags": [
             "Bingo"
         ],
         "authors": [
             {
-                "url": "http://testserver/api/author/1/",
+                "url": "http://testserver/api/author/{}/".format(picsou.id),
                 "detail_url": picsou.get_absolute_url(),
                 "username": picsou.username,
                 "first_name": picsou.first_name,
@@ -126,7 +122,7 @@ def test_article_articleserializer(db, settings, api_client):
         ],
         "categories": [
             {
-                "url": "http://testserver/api/category/1/",
+                "url": "http://testserver/api/category/{}/".format(ping.id),
                 "detail_url": ping.get_absolute_url(),
                 "language": ping.language,
                 "title": ping.title,
@@ -145,7 +141,7 @@ def test_article_articleserializer(db, settings, api_client):
                     "available"
                 ],
                 "title": related.title,
-                "url": "http://testserver/api/article/2/",
+                "url": "http://testserver/api/article/{}/".format(related.id),
                 "cover": "http://testserver" + related.cover.url,
             }
         ],
@@ -180,9 +176,8 @@ def test_article_articleserializer_states(db, settings, api_client):
     Serializer 'ArticleSerializer' payload should have the right states.
     """
     # Date references
-    utc = ZoneInfo("UTC")
-    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
-    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=ZoneInfo("UTC"))
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
 
     request_factory = APIRequestFactory()
     request = request_factory.get("/")
@@ -255,9 +250,8 @@ def test_article_articleresumeserializer(db, settings, api_client):
     }
 
     # Date references
-    utc = ZoneInfo("UTC")
-    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
-    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=ZoneInfo("UTC"))
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
 
     article = ArticleFactory(
         title="Lorem ipsum",
@@ -310,8 +304,7 @@ def test_article_articleminimalserializer(db, settings, api_client):
     }
 
     # Date references
-    utc = ZoneInfo("UTC")
-    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=utc)
+    tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
 
     article = ArticleFactory(
         title="Lorem ipsum",

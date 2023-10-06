@@ -5,16 +5,15 @@ from ..models import Category
 
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     """
-    TODO: Missing related article list, however this is not something we want to have
-    in all payload, only for the details.
+    Other used model serializer are imported into methods to avoid circular references.
     """
-
     original = serializers.HyperlinkedRelatedField(
         many=False,
         read_only=True,
         view_name="lotus-api:category-detail"
     )
     detail_url = serializers.SerializerMethodField()
+    articles = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
@@ -30,6 +29,31 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         Return the HTML detail view URL.
         """
         return obj.get_absolute_url()
+
+    def get_articles(self, obj):
+        """
+        Return list of related articles.
+
+        On default, only language filtering is applied on queryset but if serialized is
+        provided a context with item ``article_filter_func`` it will assume it is a
+        filtering function expecting the same arguments as
+        ``ArticleFilterMixin.apply_article_lookups`` and also some viewset attributes
+        like ``request``.
+        """
+        from .article import ArticleMinimalSerializer
+
+        if self.context.get("article_filter_func"):
+            queryset = self.context.get("article_filter_func")(
+                obj.articles, obj.language
+            )
+        else:
+            queryset = obj.articles.filter(language=obj.language)
+
+        return ArticleMinimalSerializer(
+            queryset,
+            many=True,
+            context=self.context
+        ).data
 
 
 class CategoryResumeSerializer(CategorySerializer):

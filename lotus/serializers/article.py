@@ -3,14 +3,14 @@ from rest_framework import serializers
 from taggit.serializers import TagListSerializerField, TaggitSerializer
 
 from ..models import Article
-from .author import AuthorResumeSerializer
-from .category import CategoryMinimalSerializer
 from ..templatetags.lotus import article_state_list
 
 
 class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer):
     """
     This is the serializer for full payload which implement every possible fields.
+
+    Other used model serializer are imported into methods to avoid circular references.
     """
     detail_url = serializers.SerializerMethodField()
     original = serializers.HyperlinkedRelatedField(
@@ -50,8 +50,10 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         """
         Return list of related authors.
         """
+        from .author import AuthorResumeSerializer
+
         return AuthorResumeSerializer(
-            obj.authors,
+            obj.get_authors(),
             many=True,
             context=self.context
         ).data
@@ -62,8 +64,10 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
 
         Categories with different language than the article one are filtered out.
         """
+        from .category import CategoryMinimalSerializer
+
         return CategoryMinimalSerializer(
-            obj.categories.filter(language=obj.language),
+            obj.get_categories(),
             many=True,
             context=self.context
         ).data
@@ -71,6 +75,9 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
     def get_related(self, obj):
         """
         Return list of related articles.
+
+        TODO: There is not applied any publication criteria, only language filter, see
+        ``Article.get_related()``
         """
         return ArticleMinimalSerializer(
             obj.get_related(),

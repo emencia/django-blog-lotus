@@ -296,9 +296,6 @@ def test_article_viewset_language(db, settings, api_client):
 
     This also demonstrate the way to ask for language in a request to Lotus API with
     the HTTP header 'Accept-Language'.
-
-    TODO: We may make this tests faster with not creating bread, it's probably useless
-    to care about multiple articles.
     """
     # NOTE: A test playing with language and view requests must enforce default
     # language since LANGUAGE_CODE may be altered between two tests.
