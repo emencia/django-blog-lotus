@@ -55,6 +55,13 @@ class ArticleFilterMixin(LookupBuilder):
     TODO: Rewrite docstrings since allowed_preview_mode deps is not required
     anymore, only optional.
     """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # TODO:  Documentate this new attribute and why it exists here instead of
+        # previously in method build/apply lookup, also remove target_date from them.
+        self.target_date = timezone.now()
+
     def build_article_lookups(self, language, prefix=None):
         """
         Build complex lookups to apply common publication criterias.
@@ -76,7 +83,8 @@ class ArticleFilterMixin(LookupBuilder):
         lookups = []
         prefix = prefix or ""
 
-        self.target_date = timezone.now()
+        if not hasattr(self, "target_date"):
+            self.target_date = timezone.now()
 
         # Check for enabled preview mode
         if (
@@ -124,7 +132,8 @@ class ArticleFilterMixin(LookupBuilder):
             django.db.models.QuerySet: Improved queryset with required filtering
             lookups.
         """
-        self.target_date = timezone.now()
+        if not hasattr(self, "target_date"):
+            self.target_date = timezone.now()
 
         # Check for enabled preview mode
         if (

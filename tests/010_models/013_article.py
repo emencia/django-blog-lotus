@@ -606,10 +606,8 @@ def test_article_model_get_related_default(db):
 
     # Date references
     utc = ZoneInfo("UTC")
-    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=utc)
     today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=utc)
     yesterday = datetime.datetime(2012, 10, 14, 10, 0).replace(tzinfo=utc)
-    past_hour = datetime.datetime(2012, 10, 15, 9, 00).replace(tzinfo=utc)
     next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
 
     draft = ArticleFactory(
