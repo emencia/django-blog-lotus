@@ -32,7 +32,7 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
     def get_articles(self, obj):
         """
-        Return list of related articles.
+        Return list of articles related to category object.
 
         On default, only language filtering is applied on queryset but if serialized is
         provided a context with item ``article_filter_func`` it will assume it is a

@@ -117,7 +117,6 @@ def test_article_articleserializer(db, api_client):
             {
                 "url": "http://testserver/api/author/{}/".format(picsou.id),
                 "detail_url": picsou.get_absolute_url(),
-                "username": picsou.username,
                 "first_name": picsou.first_name,
                 "last_name": picsou.last_name,
             }

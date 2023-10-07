@@ -10,10 +10,6 @@ class CategoryViewSet(MultiSerializerViewSetMixin, ArticleFilterAbstractViewset,
                       viewsets.ReadOnlyModelViewSet):
     """
     Entrypoint for Category listing and detail.
-
-    TODO:
-
-    - Test on basics and language filtering
     """
 
     model = Category

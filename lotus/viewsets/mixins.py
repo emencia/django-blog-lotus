@@ -5,14 +5,14 @@ class ArticleFilterAbstractViewset(ArticleFilterMixin, LanguageMixin):
     """
     A viewset abstract to gather mixins for including methods to apply publication
     criteria and language filter.
-
-    TODO: Inject context as in ArticleFilterAbstractView.get_context_data
     """
+
     def get_serializer_context(self):
         """
         Provide useful Lotus context to serializers used in viewset.
         """
         context = super().get_serializer_context()
+        context["LANGUAGE_CODE"] = self.get_language_code()
         context["article_filter_func"] = getattr(self, "apply_article_lookups")
         context["lotus_now"] = getattr(self, "target_date")
         return context

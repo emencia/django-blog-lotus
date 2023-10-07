@@ -72,7 +72,7 @@ def test_article_viewset_list_payload(db, settings, api_client):
     authors = payload_item.pop("authors")
     assert len(authors) == 1
     assert list(authors[0].keys()) == [
-        "url", "detail_url", "username", "first_name", "last_name"
+        "url", "detail_url", "first_name", "last_name"
     ]
 
     # Test tag names
