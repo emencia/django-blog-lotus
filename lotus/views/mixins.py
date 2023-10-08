@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.db import models
 from django.utils import timezone
 
 from ..lookups import LookupBuilder
@@ -38,7 +37,7 @@ class PreviewModeMixin:
 
     def get_context_data(self, **kwargs):
         """
-        Expose the preview mode state.
+        Expose the preview mode state to template.
         """
         context = super().get_context_data(**kwargs)
         context[settings.LOTUS_PREVIEW_VARNAME] = self.allowed_preview_mode(
@@ -59,7 +58,7 @@ class ArticleFilterMixin(LookupBuilder):
         super().__init__(*args, **kwargs)
 
         # TODO:  Documentate this new attribute and why it exists here instead of
-        # previously in method build/apply lookup, also remove target_date from them.
+        # previously in method build/apply lookup
         self.target_date = timezone.now()
 
     def build_article_lookups(self, language, prefix=None):
@@ -83,6 +82,7 @@ class ArticleFilterMixin(LookupBuilder):
         lookups = []
         prefix = prefix or ""
 
+        # Define target_date attribute if it does not exists yet
         if not hasattr(self, "target_date"):
             self.target_date = timezone.now()
 
@@ -100,14 +100,9 @@ class ArticleFilterMixin(LookupBuilder):
                 self.build_publication_conditions(
                     target_date=None,
                     language=language,
+                    private=None if self.request.user.is_authenticated else False,
                     prefix=prefix,
                 )
-            )
-
-        # Avoid anonymous to see private content
-        if not self.request.user.is_authenticated:
-            lookups.append(
-                models.Q(**{prefix + "private": False})
             )
 
         return tuple(lookups)
@@ -132,6 +127,7 @@ class ArticleFilterMixin(LookupBuilder):
             django.db.models.QuerySet: Improved queryset with required filtering
             lookups.
         """
+        # Define target_date attribute if it does not exists yet
         if not hasattr(self, "target_date"):
             self.target_date = timezone.now()
 
@@ -146,11 +142,8 @@ class ArticleFilterMixin(LookupBuilder):
             queryset = queryset.get_published(
                 target_date=self.target_date,
                 language=language,
+                private=None if self.request.user.is_authenticated else False,
             )
-
-        # Avoid anonymous to see private content
-        if not self.request.user.is_authenticated:
-            queryset = queryset.filter(private=False)
 
         return queryset
 
@@ -210,9 +203,7 @@ class ArticleFilterAbstractView(LotusContextStage, ArticleFilterMixin,
     """
     def get_context_data(self, **kwargs):
         """
-        Expose the date "now" used for publication filter.
-
-        TODO: This should be the place where to set in context the article filtering
+        Expose the date "now" used for publication filter and the article filtering.
         function
         """
         context = super().get_context_data(**kwargs)

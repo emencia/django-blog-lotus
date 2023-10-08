@@ -7,7 +7,8 @@ class BasePublishedQuerySet(LookupBuilder, models.QuerySet):
     """
     Base queryset for publication methods.
     """
-    def get_published(self, target_date=None, language=None, prefix=None):
+    def get_published(self, target_date=None, language=None, private=None,
+                      prefix=None):
         """
         Return a queryset with published entries selected.
 
@@ -17,6 +18,8 @@ class BasePublishedQuerySet(LookupBuilder, models.QuerySet):
                 datetime.
             language (string): Language code to filter on. If empty, language is not
                 filtered.
+            private (boolean): Either True or False to set lookup for 'private' field.
+                If not given, private field will not be part of built lookups.
             prefix (string): Prefix to append on each lookup expression on
                 publication dates fields (start/end). Commonly used to filter
                 from a relation like ``author__``. Default is empty.
@@ -28,6 +31,7 @@ class BasePublishedQuerySet(LookupBuilder, models.QuerySet):
             *self.build_publication_conditions(
                 target_date=target_date,
                 language=language,
+                private=private,
                 prefix=prefix
             )
         )
@@ -128,10 +132,11 @@ class ArticleManager(models.Manager):
     def get_queryset(self):
         return ArticleQuerySet(self.model, using=self._db)
 
-    def get_published(self, target_date=None, language=None):
+    def get_published(self, target_date=None, language=None, private=None):
         return self.get_queryset().get_published(
             target_date=target_date,
             language=language,
+            private=private,
         )
 
     def get_unpublished(self, target_date=None, language=None):
@@ -156,7 +161,7 @@ class AuthorManager(models.Manager):
     def get_queryset(self):
         return ArticleQuerySet(self.model, using=self._db)
 
-    def get_active(self, target_date=None, language=None):
+    def get_active(self, target_date=None, language=None, private=None):
         """
         Return distinct authors which have published articles.
         """
@@ -165,6 +170,7 @@ class AuthorManager(models.Manager):
         q = q.get_published(
             target_date=target_date,
             language=language,
+            private=private,
             prefix="articles__"
         )
 

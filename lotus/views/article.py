@@ -75,7 +75,7 @@ class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView, DetailVi
         Preview mode is enabled from a flag in session and only for staff user. If it is
         disabled publication criterias are applied on lookups.
 
-        Also apply lookup for "private" mode for non authenticated users.
+        Also apply lookup against "preview" mode.
         """
         q = self.apply_article_lookups(self.model.objects, self.get_language_code())
 

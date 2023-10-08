@@ -59,10 +59,9 @@ def test_category_viewset_language(db, settings, api_client):
 
     url = reverse("lotus-api:category-list")
 
+    # List result for default language (english)
     response = api_client.get(url)
     assert response.status_code == 200
-
-    # List result for default language (english)
     json_data = response.json()
     # print()
     # print(json.dumps(json_data, indent=4))

@@ -17,12 +17,12 @@ class LookupBuilder:
     annotations from related models.
     """
     def build_publication_conditions(self, target_date=None, language=None,
-                                     prefix=None):
+                                     private=None, prefix=None):
         """
         Return a set of complex lookups for publication criterias.
 
         This build a complex queryset about status, publish start date, publish start
-        time, publish end datetime and language.
+        time, publish end datetime, private, and language.
 
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
@@ -30,13 +30,15 @@ class LookupBuilder:
                 datetime.
             language (string): Language code to filter on. If empty, language is not
                 filtered.
+            private (boolean): Either True or False to set lookup for 'private' field.
+                If not given, private field will not be part of built lookups.
             prefix (string): Prefix to append on each lookup expression on
                 publication dates fields (start/end). Commonly used to filter
                 from a relation like ``author__``. Default is empty.
 
         Returns:
-            tuple: Lookup conditions to apply all publication criterias (publish dates,
-            language and private) with a ``filter(*conditions)`` or a complex condition
+            tuple: Lookup conditions to apply all publication criterias (publish dates
+            and language) with a ``filter(*conditions)`` or a complex condition
             ``models.Q(*conditions)``.
         """
         prefix = prefix or ""
@@ -47,6 +49,9 @@ class LookupBuilder:
         }
         if language:
             base_lookups[prefix + "language"] = language
+
+        if private is not None:
+            base_lookups[prefix + "private"] = private
 
         return (
             models.Q(**base_lookups),
@@ -61,7 +66,7 @@ class LookupBuilder:
 
     def build_language_conditions(self, language, prefix=None):
         """
-        Return lookups to get unpublished entries.
+        Return simple lookup to filter on language.
 
         Arguments:
             language (string): Language code to filter on.
