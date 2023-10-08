@@ -1,6 +1,7 @@
 import datetime
 import json
 
+import pytest
 from freezegun import freeze_time
 
 # Try to use the builtin zoneinfo available since Python 3.9
@@ -13,17 +14,29 @@ except ModuleNotFoundError:
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 
-from rest_framework.test import APIRequestFactory
-from rest_framework.renderers import JSONRenderer
+try:
+    from rest_framework.test import APIRequestFactory
+    from rest_framework.renderers import JSONRenderer
+    from lotus.serializers import (
+        ArticleSerializer, ArticleMinimalSerializer, ArticleResumeSerializer,
+    )
+    from lotus.viewsets.mixins import ArticleFilterAbstractViewset
+except ModuleNotFoundError:
+    APIRequestFactory, JSONRenderer = None, None
+    API_AVAILABLE = False
+else:
+    API_AVAILABLE = True
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
     ArticleFactory, AuthorFactory, CategoryFactory, TagFactory,
 )
-from lotus.serializers import (
-    ArticleSerializer, ArticleMinimalSerializer, ArticleResumeSerializer,
+
+
+pytestmark = pytest.mark.skipif(
+    not API_AVAILABLE,
+    reason="Django REST is not available, API is disabled"
 )
-from lotus.viewsets.mixins import ArticleFilterAbstractViewset
 
 
 # Shortcuts for shorter variable names

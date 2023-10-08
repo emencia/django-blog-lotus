@@ -226,22 +226,30 @@ INSTALLED_APPS.append(
 """
 DRF
 """
-INSTALLED_APPS.extend([
-    "rest_framework",
-])
+try:
+    import rest_framework  # noqa: F401
+except ModuleNotFoundError:
+    API_AVAILABLE = False
+else:
+    API_AVAILABLE = True
+    INSTALLED_APPS.extend([
+        "rest_framework",
+    ])
 
-REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        # Use Django"s standard `django.contrib.auth` permissions,
-        # or allow read-only access for unauthenticated users.
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
-        # Only Django"s standard `django.contrib.auth` permissions, every
-        # authenticated user can read and anonymous are never allowed
-        # "rest_framework.permissions.DjangoModelPermissions",
-    ],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-    "PAGE_SIZE": 20
-}
+    REST_FRAMEWORK = {
+        "DEFAULT_PERMISSION_CLASSES": [
+            # Use Django"s standard `django.contrib.auth` permissions,
+            # or allow read-only access for unauthenticated users.
+            "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+            # Only Django"s standard `django.contrib.auth` permissions, every
+            # authenticated user can read and anonymous are never allowed
+            # "rest_framework.permissions.DjangoModelPermissions",
+        ],
+        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+        "PAGE_SIZE": 20
+    }
+
+
 """
 SPECIFIC BASE APPLICATIONS SETTINGS BELOW
 """

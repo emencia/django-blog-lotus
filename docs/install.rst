@@ -8,6 +8,10 @@ Install
 
 Install package with every extra feature requirements in your environment : ::
 
+    pip install django-blog-lotus[api,breadcrumbs]
+
+Or without API and only breadcrumbs: ::
+
     pip install django-blog-lotus[breadcrumbs]
 
 Or without any features: ::
@@ -32,13 +36,16 @@ Enable required applications in your settings : ::
         "ckeditor_uploader",
         "view_breadcrumbs",
         "taggit",
+        "rest_framework",
         "lotus",
     )
 
 .. Note::
 
-    * Remove the line with ``view_breadcrumbs`` if you didn't installed its extra
-      requirement;
+    * Remove the line with ``view_breadcrumbs`` if you didn't installed extra
+      requirement ``breadcrumbs``;
+    * Remove the line with ``rest_framework`` if you didn't installed extra
+      requirement ``api``;
     * The lines with ``dal`` and ``dal_select2`` always need to be before
       ``django.contrib.admin`` since it needs to be ready before admin;
     * There may be conflicts if your project use also the "easy-thumbnail"
@@ -64,6 +71,21 @@ And then to enable some languages like so: ::
         ("fr", "Français"),
         ("de", "Deutsche"),
     )
+
+With API enabled, you may need some basic DjangoREST settings: ::
+
+    REST_FRAMEWORK = {
+        "DEFAULT_PERMISSION_CLASSES": [
+            # Use Django"s standard `django.contrib.auth` permissions,
+            # or allow read-only access for unauthenticated users.
+            "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+            # Only Django"s standard `django.contrib.auth` permissions, every
+            # authenticated user can read and anonymous are never allowed
+            # "rest_framework.permissions.DjangoModelPermissions",
+        ],
+        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+        "PAGE_SIZE": 20
+    }
 
 Then load default applications settings in your settings file: ::
 
@@ -96,6 +118,10 @@ Then add the required url parts in you project ``urls.py`` like this: ::
         path("", include("lotus.urls")),
     )
 
+If you didn't installed this package with API extra requirement, remove the line which
+is mounting it: ::
+
+        path("api/", include("lotus.api_urls")),
 
 .. Note::
     This URL configuration mount Lotus URLs at root of your site, it may override other

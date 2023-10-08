@@ -19,6 +19,19 @@ from lotus.factories import (
     ArticleFactory, AuthorFactory, CategoryFactory, TagFactory, multilingual_article,
 )
 
+try:
+    import rest_framework  # noqa: F401
+except ModuleNotFoundError:
+    API_AVAILABLE = False
+else:
+    API_AVAILABLE = True
+
+
+pytestmark = pytest.mark.skipif(
+    not API_AVAILABLE,
+    reason="Django REST is not available, API is disabled"
+)
+
 
 # Shortcuts for shorter variable names
 STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES

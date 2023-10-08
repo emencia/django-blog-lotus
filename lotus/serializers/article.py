@@ -75,9 +75,6 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
     def get_related(self, obj):
         """
         Return list of related articles.
-
-        TODO: There is not applied any publication criteria, only language filter, see
-        ``Article.get_related()``
         """
         if self.context.get("article_filter_func"):
             queryset = obj.get_related(

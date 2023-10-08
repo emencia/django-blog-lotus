@@ -1,8 +1,22 @@
+import pytest
 from freezegun import freeze_time
 
 from django.urls import reverse
 
 from lotus.factories import CategoryFactory, multilingual_category
+
+try:
+    import rest_framework  # noqa: F401
+except ModuleNotFoundError:
+    API_AVAILABLE = False
+else:
+    API_AVAILABLE = True
+
+
+pytestmark = pytest.mark.skipif(
+    not API_AVAILABLE,
+    reason="Django REST is not available, API is disabled"
+)
 
 
 @freeze_time("2012-10-15 10:00:00")
