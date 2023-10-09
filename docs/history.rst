@@ -19,6 +19,11 @@ Version 0.7.0 - Unreleased
 
 * Added new template tag ``article_get_related`` that is able to properly filter
   related article queryset and use it in article detail template;
+* Added new template tag ``get_categories`` to list all categories available in current
+  language;
+* Added new template tag ``get_categories_html`` which do the same as
+  ``get_categories`` but is rendered to HTML fragment from a template;
+* Added filter on Category into Article admin list;
 
 
 Version 0.6.1 - 2023/08/18

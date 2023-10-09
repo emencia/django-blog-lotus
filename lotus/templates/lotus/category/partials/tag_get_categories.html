@@ -1,0 +1,9 @@
+{% spaceless %}<nav class="nav">
+    {% for category in categories %}
+        <a class="nav-link{% if category.is_active %} active{% endif %}"
+           href="{{ category.url }}"
+           {% if category.is_active %}aria-current="page"{% endif %}>
+            {{ category.title }}
+        </a>
+    {% endfor %}
+</nav>{% endspaceless %}

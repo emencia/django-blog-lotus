@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.template import Library, TemplateSyntaxError, loader
-from django.utils.translation import get_language
 
 from ..models import Article, Category
+from ..utils.language import get_language_code
 
 register = Library()
 
@@ -326,7 +326,8 @@ def check_object_lang_availability(context, source, **kwargs):
             given source that does not have this attribute.
 
     Returns:
-        dict: A dictionnary with summary informations of object language and its availability.
+        dict: A dictionnary with summary informations of object language and its
+        availability.
     """  # noqa: E501
     is_available = False
 
@@ -350,12 +351,12 @@ def article_get_related(context, article, **kwargs):
         You must give an Article object: ::
 
             {% load lotus %}
-            {% article_get_related article %}
+            {% article_get_related myarticle %}
 
         Or:
 
             {% load lotus %}
-            {% article_get_related article as relateds %}
+            {% article_get_related myarticle as relateds %}
 
         No other arguments are expected.
 
@@ -372,53 +373,97 @@ def article_get_related(context, article, **kwargs):
     return article.get_related(filter_func=filter_func)
 
 
-@register.inclusion_tag("templatetags/categories.html", name="news_categories")
-def article_categories():
+@register.simple_tag(takes_context=True)
+def get_categories(context, current=None):
     """
-    Generates and returns a list of news categories based on the current language
-    setting.
-
-    This template tag retrieves the list of news categories that are available in the
-    user's current language. Each category in the list includes its title and a URL for
-    its detailed view.
+    Generates and returns a list of all categories for current language.
 
     Example:
-        This tag does not expect any argument: ::
+        This tag does not require any argument to work: ::
 
             {% load lotus %}
-            {% news_categories %}
+            {% get_categories_html [current=mycategory] %}
+
+        And accept optional arguments:
+
+        * ``current`` argument expect a category object to check against each item,
+            the matching item will be marked as active.
 
     Arguments:
-        None
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included.
+
+    Keyword Arguments:
+        current (Category): A category object to check against each item, the
+            matching item will be marked as active.
 
     Returns:
         dict: A dictionary containing a list of dictionaries, each of which has the
-        `title` and `url` of a category.
-
-    Example return format:
-    : ::
-        {
-            "categories": [
-                {
-                    "title": "Category1",
-                    "url": "categories/category1_slug/"
-                },
-                {
-                    "title": "Category2",
-                    "url": "categories/category2_slug/"
-                }
-            ]
-        }
+        ``title`` and ``url`` of a category.
     """
-    category_lang = get_language()
-    qs = Category.objects.get_for_lang(category_lang)
+    request = context.get("request", None)
+    queryset = Category.objects.get_for_lang(get_language_code(request=request))
+
+    if current and not isinstance(current, Category):
+        current_type = type(current).__name__
+        raise TemplateSyntaxError(
+            (
+                "'get_categories' tag only accepts a Category object as 'current' "
+                "argument. Object type '{current_type}' was given."
+            ).format(current_type=current_type)
+        )
 
     return {
         "categories": [
             {
                 "title": category.title,
-                "url": category.get_absolute_url()
+                "url": category.get_absolute_url(),
+                "is_active": (category.id == current.id) if current else False
             }
-            for category in qs
+            for category in queryset
         ]
     }
+
+
+@register.simple_tag(takes_context=True)
+def get_categories_html(context, current=None, template=None):
+    """
+    Work like ``get_categories`` but render HTML from a template instead.
+
+    Example:
+        This tag does not require any argument to work: ::
+
+            {% load lotus %}
+            {% get_categories_html [current=mycategory] [template="foo/bar.html"] %}
+
+        And accept optional arguments:
+
+        * ``current``: expect a category object to check against each item,
+            the matching item will be marked as active;
+        * ``template``: a string for a template path to use;
+
+    Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included. This is only used
+            with an Article object, so it should be safe to be empty for a Category.
+
+    Keyword Arguments:
+        current (Category): A category object to check against each item, the
+            matching item will be marked as active.
+        template (string): A path to a custom template to use instead of the default
+            one. If not given the default one will be used from setting
+            ``LOTUS_CATEGORIES_TAG_TEMPLATE``.
+
+    Returns:
+        string: Rendered template tag fragment.
+
+    """  # noqa: E501
+    # Use the right template depending model
+    template_path = template or settings.LOTUS_CATEGORIES_TAG_TEMPLATE
+
+    render_context = get_categories(
+        context,
+        current=current,
+    )
+
+    return loader.get_template(template_path).render(render_context)

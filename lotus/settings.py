@@ -97,6 +97,13 @@ LOTUS_PREVIEW_SWITCH_TEMPLATE = "lotus/preview_switch.html"
 Template path to use to render template tag ``preview_switch``.
 """
 
+LOTUS_CATEGORIES_TAG_TEMPLATE = (
+    "lotus/category/partials/tag_get_categories.html"
+)
+"""
+Template path to use to render template tag ``get_categories``.
+"""
+
 LOTUS_CRUMBS_TITLES = {
     "article-index": _("Articles"),
     "author-index": _("Authors"),

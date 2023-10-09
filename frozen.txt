@@ -1,10 +1,11 @@
-# Frozen requirement versions from '0.6.1' installation
-Django==4.2.5
+# Frozen requirement versions from '0.7.0rc3' installation
+Django==4.2.6
 django-autocomplete-light==3.9.7
 django-ckeditor==6.7.0
 django-smart-media==0.3.1
 django-taggit==4.0.0
 django-view-breadcrumbs==2.4.1
+djangorestframework==3.14.0
 factory-boy==3.3.0
 flake8==6.1.0
 freezegun==1.2.2
