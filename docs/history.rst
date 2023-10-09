@@ -17,6 +17,9 @@ Version 0.7.0 - Unreleased
   * Publication criteria and language filtering is properly implemented alike in HTML
     frontend;
 
+* Added new template tag ``article_get_related`` that is able to properly filter
+  related article queryset and use it in article detail template;
+
 
 Version 0.6.1 - 2023/08/18
 --------------------------

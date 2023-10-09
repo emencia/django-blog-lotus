@@ -166,20 +166,19 @@
                     {% endif %}
                 {% endwith %}
 
-                {% with relateds=article_object.get_related %}
-                    {% if relateds %}
-                        <div class="relateds card mb-4">
-                            <div class="card-header">
-                                <strong>{% trans "Related articles" %}</strong>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                {% for related in relateds %}
-                                <li class="list-group-item"><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
-                                {% endfor %}
-                            </ul>
+                {% article_get_related article_object as relateds %}
+                {% if relateds %}
+                    <div class="relateds card mb-4">
+                        <div class="card-header">
+                            <strong>{% trans "Related articles" %}</strong>
                         </div>
-                    {% endif %}
-                {% endwith %}
+                        <ul class="list-group list-group-flush">
+                            {% for related in relateds %}
+                            <li class="list-group-item"><a href="{{ related.get_absolute_url }}">{{ related.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -339,3 +339,34 @@ def check_object_lang_availability(context, source, **kwargs):
         "language_keys": [k for k, v in settings.LANGUAGES],
         "language_labels": [v for k, v in settings.LANGUAGES],
     }
+
+
+@register.simple_tag(takes_context=True)
+def article_get_related(context, article, **kwargs):
+    """
+    Returns the related articles for a given article object.
+
+    Example:
+        You must give an Article object: ::
+
+            {% load lotus %}
+            {% article_get_related article %}
+
+        Or:
+
+            {% load lotus %}
+            {% article_get_related article as relateds %}
+
+        No other arguments are expected.
+
+    Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included.
+        article (lotus.models.article.Article): Article object to compute states.
+
+    Returns:
+        queyrset: Queryset for retrieved related articles.
+    """
+    filter_func = context.get("article_filter_func", None)
+
+    return article.get_related(filter_func=filter_func)

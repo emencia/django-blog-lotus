@@ -30,6 +30,24 @@ STATES = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
 STATE_PREFIX = "article--"
 
 
+def check_detail_links(client_obj, article):
+    """
+    Internal helper to get links from article detail for a client object.
+
+    Always perform a request.
+    """
+    response = client_obj.get(article.get_absolute_url())
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    container = dom.find("#lotus-content .article-detail")[0]
+
+    link_edit = container.cssselect(".detail-edit")
+    link_translate = container.cssselect(".detail-translate")
+
+    return link_edit, link_translate
+
+
 def test_article_view_list_preview_mode(
     db, settings, admin_client, client, enable_preview
 ):
@@ -689,24 +707,6 @@ def test_article_view_preview(db, client, admin_client):
     assert response.status_code == 200
 
 
-def check_detail_links(client_obj, article):
-    """
-    Internal helper to get links from article detail for a client object.
-
-    Always perform a request.
-    """
-    response = client_obj.get(article.get_absolute_url())
-    assert response.status_code == 200
-
-    dom = html_pyquery(response)
-    container = dom.find("#lotus-content .article-detail")[0]
-
-    link_edit = container.cssselect(".detail-edit")
-    link_translate = container.cssselect(".detail-translate")
-
-    return link_edit, link_translate
-
-
 def test_article_view_detail_admin_links(db, settings, admin_client, client):
     """
     Detail sidebar should have the right links for admin depending article status.
@@ -831,7 +831,7 @@ def test_article_view_detail_admin_links(db, settings, admin_client, client):
 
 
 @freeze_time("2012-10-15 10:00:00")
-def test_article_model_get_related_publication_filtered(db, rf):
+def test_article_model_get_related_publication_filtered(db, rf, client):
     """
     'Article.get_related' method is able to use a filtering function to filter
     queryset on more than language.
@@ -878,15 +878,27 @@ def test_article_model_get_related_publication_filtered(db, rf):
         language="fr",
     )
 
-    basic = ArticleFactory(
+    main = ArticleFactory(
         title="basic published",
         publish_date=today.date(),
         publish_time=today.time(),
         fill_related=[draft, published_yesterday, published_notyet, french],
     )
 
-    results = sorted([
+    # Directly check against model method
+    results = [
         item.title
-        for item in basic.get_related(filter_func=filternator.apply_article_lookups)
-    ])
+        for item in main.get_related(filter_func=filternator.apply_article_lookups)
+    ]
     assert results == ["published yesterday"]
+
+    # Check against related list build with a tag in template
+    response = client.get(main.get_absolute_url())
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    relateds = [
+        item.text.strip()
+        for item in dom.find("#lotus-content .relateds li a")
+    ]
+    assert relateds == ["published yesterday"]
