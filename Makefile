@@ -12,7 +12,7 @@ FLAKE=$(VENV_PATH)/bin/flake8
 PYTEST=$(VENV_PATH)/bin/pytest
 TWINE=$(VENV_PATH)/bin/twine
 TOX=$(VENV_PATH)/bin/tox
-SPHINX_RELOAD=$(PYTHON_BIN) sphinx_reload.py
+SPHINX_RELOAD_BIN=$(PYTHON_BIN) docs/sphinx_reload.py
 
 DEMO_DJANGO_SECRET_KEY=samplesecretfordev
 PACKAGE_NAME=django-blog-lotus
@@ -165,7 +165,7 @@ install-backend:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing backend requirements <---$(FORMATRESET)\n"
 	@echo ""
-	$(PIP) install -e .[api,breadcrumbs,dev,quality,doc]
+	$(PIP) install -e .[api,breadcrumbs,dev,quality,doc,doc-live]
 .PHONY: install-backend
 
 install-frontend:
@@ -311,7 +311,7 @@ livedocs:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Watching documentation sources <---$(FORMATRESET)\n"
 	@echo ""
-	$(SPHINX_RELOAD)
+	$(SPHINX_RELOAD_BIN)
 .PHONY: livedocs
 
 flake:

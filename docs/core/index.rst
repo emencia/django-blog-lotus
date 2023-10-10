@@ -17,4 +17,5 @@ References
    responses.rst
    utils.rst
    factories.rst
+   tests.rst
    contrib.rst

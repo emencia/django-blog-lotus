@@ -18,6 +18,7 @@ Describe your environment:
 - Plateform: Window/IOS/Linux distribution
 - Python version:
 - Django version:
+- Lotus version:
 
 **To Reproduce**
 Steps to reproduce the behavior:

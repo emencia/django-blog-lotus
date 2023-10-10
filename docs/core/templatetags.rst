@@ -1,4 +1,4 @@
-.. _intro_references_templatetags:
+.. _references_templatetags_intro:
 
 =============
 Template tags

@@ -160,6 +160,7 @@ INSTALLED_APPS = [
     "lotus",
 ]
 
+
 """
 CKEditor part
 """
@@ -170,6 +171,7 @@ INSTALLED_APPS[0:0] = [
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 
+
 """
 django-taggit part
 """
@@ -179,6 +181,22 @@ INSTALLED_APPS[0:0] = [
 ]
 INSTALLED_APPS.append(
     "taggit",
+)
+
+
+"""
+django-view-breadcrumbs optional part
+"""
+INSTALLED_APPS[0:0] = [
+    "view_breadcrumbs",
+]
+
+
+"""
+DRF
+"""
+INSTALLED_APPS.append(
+    "rest_framework",
 )
 
 

@@ -3,18 +3,25 @@
 .. include:: ../README.rst
 
 
-User’s Guide
-************
+Contents
+********
 
 .. toctree::
    :maxdepth: 2
 
    install.rst
    settings.rst
-   overview.rst
+   demonstration.rst
+   contents.rst
+   languages.rst
+   publication.rst
+   medias.rst
+   breadcrumbs.rst
+   layout.rst
+   permissions.rst
    core/index.rst
 
-Developer’s Guide
+About the project
 *****************
 
 .. toctree::

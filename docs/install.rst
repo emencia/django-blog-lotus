@@ -1,4 +1,5 @@
 .. _django-smart-media: https://github.com/sveetch/django-smart-media
+.. _Django REST framework: https://www.django-rest-framework.org/
 
 .. _intro_install:
 
@@ -34,18 +35,12 @@ Enable required applications in your settings : ::
         "smart_media",
         "ckeditor",
         "ckeditor_uploader",
-        "view_breadcrumbs",
         "taggit",
-        "rest_framework",
         "lotus",
     )
 
 .. Note::
 
-    * Remove the line with ``view_breadcrumbs`` if you didn't installed extra
-      requirement ``breadcrumbs``;
-    * Remove the line with ``rest_framework`` if you didn't installed extra
-      requirement ``api``;
     * The lines with ``dal`` and ``dal_select2`` always need to be before
       ``django.contrib.admin`` since it needs to be ready before admin;
     * There may be conflicts if your project use also the "easy-thumbnail"
@@ -72,21 +67,6 @@ And then to enable some languages like so: ::
         ("de", "Deutsche"),
     )
 
-With API enabled, you may need some basic DjangoREST settings: ::
-
-    REST_FRAMEWORK = {
-        "DEFAULT_PERMISSION_CLASSES": [
-            # Use Django"s standard `django.contrib.auth` permissions,
-            # or allow read-only access for unauthenticated users.
-            "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
-            # Only Django"s standard `django.contrib.auth` permissions, every
-            # authenticated user can read and anonymous are never allowed
-            # "rest_framework.permissions.DjangoModelPermissions",
-        ],
-        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-        "PAGE_SIZE": 20
-    }
-
 Then load default applications settings in your settings file: ::
 
     from smart_media.settings import *
@@ -111,17 +91,11 @@ Then add the required url parts in you project ``urls.py`` like this: ::
         path("admin/", admin.site.urls),
         path("ckeditor/", include("ckeditor_uploader.urls")),
         path("i18n/", include("django.conf.urls.i18n")),
-        path("api/", include("lotus.api_urls")),
     ]
 
     urlpatterns += i18n_patterns(
         path("", include("lotus.urls")),
     )
-
-If you didn't installed this package with API extra requirement, remove the line which
-is mounting it: ::
-
-        path("api/", include("lotus.api_urls")),
 
 .. Note::
     This URL configuration mount Lotus URLs at root of your site, it may override other
@@ -130,9 +104,97 @@ is mounting it: ::
 
         path("blog/", include("lotus.urls")),
 
-    Now you will reach lotus from path ``/blog/``. This is the same for API urls on
-    ``api/``, feel free to mount it with another path.
+    Now you will reach lotus from path ``/blog/``.
 
+
+.. _install_breadcrumbs:
+
+Breadcrumbs
+-----------
+
+Then enable it in Django enabled applications before the line for Lotus (in any order
+with API): ::
+
+    INSTALLED_APPS = (
+        ...
+        "view_breadcrumbs",
+        ...
+        "lotus",
+    )
+
+
+.. _install_api:
+
+API
+---
+
+If you installed the extra requirement for API you need to mount it in your urls, add
+the following line into the ``urlpatterns = [...]`` from previous ``urls.py```
+example: ::
+
+    path("api/", include("lotus.api_urls")),
+
+Obviously you can use the url path you need instead of ``api/``.
+
+Then enable it in Django enabled applications before the line for Lotus (in any order
+with Breadcrumbs): ::
+
+    INSTALLED_APPS = (
+        ...
+        "rest_framework",
+        ...
+        "lotus",
+    )
+
+Also you may want to add settings for `Django REST framework`_ itself like these
+ones: ::
+
+    REST_FRAMEWORK = {
+        "DEFAULT_PERMISSION_CLASSES": [
+            # Use Django"s standard `django.contrib.auth` permissions,
+            # or allow read-only access for unauthenticated users.
+            "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
+            # Only Django"s standard `django.contrib.auth` permissions, every
+            # authenticated user can read and anonymous are never allowed
+            # "rest_framework.permissions.DjangoModelPermissions",
+        ],
+        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+        "PAGE_SIZE": 20
+    }
+
+However Lotus does not require any particular DRF settings, see
+`Django REST framework`_ documentation to know what you can configure.
+
+
+.. _install_single_language:
+
+Single language site
+--------------------
+
+If you don't plan to use other languages, avoid the step about adding middleware
+``LocaleMiddleware`` and only set the same language from settings ``LANGUAGE_CODE``
+into ``LANGUAGES``: ::
+
+    LANGUAGE_CODE = "en"
+
+    LANGUAGES = (
+        ("en", "English"),
+    )
+
+
+And finally don't mount Lotus urls with ``i18n_patterns``, just use: ::
+
+    urlpatterns = [
+        path("admin/", admin.site.urls),
+        path("ckeditor/", include("ckeditor_uploader.urls")),
+        path("", include("lotus.urls")),
+    ]
+
+
+.. _install_integration:
+
+Basic integration
+-----------------
 
 And finally your project needs a ``skeleton.html`` template like this: ::
 
@@ -164,14 +226,8 @@ installed Lotus with breadcrumb extra requirement.
 Once finished, you can run the Django command to apply the Lotus migrations. Also, you
 will need to create a superuser or an admin to write contents from Django admin.
 
-Single language site
---------------------
 
-If you don't plan to use other languages, avoid the step about adding middleware and
-only set the same language from settings ``LANGUAGE_CODE`` into ``LANGUAGES`` and
-finally don't mount Lotus urls with ``i18n_patterns``.
-
-.. _intro_install_demo:
+.. _install_demo:
 
 Demonstration
 *************
@@ -179,12 +235,12 @@ Demonstration
 You may also install the full demonstration which implements all the features in a
 Django project ready to start. This requires Git, pip, virtualenv, recent Node.js and
 make tools. Clone this repository where you want, enter in repository directory and use
-the Makefile task: ::
+the Makefile tasks: ::
 
     make install frontend superuser
 
-This installs everything to run and develop then build frontend assets and creates
-a superuser.
+This installs everything to run and develop then build frontend assets and prompt you
+to create a superuser.
 
 And finally automatically fill some demonstration Author, Article and Category
 objects using command ``lotus_demo`` with default values: ::

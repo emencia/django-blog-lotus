@@ -1,4 +1,4 @@
-.. _intro_references_views:
+.. _references_views_intro:
 
 =====
 Views

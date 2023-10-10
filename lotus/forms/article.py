@@ -30,15 +30,6 @@ if CONFIG_NAME not in CKEDITOR_CONFIG:
 class ArticleAdminForm(autocomplete.FutureModelForm):
     """
     Article form for admin.
-
-    NOTE:
-
-        DAL usage with dark mode is not compatible yet (have been fixed but not
-        released yet as of 3.9.4):
-
-        https://github.com/yourlabs/django-autocomplete-light/issues/1245
-
-        We currently patch it with a custom template with CSS overriding.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
