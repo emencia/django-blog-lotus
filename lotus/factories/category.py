@@ -19,6 +19,7 @@ class CategoryFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Category
+        skip_postgeneration_save = True
 
     @factory.lazy_attribute
     def lead(self):

@@ -32,6 +32,7 @@ class ArticleFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Article
+        skip_postgeneration_save = True
 
     @factory.lazy_attribute
     def publish_date(self):

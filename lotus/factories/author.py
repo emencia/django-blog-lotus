@@ -21,6 +21,7 @@ class AuthorFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Author
+        skip_postgeneration_save = True
 
     class Params:
         """
