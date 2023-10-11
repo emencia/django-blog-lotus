@@ -25,6 +25,8 @@ Version 0.7.0 - Unreleased
 * Added filter on Category into Article admin list;
 * Moved documentation to Furo theme;
 * Restructured documentation and improved some parts;
+* Fixed warnings about deprecated ``django.utils.timezone.utc`` in favor of
+  ``datetime.timezone.utc``;
 
 
 Version 0.6.1 - 2023/08/18

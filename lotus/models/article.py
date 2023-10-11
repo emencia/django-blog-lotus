@@ -419,7 +419,7 @@ class Article(SmartFormatMixin, Translated):
         """
         return datetime.datetime.combine(
             self.publish_date, self.publish_time
-        ).replace(tzinfo=timezone.utc)
+        ).replace(tzinfo=datetime.timezone.utc)
 
     def get_states(self, now=None):
         """

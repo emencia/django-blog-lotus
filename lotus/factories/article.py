@@ -64,7 +64,7 @@ class ArticleFactory(factory.django.DjangoModelFactory):
         """
         return datetime.datetime.combine(
             self.publish_date, self.publish_time
-        ).replace(tzinfo=timezone.utc)
+        ).replace(tzinfo=datetime.timezone.utc)
 
     @factory.lazy_attribute
     def cover(self):
