@@ -29,3 +29,4 @@ About the project
 
    development.rst
    history.rst
+   migrations.rst

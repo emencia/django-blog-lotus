@@ -3,8 +3,12 @@
 Changelog
 =========
 
-Version 0.7.0 - Unreleased
+Version 0.7.0 - 2023/10/11
 --------------------------
+
+A major release without almost no breaking changes, see
+`Migrations <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html>`_ to
+know about migrating your project.
 
 * Added API with Django REST framework (DRF):
 
@@ -50,7 +54,7 @@ Version 0.6.0 - 2023/06/12
   ``LocaleMiddleware`` is disabled);
 * Fixed admin views for Article and Category to not fail when there is an object saved
   with language that are not available anymore;
-* Added ``seo_title``, ``lead``, ``introduction``, ``content`` to seachable fields in
+* Added ``seo_title``, ``lead``, ``introduction``, ``content`` to searchable fields in
   Article admin list;
 * Added ``lead``, ``description`` to searchable fields in Category admin list;
 * Added new filter to Article admin list to filter on published or unpublished items;
