@@ -373,7 +373,7 @@ check-release: build-package
 	$(TWINE) check dist/*
 .PHONY: check-release
 
-quality: flake check-migrations test-initial docs check-release freeze-dependencies
+quality: check-django check-migrations test-initial flake docs check-release freeze-dependencies
 	@echo ""
 	@echo "♥ ♥ Everything should be fine ♥ ♥"
 	@echo ""
