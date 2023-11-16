@@ -6,12 +6,17 @@ Changelog
 Version 0.8.0 - Unreleased
 --------------------------
 
+**This will be the last version to support Django 4.0, the next version will require
+Django 4.1 at least**
+
 * Improved quality task to include check-django;
 * Adopted some django-ckeditor settings in sandbox for a better usecase with image
   embedded in ckeditor contents;
 * Added new meta tag in ``base.html`` to define canonical URL for every pages, this
   needs to enable a new middleware in your Django settings to work. See migration
   document for details;
+* Pinned django-taggit to ``<5.0.0`` since the 5.x version drops support of Django 4.0
+  that we want to keep for Lotus 0.8.x version;
 
 
 Version 0.7.0 - 2023/10/11
