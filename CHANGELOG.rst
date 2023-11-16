@@ -17,6 +17,9 @@ Django 4.1 at least**
   document for details;
 * Pinned django-taggit to ``<5.0.0`` since the 5.x version drops support of Django 4.0
   that we want to keep for Lotus 0.8.x version;
+* Fixed task ``check-migration`` so it returns migration code instead of just signal
+  error when there is pending migration. This is required since Django 4.0 the Django
+  command ``makemigration`` has some behavior changes;
 
 
 Version 0.7.0 - 2023/10/11

@@ -58,7 +58,7 @@ An object is considered as an original if it does not have any relation to anoth
     * You can't create a translation with the same language twice;
 
     You can change article language and original relation at any time but it will be
-    validated against these rules.
+    validated in comparison to these rules.
 
 Since translation objects are complete new objects, you can change every content from
 a language version to another.
