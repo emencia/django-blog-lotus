@@ -172,6 +172,10 @@ INSTALLED_APPS[0:0] = [
 ]
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
+CKEDITOR_RESTRICT_BY_DATE = False
+CKEDITOR_IMAGE_BACKEND = "ckeditor_uploader.backends.PillowBackend"
+CKEDITOR_BROWSE_SHOW_DIRS = True
 
 CKEDITOR_CONFIGS = {
     "lotus": {
@@ -181,6 +185,9 @@ CKEDITOR_CONFIGS = {
         "skin": "moono-lisa",
         # Enabled showblocks as default behavior
         "startupOutlineBlocks": True,
+        # Enable image2 plugin
+        "extraPlugins": "image2",
+        "image_previewText": True,
         # Disable element filter to enable full HTML5, also this will let
         # append any code, even bad syntax and malicious code, so be careful
         "removePlugins": "stylesheetparser",
