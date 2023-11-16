@@ -1,5 +1,10 @@
 {% extends "skeleton.html" %}
 
+{% block header-resource-extra %}
+    {{ block.super }}
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.site.domain }}{{ request.path }}">
+{% endblock header-resource-extra %}
+
 {% block content %}
 <div id="lotus-content">
     {% block lotus_content %}{% endblock lotus_content %}

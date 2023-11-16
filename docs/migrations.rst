@@ -4,6 +4,16 @@
 Migrations
 ==========
 
+From 0.7.0 to 0.8.0
+*******************
+
+TODO:
+
+* Add ``django.contrib.sites.middleware.CurrentSiteMiddleware`` middleware to your ``settings.MIDDLEWARES``;
+* New template block ``{% block header-resource-extra %}`` in skeleton;
+* ``lotus/base.html`` to update if customized;
+
+
 From 0.6.1 to 0.7.0
 *******************
 

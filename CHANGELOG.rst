@@ -3,12 +3,23 @@
 Changelog
 =========
 
+Version 0.8.0 - Unreleased
+--------------------------
+
+* Improved quality task to include check-django;
+* Adopted some django-ckeditor settings in sandbox for a better usecase with image
+  embedded in ckeditor contents;
+* Added new meta tag in ``base.html`` to define canonical URL for every pages, this
+  needs to enable a new middleware in your Django settings to work. See migration
+  document for details;
+
+
 Version 0.7.0 - 2023/10/11
 --------------------------
 
 A major release without almost no breaking changes, see
-`Migrations <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html>`_ to
-know about migrating your project.
+`Migration to 0.7.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-6-1-to-0-7-0>`_
+to know about migrating your project.
 
 * Added API with Django REST framework (DRF):
 
