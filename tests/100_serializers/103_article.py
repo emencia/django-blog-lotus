@@ -52,7 +52,7 @@ def test_article_articleserializer(db, api_client):
     request_factory = APIRequestFactory()
     request = request_factory.get("/")
 
-    # A basic test with an empty object
+    # A basic test with an empty object won't have any relation field
     serialized = ArticleSerializer(None)
     assert serialized.data == {
         "tags": [],
@@ -72,7 +72,7 @@ def test_article_articleserializer(db, api_client):
         "introduction": "",
         "content": "",
         "cover": None,
-        "image": None
+        "image": None,
     }
 
     # Date references
@@ -181,6 +181,7 @@ def test_article_articleserializer(db, api_client):
         "content": article.content,
         "cover": "http://testserver" + article.cover.url,
         "image": "http://testserver" + article.image.url,
+        "album": None,
     }
 
 

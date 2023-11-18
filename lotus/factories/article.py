@@ -28,6 +28,7 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     pinned = False
     private = False
     publish_end = None
+    album = None
     seo_title = ""
 
     class Meta:

@@ -16,6 +16,10 @@ Models
     :members: Category
     :exclude-members: DoesNotExist, MultipleObjectsReturned
 
+.. automodule:: lotus.models.album
+    :members: Album, AlbumItem
+    :exclude-members: DoesNotExist, MultipleObjectsReturned
+
 .. automodule:: lotus.models.article
     :members: Article
     :exclude-members: DoesNotExist, MultipleObjectsReturned

@@ -24,6 +24,7 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
     publish_datetime = serializers.SerializerMethodField()
     related = serializers.SerializerMethodField()
     states = serializers.SerializerMethodField()
+    album = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
@@ -96,16 +97,30 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         """
         return article_state_list({}, obj, now=self.context.get("lotus_now", None))
 
+    def get_album(self, obj):
+        """
+        Return album data with its items.
+        """
+        # from .album import AlbumResumeSerializer
+
+        # return AlbumResumeSerializer(
+        #     obj.album,
+        #     many=False,
+        #     context=self.context
+        # ).data
+        return None
+
 
 class ArticleResumeSerializer(ArticleSerializer):
     """
     Reduced article serializer
 
-    This should be the common serializer, the other complete one would be better in
-    detail.
+    This should be the common serializer, the other complete one would be better for
+    details.
 
     .. Note::
 
+        Some fields
         Field ``related`` is not allowed since this serializer is used into list and
         it could lead on too many recursions.
 

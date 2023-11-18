@@ -12,9 +12,10 @@ from django.utils.text import slugify
 from taggit.models import Tag
 
 from lotus.factories import (
-    ArticleFactory, AuthorFactory, CategoryFactory, TagNameBuilder,
+    AlbumFactory, AlbumItemFactory, ArticleFactory, AuthorFactory, CategoryFactory,
+    TagNameBuilder,
 )
-from lotus.models import Article, Author, Category
+from lotus.models import Album, Article, Author, Category
 from lotus.choices import STATUS_DRAFT
 from lotus.utils.imaging import DjangoSampleImageCrafter
 
@@ -42,9 +43,10 @@ PLACEHOLDER_FORMATS = getattr(settings, "LOTUS_DEMO_PLACEHOLDER_FORMATS", [
 ])
 
 
-CATEGORY_COVER_SIZE = getattr(settings, "LOTUS_DEMO_CATEGORY_COVER_SIZE", (800, 500))
+ALBUM_MEDIA_SIZE = getattr(settings, "LOTUS_DEMO_ALBUM_MEDIA_SIZE", (640, 480))
 ARTICLE_COVER_SIZE = getattr(settings, "LOTUS_DEMO_ARTICLE_COVER_SIZE", (300, 200))
 ARTICLE_LARGE_SIZE = getattr(settings, "LOTUS_DEMO_ARTICLE_LARGE_SIZE", (1280, 640))
+CATEGORY_COVER_SIZE = getattr(settings, "LOTUS_DEMO_CATEGORY_COVER_SIZE", (800, 500))
 
 
 class Command(BaseCommand):
@@ -62,7 +64,7 @@ class Command(BaseCommand):
         the script will fail.
     """
     help = (
-        "Create Author, Article and Category objects for demonstration purpose."
+        "Create Author, Album, Article and Category objects for demonstration purpose."
         "You should use the flush options to remove objects to avoid constraint "
         "failures on some unique fields. Default length of created objects depends on "
         "limits settings. Author are shared with every languages. For translations, it "
@@ -71,6 +73,28 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
+        parser.add_argument(
+            "--albums",
+            type=int,
+            default=settings.LOTUS_ARTICLE_PAGINATION,
+            help=(
+                "Length of Album objects to create. Must be at least half of "
+                "article length and greater or equal to 1."
+            ),
+        )
+        parser.add_argument(
+            "--flush-albums",
+            action="store_true",
+            help="Flush all album objects before creations.",
+        )
+        parser.add_argument(
+            "--item-per-album",
+            type=int,
+            default=12,
+            help=(
+                "Maximum of item to add to each album. Must equal or greater than 1.",
+            ),
+        )
         parser.add_argument(
             "--authors",
             type=int,
@@ -162,10 +186,17 @@ class Command(BaseCommand):
             ),
         )
 
-    def flush(self, articles=False, authors=False, categories=False, tags=False):
+    def flush(self, albums=False, articles=False, authors=False, categories=False,
+              tags=False):
         """
         Flush required model objects.
         """
+
+        if albums:
+            self.stdout.write(
+                self.style.WARNING("* Flushing all albums")
+            )
+            Album.objects.all().delete()
 
         if articles:
             self.stdout.write(
@@ -192,7 +223,8 @@ class Command(BaseCommand):
             )
             Tag.objects.all().delete()
 
-    def build_random_placeholder(self, slug, size, background=None, text_color=None):
+    def build_random_placeholder(self, slug, size, background=None, text_color=None,
+                                 format_name=None):
         """
         Create a random placeholder image.
 
@@ -200,7 +232,7 @@ class Command(BaseCommand):
         """
         background = background or random.choice(list(PLACEHOLDER_PALETTE.keys()))
         text_color = text_color or PLACEHOLDER_PALETTE[background]
-        format_name = random.choice(PLACEHOLDER_FORMATS)
+        format_name = format_name or random.choice(PLACEHOLDER_FORMATS)
         extension = format_name.lower()
 
         built = self.image_crafter.create(
@@ -245,9 +277,67 @@ class Command(BaseCommand):
 
         return reserved
 
+    def get_filled_slots(self, length, items, empty_value=None, ratio=0.75):
+        """
+        Computate a list starting from given items then filled with empty value to
+        match required length.
+
+        Returns:
+            list: New list filled started from ``items`` and possibly filled with empty
+            value.
+        """
+        slot_length = len(items)
+        if length >= slot_length:
+            slot_length = round(length * ratio)
+
+        slots = items + [empty_value] * (slot_length - len(items))
+        random.shuffle(slots)
+
+        return slots
+
+    def create_albums(self):
+        """
+        Create Album objects for required length.
+        """
+        created = []
+
+        self.stdout.write(
+            self.style.SUCCESS("* Creating {length} albums".format(
+                length=self.album_length,
+            ))
+        )
+
+        for i in range(1, self.album_length + 1):
+            items_length = random.randint(1, self.item_per_album)
+            album = AlbumFactory()
+
+            for k in range(0, items_length):
+                background = random.choice(list(PLACEHOLDER_PALETTE.keys()))
+                text_color = PLACEHOLDER_PALETTE[background]
+
+                AlbumItemFactory(
+                    album=album,
+                    media=self.build_random_placeholder(
+                        "foo-{}".format(i),
+                        ALBUM_MEDIA_SIZE,
+                        background=background,
+                        text_color=text_color,
+                        format_name="PNG",
+                    ),
+                )
+
+            self.stdout.write("  {index}) Album: {title} ({items} items)".format(
+                index=str(i).zfill(2),
+                title=album.title,
+                items=items_length,
+            ))
+            created.append(album)
+
+        return created
+
     def create_authors(self):
         """
-        Create Author objects required length from factory.
+        Create Author objects for required length.
         """
         created = []
 
@@ -279,7 +369,7 @@ class Command(BaseCommand):
 
     def create_tags(self, faker):
         """
-        Create a list of unique tags.
+        Create a list of unique tags for required length.
 
         Arguments:
             faker (Faker): A Faker instance to use to generated words.
@@ -299,7 +389,7 @@ class Command(BaseCommand):
 
     def create_categories(self, language, originals=None):
         """
-        Create Category objects required length from factory.
+        Create Category objects for required length.
         """
         created = []
 
@@ -349,10 +439,10 @@ class Command(BaseCommand):
 
         return created
 
-    def create_articles(self, language, authors=[], categories=[], tags=[],
+    def create_articles(self, language, albums=[], authors=[], categories=[], tags=[],
                         originals=None):
         """
-        Create Article objects required length from factory.
+        Create Article objects for required length.
         """
         created = []
 
@@ -368,6 +458,10 @@ class Command(BaseCommand):
             reserved_originals = self.random_reservation(
                 self.article_length, originals
             )
+
+        # Make a list of album slots started from created album list and filled with
+        # null value to fit to article length
+        reserved_albums = self.get_filled_slots(self.article_length, albums)
 
         for i in range(1, self.article_length + 1):
             title = self.faker.unique.sentence(nb_words=5)
@@ -419,6 +513,7 @@ class Command(BaseCommand):
                     background=background,
                     text_color=text_color,
                 ),
+                "album": random.choice(reserved_albums),
                 "fill_authors": random.sample(
                     authors,
                     random.randint(1, authors_count),
@@ -568,22 +663,31 @@ class Command(BaseCommand):
         Object lengths should be smarter to avoid issues with missing left relations
         needed in random choices because of uniqueness.
         """
-        if options["authors"] < 2:
-            raise CommandError("Argument 'authors' should be greater than 1")
-
         if options["articles"] < 2:
             raise CommandError("Argument 'articles' should be greater than 1")
 
         if options["categories"] < 2:
             raise CommandError("Argument 'categories' should be greater than 1")
 
+        if options["albums"] < 2:
+            raise CommandError("Argument 'albums' should be greater or equal to 1")
+        elif options["albums"] < (options["articles"] / 2):
+            raise CommandError(
+                "Argument 'albums' should be at least half of article length."
+            )
+
         if options["tags"] < 2:
             raise CommandError("Argument 'tags' should be greater than 1")
 
         if options["tag_per_article"] > options["tags"]:
             raise CommandError((
-                "Argument 'tag_per_article' can not be greater than 'tags' argument "
+                "Argument 'tag-per-article' can not be greater than 'tags' argument "
                 "value."
+            ))
+
+        if options["item_per_album"] < 1:
+            raise CommandError((
+                "Argument 'item-per-album' must be greater or equal to 1."
             ))
 
         return True
@@ -609,16 +713,19 @@ class Command(BaseCommand):
             )
 
         # Register limits from command arguments
+        self.album_length = options["albums"]
         self.author_length = options["authors"]
         self.article_length = options["articles"]
         self.category_length = options["categories"]
         self.tag_length = options["tags"]
         self.tag_per_article = options["tag_per_article"]
+        self.item_per_album = options["item_per_album"]
 
         # Initialize faker instance with default language
         self.faker = Faker(settings.LANGUAGE_CODE)
 
         # Manage object flush
+        flush_albums = options["flush_albums"]
         flush_articles = options["flush_articles"]
         flush_authors = options["flush_authors"]
         flush_categories = options["flush_categories"]
@@ -630,6 +737,7 @@ class Command(BaseCommand):
             flush_tags = True
 
         self.flush(
+            albums=flush_albums,
             articles=flush_articles,
             authors=flush_authors,
             categories=flush_categories,
@@ -637,6 +745,8 @@ class Command(BaseCommand):
         )
 
         # Create objects (order does matter) for default language only
+        created_albums = self.create_albums()
+
         created_authors = self.create_authors()
 
         created_categories = {
@@ -647,6 +757,7 @@ class Command(BaseCommand):
 
         created_articles = self.create_articles(
             settings.LANGUAGE_CODE,
+            albums=created_albums,
             authors=created_authors,
             categories=created_categories[settings.LANGUAGE_CODE],
             tags=self.create_tags(self.faker),
@@ -664,6 +775,7 @@ class Command(BaseCommand):
 
             self.create_articles(
                 code,
+                albums=created_albums,
                 authors=created_authors,
                 categories=created_categories[code],
                 originals=created_articles,

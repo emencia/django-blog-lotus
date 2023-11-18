@@ -19,10 +19,10 @@ from lotus.views.mixins import ArticleFilterAbstractView
 
 
 @freeze_time("2012-10-15 10:00:00")
-def test_tag_translation_siblings_missing_now(db, settings, rf):
+def test_tag_get_related_render(db, settings, rf):
     """
-    Tag "translation_siblings" requires an article object and context variable
-    'lotus_now' or a tag argument 'now'.
+    Tag "article_get_related" should either list all related article objects if there
+    is no filtering function given, or list only objects that match filter function.
     """
     settings.LANGUAGE_CODE = "en"
 

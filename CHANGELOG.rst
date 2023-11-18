@@ -6,8 +6,20 @@ Changelog
 Version 0.8.0 - Unreleased
 --------------------------
 
+A major release with new feature *Article album*, see
+`Migration to 0.8.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-7-0-to-0-8-0>`_
+to know about migrating your project.
+
 **This will be the last version to support Django 4.0, the next version will require
-Django 4.1 at least**
+Django 4.1 at least.**
+
+* Added new feature "Article album":
+
+  * Album holds items which can have a uploaded media;
+  * Article can select an Album to display in its detail view;
+  * This features comes with new models, factories, setting, template tag and tests;
+  * Updated ``lotus_demo`` command to create some albums to use in articles;
+  * API does not implement it yet and it will come in the next version;
 
 * Improved quality task to include check-django;
 * Adopted some django-ckeditor settings in sandbox for a better usecase with image
@@ -20,6 +32,41 @@ Django 4.1 at least**
 * Fixed task ``check-migration`` so it returns migration code instead of just signal
   error when there is pending migration. This is required since Django 4.0 the Django
   command ``makemigration`` has some behavior changes;
+* Enabled CSS Grid from Bootstrap settings in sandbox frontend (since Grid is used to
+  display Album);
+
+TODO
+....
+
+- [ ] Article album:
+
+  - [x] Model;
+  - [x] Form;
+  - [x] Admin;
+  - [x] Fill empty title from filename;
+  - [x] Factories;
+  - [x] Template tag;
+  - [x] Partial template for album item rendering from tag;
+  - [x] Implement Album tag usage in Article detail;
+  - [x] Tests model, forms, admin, view;
+  - [x] Add some albums in demo;
+  - [x] Documentation;
+  - [ ] API implementation;
+  - [ ] Tests serializers, viewsets;
+  - [ ] Private album ?
+  - [ ] Dedicated view ?
+  - [ ] Album mass upload from ZIP ? (deferred as additional feature in further
+    release?);
+
+- [ ] Add a stylesheet for admin which include
+  ``.django-ckeditor-widget {flex: auto 1;}`` for better CKEditor usability. This
+  should be an optional stylesheet that could be overriden with another one (to ensure
+  portability with Bootstrap admin interfaces like admin-style which need more of
+  ``width: 100%``);
+- [ ] API Documentation;
+- [ ] Better indication on Article kind (original/translation) in admin Article edit
+  form which should be clearly mentionned;
+- [ ] Split template tags in modules ?
 
 
 Version 0.7.0 - 2023/10/11

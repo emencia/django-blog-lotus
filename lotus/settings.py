@@ -97,11 +97,14 @@ LOTUS_PREVIEW_SWITCH_TEMPLATE = "lotus/preview_switch.html"
 Template path to use to render template tag ``preview_switch``.
 """
 
-LOTUS_CATEGORIES_TAG_TEMPLATE = (
-    "lotus/category/partials/tag_get_categories.html"
-)
+LOTUS_CATEGORIES_TAG_TEMPLATE = "lotus/category/partials/tag_get_categories.html"
 """
 Template path to use to render template tag ``get_categories``.
+"""
+
+LOTUS_ALBUM_TAG_TEMPLATE = "lotus/album/partials/tag_get_album_html.html"
+"""
+Template path to use to render template tag ``get_album_html``.
 """
 
 LOTUS_CRUMBS_TITLES = {

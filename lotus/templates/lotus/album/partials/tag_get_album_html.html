@@ -1,0 +1,21 @@
+{% load smart_image %}{% spaceless %}
+<div class="album mt-4">
+    <h2 class="title mb-3">{{ album_object.title }}</h2>
+
+    <div class="albumitems grid text-center">
+        {% for item in album_object.albumitems.all %}
+            {% media_thumb item.media "300x200" crop="center" as item_media_thumb %}
+            <figure class="item figure g-col-4 g-col-md-2">
+                <a href="{{ item.media.url }}" target="_blank">
+                    <img src="{{ item_media_thumb.url }}"
+                        class="media figure-img img-fluid rounded"
+                        alt="{{ item.title }}">
+                </a>
+                <figcaption class="figure-caption">
+                    <small class="title">{{ item.title }}</small>
+                </figcaption>
+            </figure>
+        {% endfor %}
+    </div>
+</div>
+{% endspaceless %}

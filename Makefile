@@ -46,6 +46,7 @@ help:
 	@echo "  check-django                  -- to run Django System check framework"
 	@echo "  superuser                     -- to create a superuser for Django admin"
 	@echo "  demo                          -- to fill database with demo datas (this removes every existing Author, Article and Category objects)"
+	@echo "  minimal-demo                  -- to fill database with minimal demo datas (this removes every existing Author, Article and Category objects)"
 	@echo
 	@echo "  po                            -- to update every PO files from app and sandbox sources for enabled languages"
 	@echo "  mo                            -- to build MO files from app and sandbox PO files"
@@ -245,6 +246,14 @@ demo:
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
  	$(PYTHON_BIN) $(DJANGO_MANAGE) lotus_demo --flush-all --translation=fr --translation=de --font ./tests/data_fixtures/font/VeraMono.ttf
 .PHONY: demo
+
+demo-minimal:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Filling with minimal demo datas <---$(FORMATRESET)\n"
+	@echo ""
+	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
+	$(PYTHON_BIN) $(DJANGO_MANAGE) lotus_demo --flush-all --albums=4 --item-per-album=3 --authors=2 --categories=2 --tags=2 --tag-per-article=1 --articles=8 --font ./tests/data_fixtures/font/VeraMono.ttf
+.PHONY: demo-minimal
 
 run:
 	@echo ""

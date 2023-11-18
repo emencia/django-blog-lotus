@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.template import Library, TemplateSyntaxError, loader
 
-from ..models import Article, Category
+from ..models import Album, Article, Category
 from ..utils.language import get_language_code
 
 register = Library()
@@ -347,6 +347,14 @@ def article_get_related(context, article, **kwargs):
     """
     Returns the related articles for a given article object.
 
+    It rely on an optional filtering function used to filter article objects to apply
+    publication and language lookups. This function is searched in template context
+    as an item named ``apply_article_lookups``, if not found no filtering is applied.
+
+    Commonly the filtering function would be
+    ``ArticleFilterMixin.apply_article_lookups`` that is already supplied in Article
+    detail view and viewset.
+
     Example:
         You must give an Article object: ::
 
@@ -394,8 +402,8 @@ def get_categories(context, current=None):
             context variable for template where the tag is included.
 
     Keyword Arguments:
-        current (Category): A category object to check against each item, the
-            matching item will be marked as active.
+        current (lotus.models.article.Category): A category object to check against
+            each item, the matching item will be marked as active.
 
     Returns:
         dict: A dictionary containing a list of dictionaries, each of which has the
@@ -448,17 +456,16 @@ def get_categories_html(context, current=None, template=None):
             with an Article object, so it should be safe to be empty for a Category.
 
     Keyword Arguments:
-        current (Category): A category object to check against each item, the
-            matching item will be marked as active.
-        template (string): A path to a custom template to use instead of the default
-            one. If not given the default one will be used from setting
-            ``LOTUS_CATEGORIES_TAG_TEMPLATE``.
+        current (lotus.models.article.Category): A category object to check against
+            each item, the matching item will be marked as active.
+        template (string): A path for custom template to use. If not given a default
+            one will be used from setting ``LOTUS_CATEGORIES_TAG_TEMPLATE``.
 
     Returns:
         string: Rendered template tag fragment.
 
     """  # noqa: E501
-    # Use the right template depending model
+    # Use given template if any else the default one from settings
     template_path = template or settings.LOTUS_CATEGORIES_TAG_TEMPLATE
 
     render_context = get_categories(
@@ -467,3 +474,42 @@ def get_categories_html(context, current=None, template=None):
     )
 
     return loader.get_template(template_path).render(render_context)
+
+
+@register.simple_tag(takes_context=True)
+def get_album_html(context, album, template=None):
+    """
+    Render an Album object with a template.
+
+    Example:
+        This tag requires ``album`` argument to work: ::
+
+            {% load lotus %}
+            {% get_album_html album %}
+
+    Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included.
+        album (lotus.models.article.Album): An album object.
+
+    Keyword Arguments:
+        template (string): A path for custom template to use. If not given a default
+            one will be used from setting ``LOTUS_ALBUM_TAG_TEMPLATE``.
+
+    Returns:
+        string: Rendered template tag fragment.
+    """
+    if album and not isinstance(album, Album):
+        current_type = type(album).__name__
+        raise TemplateSyntaxError(
+            (
+                "'get_album_html' tag only accepts an Album object as 'album' "
+                "argument. Object type '{current_type}' was given."
+            ).format(current_type=current_type)
+        )
+    # Use given template if any else the default one from settings
+    template_path = template or settings.LOTUS_ALBUM_TAG_TEMPLATE
+
+    return loader.get_template(template_path).render({
+        "album_object": album,
+    })

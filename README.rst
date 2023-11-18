@@ -18,7 +18,7 @@ Features
 ********
 
 * Multilingual articles and categories (but still compatible with single language site);
-* Tags for Articles;
+* Categories, albums and tags for Articles;
 * Featuring, pinning, private and draft modes;
 * Configured `CKEditor <https://ckeditor.com/ckeditor-4/>`_ to write rich text in admin;
 * Preview mode for admins;

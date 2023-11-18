@@ -30,6 +30,10 @@
                 <div class="introduction">{{ article_object.introduction|safe }}</div>
 
                 <div class="content">{{ article_object.content|safe }}</div>
+
+                {% if article_object.album %}
+                    {% get_album_html article_object.album %}
+                {% endif %}
             </div>
 
             <div class="col-12 col-lg-3">

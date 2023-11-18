@@ -7,25 +7,46 @@ Migrations
 From 0.7.0 to 0.8.0
 *******************
 
-TODO:
+New feature Album
+    * If you use a custom template for Article detail view you will need to update it
+      to include the `Album part <https://github.com/emencia/django-blog-lotus/blob/v0.8.0/lotus/templates/lotus/article/detail.html#L34>`_;
+    * If you copied the Sass sources frontend, you will need to update Bootstrap settings to
+      `enable the CSS Grid <https://github.com/emencia/django-blog-lotus/blob/v0.8.0/frontend/scss/settings/_bootstrap.scss#L9>`_
+      with ``$enable-cssgrid: true;``;
 
-* Add ``django.contrib.sites.middleware.CurrentSiteMiddleware`` middleware to your ``settings.MIDDLEWARES``;
-* New template block ``{% block header-resource-extra %}`` in skeleton;
-* ``lotus/base.html`` to update if customized;
+New feature Canonical URL
+    * You need to add ``django.contrib.sites.middleware.CurrentSiteMiddleware`` middleware
+      to your ``settings.MIDDLEWARES``;
+    * A new template block ``{% block header-resource-extra %}`` has to be added in
+      `template skeleton <https://github.com/emencia/django-blog-lotus/blob/v0.8.0/sandbox/templates/skeleton.html#L14>`_
+      since Lotus use in its templates;
+    * If you use a custom ``lotus/base.html`` you will need to update it to include
+      the `new part which build the canonical URL <https://github.com/emencia/django-blog-lotus/blob/v0.8.0/lotus/templates/lotus/base.html#L3>`_;
+
+CKEditor integration
+    In our sandbox settings we enabled the plugin ``image2`` instead of default image
+    plugin since it is a bit of ergonomy improvement, you may include it also in your
+    CKEditor configuration with the
+    `following two lines <https://github.com/emencia/django-blog-lotus/blob/v0.8.0/sandbox/settings/base.py#L190>`_.
 
 
 From 0.6.1 to 0.7.0
 *******************
 
-* If you were using a custom template for Article details and keeped the part for
-  related article listing that was starting with
-  ``{% with relateds=article_object.get_related %}`` you must change it to use the
-  new template tag which apply the publication and language filtering. See the
-  `current detail template <https://github.com/emencia/django-blog-lotus/blob/2774ca69af7d9acfa6dc77ac0bf7549bcd62779e/lotus/templates/lotus/article/detail.html#L169>`_
-  to know what to copy. This is important since the old template only applied language
-  filtering and totally ignore publication criterias;
-* You may now enable the API with installing package extra requirement ``api`` and
-  then follow install guide about :ref:`install_api`;
+Improved related article in Article detail view
+    If you were using a custom template for Article details and keeped the part for
+    related article listing that was starting with
+    ``{% with relateds=article_object.get_related %}`` you must change it to use the
+    new template tag which apply the publication and language filtering.
+
+    See the
+    `current detail template <https://github.com/emencia/django-blog-lotus/blob/v0.7.0/lotus/templates/lotus/article/detail.html#L169>`_
+    to know what to copy. This is important since the old template only applied language
+    filtering and totally ignore publication criterias;
+
+New feature API
+    You may now enable the API with installing package extra requirement ``api`` and
+    then follow install guide about :ref:`install_api`;
 
 
 From 0.6.0 to 0.6.1

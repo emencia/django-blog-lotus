@@ -19,7 +19,8 @@ from django.urls import reverse
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import (
-    ArticleFactory, AuthorFactory, CategoryFactory, TagFactory, multilingual_article,
+    AlbumFactory, ArticleFactory, AuthorFactory, CategoryFactory, TagFactory,
+    multilingual_article,
 )
 from lotus.utils.tests import get_admin_change_url, html_pyquery
 from lotus.views.mixins import ArticleFilterAbstractView
@@ -902,3 +903,35 @@ def test_article_model_get_related_publication_filtered(db, rf, client):
         for item in dom.find("#lotus-content .relateds li a")
     ]
     assert relateds == ["published yesterday"]
+
+
+def test_article_with_album(db, client):
+    """
+    Article that selected an album should have the album rendered in its detail view.
+    """
+    album = AlbumFactory(fill_items=2)
+
+    article = ArticleFactory(title="Bar", album=album)
+
+    # Parse HTML response for 'no SEO article'
+    response = client.get(article.get_absolute_url())
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    album_render = dom.find(".album")
+    assert len(album_render) == 1
+
+    rendered_items = [
+        (
+            item.cssselect(".title")[0].text,
+            item.cssselect("a")[0].get("href"),
+        )
+        for item in album_render.find(".albumitems .item")
+    ]
+
+    expected_items = [
+        (item.title, item.media.url)
+        for item in album.albumitems.all()
+    ]
+
+    assert rendered_items == expected_items

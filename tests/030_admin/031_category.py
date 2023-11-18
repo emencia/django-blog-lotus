@@ -44,7 +44,7 @@ def test_category_admin_detail(db, admin_client):
     assert response.status_code == 200
 
 
-def test_category_admin_change_form(db, admin_client):
+def test_category_admin_change_form(db):
     """
     Ensure the admin change form is working well (this should cover add form
     also) and ensure image upload is correct.
@@ -112,7 +112,7 @@ def test_category_admin_original_choices(db, admin_client):
     assert sorted(option_ids) == sorted([item.id for item in fillers_langs])
 
 
-def test_category_admin_original_validation(db, admin_client):
+def test_category_admin_original_validation(db):
     """
     Changing language should not allow to trick constraint on original relation
     which must be in different language.
@@ -149,7 +149,7 @@ def test_category_admin_original_validation(db, admin_client):
     }
 
 
-def test_category_admin_article_relations_validation(db, admin_client):
+def test_category_admin_article_relations_validation(db):
     """
     Category admin form should not allow to change language if object already
     have related articles in different language.
@@ -182,7 +182,7 @@ def test_category_admin_article_relations_validation(db, admin_client):
     }
 
 
-def test_category_preview_modelchoice_create_labels(db, admin_client):
+def test_category_preview_modelchoice_create_labels(db):
     """
     Admin create form should have language names in model choices fields.
     """
@@ -203,7 +203,7 @@ def test_category_preview_modelchoice_create_labels(db, admin_client):
     ]
 
 
-def test_category_preview_modelchoice_change_labels(db, admin_client):
+def test_category_preview_modelchoice_change_labels(db):
     """
     Admin change form should have language names in model choices fields.
     """

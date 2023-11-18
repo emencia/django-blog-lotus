@@ -260,6 +260,17 @@ class Article(SmartFormatMixin, Translated):
     Optional tags
     """
 
+    album = models.ForeignKey(
+        "lotus.Album",
+        related_name="articles",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE
+    )
+    """
+    Optional album relation.
+    """
+
     COMMON_ORDER_BY = ["-pinned", "-publish_date", "-publish_time", "title"]
     """
     List of field order commonly used in frontend view/api
@@ -370,6 +381,17 @@ class Article(SmartFormatMixin, Translated):
             queryset: List of article categories.
         """
         return self.categories.get_for_lang(self.language).order_by("title")
+
+    def get_album_items(self):
+        """
+        Return album items.
+
+        Depends on ``use_original_album`` value.
+
+        Returns:
+            queryset: List of album items.
+        """
+        return []
 
     def get_related(self, filter_func=None):
         """
