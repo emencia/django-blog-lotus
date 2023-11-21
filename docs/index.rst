@@ -17,6 +17,7 @@ Contents
    publication.rst
    medias.rst
    breadcrumbs.rst
+   api.rst
    layout.rst
    permissions.rst
    core/index.rst
