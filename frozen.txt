@@ -1,4 +1,4 @@
-# Frozen requirement versions from '0.8.0rc12' installation
+# Frozen requirement versions from '0.8.0' installation
 Django==4.2.6
 django-autocomplete-light==3.9.7
 django-ckeditor==6.7.0

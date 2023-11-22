@@ -3,7 +3,7 @@
 Changelog
 =========
 
-Version 0.8.0 - Unreleased
+Version 0.8.0 - 2023/11/22
 --------------------------
 
 A major release with new feature *Article album*, see
