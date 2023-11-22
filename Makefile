@@ -267,6 +267,7 @@ css:
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building CSS for development environment <---$(FORMATRESET)\n"
 	@echo ""
 	cd $(FRONTEND_DIR) && npm run-script css
+	@mv $(SANDBOX_DIR)/static-sources/css/lotus-admin.css lotus/static/css/
 .PHONY: css
 
 watch-sass:
@@ -281,6 +282,7 @@ css-prod:
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building CSS for production environment <---$(FORMATRESET)\n"
 	@echo ""
 	cd $(FRONTEND_DIR) && npm run-script css-prod
+	@mv $(SANDBOX_DIR)/static-sources/css/lotus-admin.css lotus/static/css/
 .PHONY: css-prod
 
 js:

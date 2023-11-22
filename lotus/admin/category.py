@@ -74,6 +74,10 @@ class CategoryAdmin(SmartModelAdmin):
         ),
     )
 
+    class Media:
+        css = settings.LOTUS_ADMIN_CATEGORY_ASSETS.get("css", None)
+        js = settings.LOTUS_ADMIN_CATEGORY_ASSETS.get("js", None)
+
     def language_name(self, obj):
         if obj.language in LANGUAGE_NAMES:
             return LANGUAGE_NAMES[obj.language]

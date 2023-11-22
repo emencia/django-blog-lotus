@@ -13,6 +13,9 @@ New feature Album
     * If you copied the Sass sources frontend, you will need to update Bootstrap settings to
       `enable the CSS Grid <https://github.com/emencia/django-blog-lotus/blob/v0.8.0/frontend/scss/settings/_bootstrap.scss#L9>`_
       with ``$enable-cssgrid: true;``;
+    * A new setting ``LOTUS_ALBUM_TAG_TEMPLATE`` is required, see
+      :ref:`intro_install_settings` documentation if you don't import the default
+      settings from Lotus;
 
 New feature Canonical URL
     * You need to add ``django.contrib.sites.middleware.CurrentSiteMiddleware`` middleware
@@ -25,9 +28,15 @@ New feature Canonical URL
 
 CKEditor integration
     In our sandbox settings we enabled the plugin ``image2`` instead of default image
-    plugin since it is a bit of ergonomy improvement, you may include it also in your
+    plugin since it has a minor ergonomy improvement, you may include it also in your
     CKEditor configuration with the
-    `following two lines <https://github.com/emencia/django-blog-lotus/blob/v0.8.0/sandbox/settings/base.py#L190>`_.
+    `following two lines <https://github.com/emencia/django-blog-lotus/blob/v0.8.0/sandbox/settings/base.py#L190>`_;
+
+Admin improvements
+    New settings ``LOTUS_ADMIN_ARTICLE_ASSETS``, ``LOTUS_ADMIN_CATEGORY_ASSETS``
+    and ``LOTUS_ADMIN_ALBUM_ASSETS``  are required, see
+    :ref:`intro_install_settings` documentation if you don't import the default
+    settings from Lotus;
 
 
 From 0.6.1 to 0.7.0

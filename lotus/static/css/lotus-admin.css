@@ -1,0 +1,11 @@
+/*
+ *
+ * Some useful basic functions and mixins
+ *
+ */
+/*
+ * Additional site specific settings
+ */
+.app-lotus .django-ckeditor-widget {
+  flex: auto 1;
+  width: 100%; }

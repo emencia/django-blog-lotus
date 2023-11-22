@@ -124,6 +124,10 @@ class ArticleAdmin(SmartModelAdmin):
         ),
     )
 
+    class Media:
+        css = settings.LOTUS_ADMIN_ARTICLE_ASSETS.get("css", None)
+        js = settings.LOTUS_ADMIN_ARTICLE_ASSETS.get("js", None)
+
     def language_name(self, obj):
         """
         Return humanized name for object language code.

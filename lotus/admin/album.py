@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
@@ -34,3 +35,7 @@ class AlbumAdmin(admin.ModelAdmin):
         "title",
     )
     inlines = (AlbumItemAdmin,)
+
+    class Media:
+        css = settings.LOTUS_ADMIN_ALBUM_ASSETS.get("css", None)
+        js = settings.LOTUS_ADMIN_ALBUM_ASSETS.get("js", None)

@@ -34,39 +34,9 @@ Django 4.1 at least.**
   command ``makemigration`` has some behavior changes;
 * Enabled CSS Grid from Bootstrap settings in sandbox frontend (since Grid is used to
   display Album);
-
-TODO
-....
-
-- [ ] Article album:
-
-  - [x] Model;
-  - [x] Form;
-  - [x] Admin;
-  - [x] Fill empty title from filename;
-  - [x] Factories;
-  - [x] Template tag;
-  - [x] Partial template for album item rendering from tag;
-  - [x] Implement Album tag usage in Article detail;
-  - [x] Tests model, forms, admin, view;
-  - [x] Add some albums in demo;
-  - [x] Documentation;
-  - [ ] API implementation;
-  - [ ] Tests serializers, viewsets;
-  - [ ] Private album ?
-  - [ ] Dedicated view ?
-  - [ ] Album mass upload from ZIP ? (deferred as additional feature in further
-    release?);
-
-- [ ] Add a stylesheet for admin which include
-  ``.django-ckeditor-widget {flex: auto 1;}`` for better CKEditor usability. This
-  should be an optional stylesheet that could be overriden with another one (to ensure
-  portability with Bootstrap admin interfaces like admin-style which need more of
-  ``width: 100%``);
-- [ ] API Documentation;
-- [ ] Better indication on Article kind (original/translation) in admin Article edit
-  form which should be clearly mentionned;
-- [ ] Split template tags in modules ?
+* Added API overview documentation;
+* Added new stylesheet used in Lotus model admins to improve CKEditor width, this
+  configurable from settings;
 
 
 Version 0.7.0 - 2023/10/11

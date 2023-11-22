@@ -1,0 +1,20 @@
+@charset "utf-8";
+
+// Basic functions must be loaded before settings to be able to use them from
+// settings and objects
+@import "./tools/rem";
+@import "./tools/content_urls";
+
+// Load project settings
+@import "./settings/site";
+
+.app-lotus {
+    // django-ckeditor widget improvement
+    .django-ckeditor-widget {
+        // Enforce input to take full available width
+        // This should work for Django admin layout
+        flex: auto 1;
+        // And this should work with admin-style
+        width: 100%;
+    }
+}

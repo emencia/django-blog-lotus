@@ -123,3 +123,42 @@ is the title to display. You must not remove any of these, just change the value
     object title as a crumb title, so they won't be editable from this setting.
 
 """
+
+LOTUS_ADMIN_ARTICLE_ASSETS = {
+    "css": {
+        "all": ("css/lotus-admin.css",)
+    },
+    "js": None,
+}
+"""
+Form media to load in all admin views related to model Article. See Django
+documentation about `admin form media definitions
+<https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#modeladmin-asset-definitions>`_
+to know how you can edit it.
+"""
+
+LOTUS_ADMIN_CATEGORY_ASSETS = {
+    "css": {
+        "all": ("css/lotus-admin.css",)
+    },
+    "js": None,
+}
+"""
+Form media to load in all admin views related to model Category. See Django
+documentation about `admin form media definitions
+<https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#modeladmin-asset-definitions>`_
+to know how you can edit it.
+"""
+
+LOTUS_ADMIN_ALBUM_ASSETS = {
+    "css": {
+        "all": ("css/lotus-admin.css",)
+    },
+    "js": None,
+}
+"""
+Form media to load in all admin views related to model Album. See Django
+documentation about `admin form media definitions
+<https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#modeladmin-asset-definitions>`_
+to know how you can edit it.
+"""
