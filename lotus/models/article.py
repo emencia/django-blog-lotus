@@ -437,7 +437,7 @@ class Article(SmartFormatMixin, Translated):
         Return a datetime from joined publish date and time.
 
         Returns:
-            datetime.datetime: Publish datetime.
+            datetime.datetime: Publish datetime with UTC timezone.
         """
         return datetime.datetime.combine(
             self.publish_date, self.publish_time
@@ -459,7 +459,7 @@ class Article(SmartFormatMixin, Translated):
                 date. Empty by default, there will be no state about start/end dates.
 
         Returns:
-            datetime.datetime: Publish datetime.
+            list: A list of all article state names.
         """
         state_names = settings.LOTUS_ARTICLE_PUBLICATION_STATE_NAMES
         states = []

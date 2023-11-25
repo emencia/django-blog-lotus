@@ -22,12 +22,27 @@ class Album(models.Model):
     A required title string.
     """
 
-    def __str__(self):
-        return self.title
+    modified = models.DateTimeField(
+        _("modification date"),
+        default=timezone.now,
+        editable=False,
+    )
+    """
+    Automatic modification date.
+    """
 
     class Meta:
         verbose_name = _("Album")
         verbose_name_plural = _("Albums")
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        # Auto update 'modified' value on each save
+        self.modified = timezone.now()
+
+        super().save(*args, **kwargs)
 
 
 class AlbumItem(SmartFormatMixin, models.Model):
@@ -40,9 +55,8 @@ class AlbumItem(SmartFormatMixin, models.Model):
         on_delete=models.CASCADE
     )
 
-    modified = models.DateField(
+    modified = models.DateTimeField(
         _("modification date"),
-        db_index=True,
         default=timezone.now,
         editable=False,
     )

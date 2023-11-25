@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import translate_url, reverse
 
@@ -28,6 +29,15 @@ class Category(SmartFormatMixin, Translated):
     )
     """
     Optional original category when object is a translation.
+    """
+
+    modified = models.DateTimeField(
+        _("modification date"),
+        default=timezone.now,
+        editable=False,
+    )
+    """
+    Automatic modification date.
     """
 
     title = models.CharField(
@@ -140,6 +150,12 @@ class Category(SmartFormatMixin, Translated):
 
     def get_cover_format(self):
         return self.media_format(self.cover)
+
+    def save(self, *args, **kwargs):
+        # Auto update 'modified' value on each save
+        self.modified = timezone.now()
+
+        super().save(*args, **kwargs)
 
 
 # Connect some signals

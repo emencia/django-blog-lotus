@@ -38,11 +38,13 @@ pytestmark = pytest.mark.skipif(
 
 
 @freeze_time("2012-10-15 10:00:00")
-def test_category_categoryserializer(db, api_client):
+def test_category_categoryserializer(db, settings, api_client):
     """
     Serializer 'CategorySerializer' should returns the full payload as expected
     depending serializer has been given (from context) a filtering function or not.
     """
+    settings.LANGUAGE_CODE = "fr"
+
     # Build a dummy request, we don't care about requested URL.
     request_factory = APIRequestFactory()
     request = request_factory.get("/")
@@ -61,6 +63,8 @@ def test_category_categoryserializer(db, api_client):
         "cover": None
     }
 
+    # Timezone defined from project settings, used to format displayed date
+    site_tz = ZoneInfo(settings.TIME_ZONE)
     # Date references
     now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=ZoneInfo("UTC"))
     tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
@@ -152,6 +156,7 @@ def test_category_categoryserializer(db, api_client):
         "title": ping.title,
         "slug": ping.slug,
         "lead": ping.lead,
+        "modified": ping.modified.astimezone(site_tz).isoformat(),
         "cover": "http://testserver" + ping.cover.url,
         "description": ping.description,
     }
@@ -195,6 +200,7 @@ def test_category_categoryserializer(db, api_client):
         "title": ping.title,
         "slug": ping.slug,
         "lead": ping.lead,
+        "modified": ping.modified.astimezone(site_tz).isoformat(),
         "cover": "http://testserver" + ping.cover.url,
         "description": ping.description,
     }

@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Version 0.8.1 - Unreleased
+--------------------------
+
+* Added a ``modified`` field on Category, Album and AlbumItem models. This was required
+  to have accurate update datetime in future ``sitemap.xml``;
+
+
 Version 0.8.0 - 2023/11/22
 --------------------------
 
