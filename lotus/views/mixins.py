@@ -61,7 +61,13 @@ class ArticleFilterMixin(LookupBuilder):
         # previously in method build/apply lookup
         self.target_date = timezone.now()
 
-    def build_article_lookups(self, language, prefix=None):
+    def is_for_authenticated_user(self):
+        if not hasattr(self, "request"):
+            return False
+
+        return self.request.user.is_authenticated
+
+    def build_article_lookups(self, language=None, prefix=None):
         """
         Build complex lookups to apply common publication criterias.
 
@@ -73,11 +79,11 @@ class ArticleFilterMixin(LookupBuilder):
         model with a manager which implement ``get_for_lang`` and ``get_published``
         methods.
 
-        Arguments:
+        Keyword Arguments:
             language (string): Language code to filter on.
 
         Returns:
-            tuple:
+            tuple: The lookups to give to a queryset filter.
         """
         lookups = []
         prefix = prefix or ""
@@ -88,6 +94,7 @@ class ArticleFilterMixin(LookupBuilder):
 
         # Check for enabled preview mode
         if (
+            language and
             hasattr(self, "allowed_preview_mode") and
             self.allowed_preview_mode(self.request)
         ):
@@ -100,7 +107,7 @@ class ArticleFilterMixin(LookupBuilder):
                 self.build_publication_conditions(
                     target_date=None,
                     language=language,
-                    private=None if self.request.user.is_authenticated else False,
+                    private=None if self.is_for_authenticated_user() else False,
                     prefix=prefix,
                 )
             )
@@ -142,7 +149,7 @@ class ArticleFilterMixin(LookupBuilder):
             queryset = queryset.get_published(
                 target_date=self.target_date,
                 language=language,
-                private=None if self.request.user.is_authenticated else False,
+                private=None if self.is_for_authenticated_user() else False,
             )
 
         return queryset

@@ -15,3 +15,23 @@ more informations on its available features and settings.
     View crumb titles can be changed from setting ``LOTUS_ENABLE_TAG_INDEX_VIEW``
     except those ones which use an object title as their crumb title like the detail
     views.
+
+.. _install_breadcrumbs:
+
+Install
+*******
+
+First you need to install Lotus with extra requirement for breadcrumbs: ::
+
+    pip install django-blog-lotus[breadcrumbs]
+
+Then enable it in Django enabled applications before the line for Lotus (in any order
+with API): ::
+
+    INSTALLED_APPS = (
+        ...
+        "view_breadcrumbs",
+        ...
+        "lotus",
+    )
+

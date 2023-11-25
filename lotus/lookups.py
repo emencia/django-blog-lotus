@@ -26,8 +26,7 @@ class LookupBuilder:
 
         Keyword Arguments:
             target_date (datetime.datetime): Datetime timezone aware for
-                publication target, if empty default value will be the current
-                datetime.
+                publication target, if empty the value will be the current datetime.
             language (string): Language code to filter on. If empty, language is not
                 filtered.
             private (boolean): Either True or False to set lookup for 'private' field.
@@ -91,6 +90,9 @@ class LookupBuilder:
         Return lookups to get sibling objects for given source object.
 
         The siblings can be the original object and translation objects.
+
+        TODO: Method should have an option (enable by default) to only list object for
+        enabled languages from ``settings.settings.LANGUAGES``.
 
         Arguments:
             source (object): Object to use for its id and original_id used in queryset

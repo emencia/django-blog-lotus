@@ -5,9 +5,11 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps import views as sitemap_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 
+from lotus.sitemaps import ArticleSitemap, AuthorSitemap, CategorySitemap, TagSitemap
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -15,6 +17,25 @@ urlpatterns = [
     path("i18n/", include("django.conf.urls.i18n")),
 ]
 
+# The sitemap.xml part
+sitemap_classes = {
+    "lotus-article": ArticleSitemap,
+    "lotus-author": AuthorSitemap,
+    "lotus-category": CategorySitemap,
+    "lotus-tag": TagSitemap,
+}
+
+urlpatterns += [
+    path("sitemap.xml", sitemap_views.index, {"sitemaps": sitemap_classes}),
+    path(
+        "sitemap-<section>.xml",
+        sitemap_views.sitemap,
+        {"sitemaps": sitemap_classes},
+        name="django.contrib.sitemaps.views.sitemap"
+    ),
+]
+
+# Enable API if DRF is installed
 try:
     import rest_framework  # noqa: F401
 except ModuleNotFoundError:
@@ -25,6 +46,7 @@ else:
         path("api/", include("lotus.api_urls")),
     ]
 
+# Mount Lotus frontend with I18N
 urlpatterns += i18n_patterns(
     path("", include("lotus.urls")),
 )

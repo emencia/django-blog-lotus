@@ -18,6 +18,9 @@ from .tag import TagFactory
 class ArticleFactory(factory.django.DjangoModelFactory):
     """
     Factory to create instance of an Article.
+
+    No relations for category, author, related or author are created by default, it
+    needs to be explicitely asken for with post generation methods.
     """
     language = settings.LANGUAGE_CODE
     original = None

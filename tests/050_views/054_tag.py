@@ -12,9 +12,7 @@ except ModuleNotFoundError:
 from django.urls import translate_url, reverse
 
 from lotus.choices import STATUS_DRAFT
-from lotus.factories import (
-    ArticleFactory, AuthorFactory, CategoryFactory, TagFactory,
-)
+from lotus.factories import ArticleFactory, AuthorFactory, TagFactory
 from lotus.utils.tests import html_pyquery
 
 
@@ -36,10 +34,6 @@ def test_tag_view_index(db, admin_client, client, enable_preview, settings):
 
     utc = ZoneInfo("UTC")
     next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
-
-    AuthorFactory(first_name="Picsou", last_name="McDuck")
-
-    CategoryFactory(title="cat_1")
 
     science = TagFactory(name="Science", slug="science")
     TagFactory(name="Sausage", slug="sausage")
@@ -197,10 +191,6 @@ def test_tag_view_detail(db, admin_client, client, enable_preview, settings):
 
     utc = ZoneInfo("UTC")
     next_hour = datetime.datetime(2012, 10, 15, 11, 00).replace(tzinfo=utc)
-
-    AuthorFactory(first_name="Picsou", last_name="McDuck")
-
-    CategoryFactory(title="cat_1")
 
     science = TagFactory(name="Science", slug="science")
     sausage = TagFactory(name="Sausage", slug="sausage")

@@ -27,6 +27,7 @@ Features
 * SVG soft support in image fields;
 * Optional API with `djangorestframework`_;
 * Optional Breadcrumbs with `django-view-breadcrumbs`_;
+* Optional Django Sitemap classes for all models to build a ``sitemap.xml``;
 * Full test coverage;
 
 

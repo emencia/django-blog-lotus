@@ -42,6 +42,8 @@ class Author(safe_get_user_model(), AuthorManagerEnabled):
     def get_absolute_url(self):
         """
         Builds and returns the author's URL based on his username.
+
+        TODO: The try..except does not seems useful.
         """
         try:
             return super().get_absolute_url()

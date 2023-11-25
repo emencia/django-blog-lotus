@@ -4,6 +4,18 @@
 Migrations
 ==========
 
+From 0.8.0 to 0.8.1
+*******************
+
+New migration
+    A new basic model migration has been added to add a ``modified`` field on some
+    models, you just have to apply it on your project.
+
+New feature Sitemap
+    This new feature is available but you will need to enable it, see install guide in
+    documentation Sitemap :ref:`install_sitemaps`.
+
+
 From 0.7.0 to 0.8.0
 *******************
 
@@ -55,7 +67,7 @@ Improved related article in Article detail view
 
 New feature API
     You may now enable the API with installing package extra requirement ``api`` and
-    then follow install guide about :ref:`install_api`;
+    then follow install guide about API :ref:`install_api`;
 
 
 From 0.6.0 to 0.6.1

@@ -1,9 +1,12 @@
-from django.utils.translation import gettext_lazy as _
-
 """
+.. _Django sitemap framework: https://docs.djangoproject.com/en/stable/ref/contrib/sitemaps/
+
 These are the default settings you can override in your own project settings
 right after the line which load the default app settings.
-"""
+"""  # noqa
+from django.utils.translation import gettext_lazy as _
+
+
 LOTUS_CATEGORY_PAGINATION = 5
 """
 Category per page limit for pagination, set it to ``None`` to disable
@@ -133,9 +136,9 @@ LOTUS_ADMIN_ARTICLE_ASSETS = {
 """
 Form media to load in all admin views related to model Article. See Django
 documentation about `admin form media definitions
-<https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#modeladmin-asset-definitions>`_
+<https://docs.djangoproject.com/en/stable/ref/contrib/admin/#modeladmin-asset-definitions>`_
 to know how you can edit it.
-"""
+"""  # noqa
 
 LOTUS_ADMIN_CATEGORY_ASSETS = {
     "css": {
@@ -146,9 +149,9 @@ LOTUS_ADMIN_CATEGORY_ASSETS = {
 """
 Form media to load in all admin views related to model Category. See Django
 documentation about `admin form media definitions
-<https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#modeladmin-asset-definitions>`_
+<https://docs.djangoproject.com/en/stable/ref/contrib/admin/#modeladmin-asset-definitions>`_
 to know how you can edit it.
-"""
+"""  # noqa
 
 LOTUS_ADMIN_ALBUM_ASSETS = {
     "css": {
@@ -159,6 +162,73 @@ LOTUS_ADMIN_ALBUM_ASSETS = {
 """
 Form media to load in all admin views related to model Album. See Django
 documentation about `admin form media definitions
-<https://docs.djangoproject.com/en/4.2/ref/contrib/admin/#modeladmin-asset-definitions>`_
+<https://docs.djangoproject.com/en/stable/ref/contrib/admin/#modeladmin-asset-definitions>`_
 to know how you can edit it.
+"""  # noqa
+
+LOTUS_SITEMAP_AUTHOR_OPTIONS = {
+    "changefreq": "monthly",
+    "priority": 0.5,
+}
+"""
+Author sitemap class options.
+
+Supported `Django sitemap framework`_ options are:
+
+* ``changefreq``;
+* ``limit``;
+* ``priority``;
+* ``protocol``;
+
+"""
+
+LOTUS_SITEMAP_ARTICLE_OPTIONS = {
+    "changefreq": "monthly",
+    "priority": 0.5,
+}
+"""
+Article sitemap class options.
+
+Supported `Django sitemap framework`_ options are:
+
+* ``changefreq``;
+* ``limit``;
+* ``priority``;
+* ``protocol``;
+
+And additionnally the option ``translations`` which except a boolean value to enable
+or disable the :ref:`sitemaps_translation_mode`.
+"""
+
+LOTUS_SITEMAP_CATEGORY_OPTIONS = {
+    "changefreq": "monthly",
+    "priority": 0.5,
+}
+"""
+Category sitemap class options.
+
+Supported `Django sitemap framework`_ options are:
+
+* ``changefreq``;
+* ``limit``;
+* ``priority``;
+* ``protocol``;
+
+And additionnally the option ``translations`` which except a boolean value to enable
+or disable the :ref:`sitemaps_translation_mode`.
+"""
+
+LOTUS_SITEMAP_TAG_OPTIONS = {
+    "changefreq": "monthly",
+    "priority": 0.5,
+}
+"""
+Tag sitemap class options.
+
+Supported `Django sitemap framework`_ options are:
+
+* ``changefreq``;
+* ``limit``;
+* ``priority``;
+* ``protocol``;
 """

@@ -11,9 +11,7 @@ from dal import autocomplete
 from taggit.models import Tag
 
 from ..models import Article
-from .mixins import (
-    ArticleFilterAbstractView,
-)
+from .mixins import ArticleFilterAbstractView
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin

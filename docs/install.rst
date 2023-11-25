@@ -107,63 +107,15 @@ Then add the required url parts in you project ``urls.py`` like this: ::
     Now you will reach lotus from path ``/blog/``.
 
 
-.. _install_breadcrumbs:
+Optional features
+-----------------
 
-Breadcrumbs
------------
+There is also some optional features that are not enabled on default, you may want
+to enable them following their documentation:
 
-Then enable it in Django enabled applications before the line for Lotus (in any order
-with API): ::
-
-    INSTALLED_APPS = (
-        ...
-        "view_breadcrumbs",
-        ...
-        "lotus",
-    )
-
-
-.. _install_api:
-
-API
----
-
-If you installed the extra requirement for API you need to mount it in your urls, add
-the following line into the ``urlpatterns = [...]`` from previous ``urls.py```
-example: ::
-
-    path("api/", include("lotus.api_urls")),
-
-Obviously you can use the url path you need instead of ``api/``.
-
-Then enable it in Django enabled applications before the line for Lotus (in any order
-with Breadcrumbs): ::
-
-    INSTALLED_APPS = (
-        ...
-        "rest_framework",
-        ...
-        "lotus",
-    )
-
-Also you may want to add settings for `Django REST framework`_ itself like these
-ones: ::
-
-    REST_FRAMEWORK = {
-        "DEFAULT_PERMISSION_CLASSES": [
-            # Use Django"s standard `django.contrib.auth` permissions,
-            # or allow read-only access for unauthenticated users.
-            "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
-            # Only Django"s standard `django.contrib.auth` permissions, every
-            # authenticated user can read and anonymous are never allowed
-            # "rest_framework.permissions.DjangoModelPermissions",
-        ],
-        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
-        "PAGE_SIZE": 20
-    }
-
-However Lotus does not require any particular DRF settings, see
-`Django REST framework`_ documentation to know what you can configure.
+* :ref:`api_intro`;
+* :ref:`breadcrumbs_intro`;
+* :ref:`sitemaps_intro`;
 
 
 .. _install_single_language:
@@ -226,7 +178,6 @@ installed Lotus with breadcrumb extra requirement.
 Once finished, you can run the Django command to apply the Lotus migrations. Also, you
 will need to create a superuser or an admin to write contents from Django admin.
 
-
 .. _install_demo:
 
 Demonstration
@@ -242,8 +193,8 @@ the Makefile tasks: ::
 This installs everything to run and develop then build frontend assets and prompt you
 to create a superuser.
 
-And finally automatically fill some demonstration Author, Article and Category
-objects using command ``lotus_demo`` with default values: ::
+And finally automatically fill some demonstration contents objects using command
+``lotus_demo`` with default values: ::
 
     make demo
 
@@ -267,4 +218,4 @@ objects using command ``lotus_demo`` with default values: ::
     constraint which lead to consume random objects and may lead to empty remaining
     object queue.
 
-    So this command may fails depending object lengths.
+    So this command may fails depending object lengths you required.

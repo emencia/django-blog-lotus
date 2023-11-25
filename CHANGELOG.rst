@@ -6,8 +6,14 @@ Changelog
 Version 0.8.1 - Unreleased
 --------------------------
 
+A minor release with new feature *Sitemaps*, see
+`Migration to 0.8.1 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-8-0-to-0-8-1>`_
+to know about migrating your project.
+
 * Added a ``modified`` field on Category, Album and AlbumItem models. This was required
   to have accurate update datetime in future ``sitemap.xml``;
+* Added Sitemap classes for Article, Author, Category and Tag objects with test
+  coverage and documentation;
 
 
 Version 0.8.0 - 2023/11/22
@@ -17,8 +23,8 @@ A major release with new feature *Article album*, see
 `Migration to 0.8.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-7-0-to-0-8-0>`_
 to know about migrating your project.
 
-**This will be the last version to support Django 4.0, the next version will require
-Django 4.1 at least.**
+**This will be the last major version to support Django 4.0, the next version will
+require Django 4.1 at least.**
 
 * Added new feature "Article album":
 
