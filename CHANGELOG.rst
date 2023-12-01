@@ -3,7 +3,7 @@
 Changelog
 =========
 
-Version 0.8.1 - Unreleased
+Version 0.8.1 - 2023/12/01
 --------------------------
 
 A minor release with new feature *Sitemaps*, see
