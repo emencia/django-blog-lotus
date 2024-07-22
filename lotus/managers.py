@@ -1,5 +1,7 @@
 from django.db import models
 
+from treebeard.mp_tree import MP_NodeManager
+
 from .lookups import LookupBuilder
 
 
@@ -111,7 +113,7 @@ class ArticleQuerySet(BasePublishedQuerySet, BaseTranslatedQuerySet):
     pass
 
 
-class CategoryManager(models.Manager):
+class CategoryManager(MP_NodeManager):
     """
     Categroy objects manager.
     """

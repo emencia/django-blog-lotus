@@ -2,6 +2,8 @@ from django.conf import settings
 
 import factory
 
+from treebeard.mp_tree import MP_Node
+
 from ..models import Category
 from ..utils.factory import fake_html_paragraphs
 from ..utils.imaging import DjangoSampleImageCrafter
@@ -16,6 +18,8 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     title = factory.Sequence(lambda n: "Category {0}".format(n))
     slug = factory.Sequence(lambda n: "category-{0}".format(n))
     description = factory.Faker("text", max_nb_chars=150)
+    depth = 1
+    path = factory.Sequence(lambda n: MP_Node._get_path(None, 1, n))
 
     class Meta:
         model = Category

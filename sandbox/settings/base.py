@@ -153,6 +153,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.forms",
+    "treebeard",
     "sorl.thumbnail",
     "smart_media",
     "lotus",

@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import translate_url, reverse
 
+from treebeard.mp_tree import MP_Node
+
 from smart_media.mixins import SmartFormatMixin
 from smart_media.modelfields import SmartMediaField
 from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
@@ -13,7 +15,7 @@ from ..managers import CategoryManager
 from .translated import Translated
 
 
-class Category(SmartFormatMixin, Translated):
+class Category(SmartFormatMixin, MP_Node, Translated):
     """
     Category model.
     """
