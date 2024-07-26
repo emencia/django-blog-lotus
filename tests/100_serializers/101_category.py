@@ -60,7 +60,10 @@ def test_category_categoryserializer(db, settings, api_client):
         "slug": "",
         "lead": "",
         "description": "",
-        "cover": None
+        "cover": None,
+        "path": "",
+        "depth": None,
+        "numchild": None,
     }
 
     # Timezone defined from project settings, used to format displayed date
@@ -108,7 +111,8 @@ def test_category_categoryserializer(db, settings, api_client):
 
     # Use JSON render that will flatten data (turn OrderedDict as simple dict) to
     # ease assert and manipulation
-    assert json.loads(JSONRenderer().render(serialized.data)) == {
+    rendered = JSONRenderer().render(serialized.data)
+    assert json.loads(rendered) == {
         "url": "http://testserver/api/category/{}/".format(ping.id),
         "original": None,
         "detail_url": ping.get_absolute_url(),
@@ -159,6 +163,9 @@ def test_category_categoryserializer(db, settings, api_client):
         "modified": ping.modified.astimezone(site_tz).isoformat(),
         "cover": "http://testserver" + ping.cover.url,
         "description": ping.description,
+        "path": ping.path,
+        "depth": ping.depth,
+        "numchild": ping.numchild,
     }
 
     # Craft a proper viewset class with a request and that can be used to give
@@ -178,7 +185,8 @@ def test_category_categoryserializer(db, settings, api_client):
 
     # Use JSON render that will flatten data (turn OrderedDict as simple dict) to
     # ease assert and manipulation
-    assert json.loads(JSONRenderer().render(filtered_and_serialized.data)) == {
+    rendered = JSONRenderer().render(filtered_and_serialized.data)
+    assert json.loads(rendered) == {
         "url": "http://testserver/api/category/{}/".format(ping.id),
         "original": None,
         "detail_url": ping.get_absolute_url(),
@@ -203,6 +211,9 @@ def test_category_categoryserializer(db, settings, api_client):
         "modified": ping.modified.astimezone(site_tz).isoformat(),
         "cover": "http://testserver" + ping.cover.url,
         "description": ping.description,
+        "path": ping.path,
+        "depth": ping.depth,
+        "numchild": ping.numchild,
     }
 
 

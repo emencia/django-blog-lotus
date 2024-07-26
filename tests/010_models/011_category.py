@@ -19,6 +19,10 @@ def test_category_basic(settings, db):
     category = Category(
         title="Foo",
         slug="foo",
+        depth=1,
+        # Although valid it would probably not correct in practive since path is built
+        # with a specific algorithm
+        path="000C",
     )
     category.full_clean()
     category.save()
@@ -40,6 +44,8 @@ def test_category_required_fields(db):
         "title": ["This field cannot be blank."],
         "slug": ["This field cannot be blank."],
         "language": ["This field cannot be blank."],
+        "depth": ["This field cannot be null."],
+        "path": ["This field cannot be blank."],
     }
 
 
