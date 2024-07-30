@@ -12,7 +12,7 @@ from lotus.utils.tests import (
 )
 
 
-def test_category_admin_add(db, admin_client):
+def test_category_admin_ping_add(db, admin_client):
     """
     Category model admin add form view should not raise error on GET request.
     """
@@ -22,7 +22,7 @@ def test_category_admin_add(db, admin_client):
     assert response.status_code == 200
 
 
-def test_category_admin_list(db, admin_client):
+def test_category_admin_ping_list(db, admin_client):
     """
     Category model admin list view should not raise error on GET request.
     """
@@ -32,7 +32,7 @@ def test_category_admin_list(db, admin_client):
     assert response.status_code == 200
 
 
-def test_category_admin_detail(db, admin_client):
+def test_category_admin_ping_detail(db, admin_client):
     """
     Category model admin detail view should not raise error on GET request.
     """
@@ -54,7 +54,9 @@ def test_category_admin_change_form(db):
 
     # Build initial POST data
     ignore = ["id", "category", "articles"]
-    data = build_post_data_from_object(Category, obj, ignore=ignore)
+    data = build_post_data_from_object(Category, obj, ignore=ignore, extra={
+        "_position": "sorted-child",
+    })
 
     file_data = {
         "cover": SimpleUploadedFile(
@@ -65,6 +67,9 @@ def test_category_admin_change_form(db):
     }
 
     f = CategoryAdminForm(data, file_data, instance=obj)
+
+    f.is_valid()
+    print(f.errors.as_data())
 
     # No validation errors
     assert f.is_valid() is True
@@ -123,7 +128,9 @@ def test_category_admin_original_validation(db):
 
     # Build initial POST data
     ignore = ["id", "category", "articles"]
-    data = build_post_data_from_object(Category, obj_fr, ignore=ignore)
+    data = build_post_data_from_object(Category, obj_fr, ignore=ignore, extra={
+        "_position": "sorted-child",
+    })
 
     # 1) Edit to set original on 'obj_en', everything is ok
     data["original"] = obj_en
@@ -158,7 +165,9 @@ def test_category_admin_article_relations_validation(db):
 
     # Build initial POST data
     ignore = ["id", "category", "articles"]
-    data = build_post_data_from_object(Category, build_fr, ignore=ignore)
+    data = build_post_data_from_object(Category, build_fr, ignore=ignore, extra={
+        "_position": "sorted-child",
+    })
 
     # 1) Set category without any article relation yet
     data["language"] = "fr"
