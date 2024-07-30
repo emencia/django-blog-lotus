@@ -45,6 +45,8 @@ class CategoryAdmin(SmartModelAdmin):
         (
             None, {
                 "fields": (
+                    "_position",
+                    "_ref_node_id",
                     "title",
                     "slug",
                 )

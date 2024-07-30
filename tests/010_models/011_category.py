@@ -251,3 +251,162 @@ def test_category_model_file_purge(db):
     # untouched
     assert Path(pong_path).exists() is False
     assert Path(pong.cover.path).exists() is True
+
+
+def test_category_tree(settings, db):
+    """
+    Check about treebear implementation behaviors during development.
+    """
+    # Bulk insertion with title/slug in arbitrary order
+    bulk_data = [
+        {
+            "data": {
+                "title": "Item 2",
+                "slug": "item-2",
+                "language": "en",
+            }
+        },
+        {
+            "data": {
+                "title": "Item 1",
+                "slug": "item-1",
+                "language": "en",
+            },
+            "children": [
+                {
+                    "data": {
+                        "title": "Item 1.1",
+                        "slug": "item-1-1",
+                        "language": "en",
+                    }
+                },
+            ]
+        },
+        {
+            "data": {
+                "title": "Item 3",
+                "slug": "item-3",
+                "language": "en",
+            },
+            "children": [
+                {
+                    "data": {
+                        "title": "Item 3.1",
+                        "slug": "item-3-1",
+                        "language": "en",
+                    },
+                    "children": [
+                        {
+                            "data": {
+                                "title": "Item 3.1.1",
+                                "slug": "item-3-1-1",
+                                "language": "en",
+                            },
+                        },
+                        {
+                            "data": {
+                                "title": "Item 3.1.3",
+                                "slug": "item-3-1-3",
+                                "language": "en",
+                            },
+                        },
+                        {
+                            "data": {
+                                "title": "Item 3.1.4",
+                                "slug": "item-3-1-4",
+                                "language": "fr",
+                            },
+                        },
+                        {
+                            "data": {
+                                "title": "Item 3.1.2",
+                                "slug": "item-3-1-2",
+                                "language": "en",
+                            },
+                        },
+                    ],
+                },
+                {
+                    "data": {
+                        "title": "Item 3.2",
+                        "slug": "item-3-2",
+                        "language": "en",
+                    },
+                },
+            ]
+        },
+    ]
+
+    Category.load_bulk(bulk_data)
+
+    # print()
+    # import json
+    # from lotus.utils.jsons import ExtendedJsonEncoder
+    # print("dump_bulk:")
+    # print(json.dumps(Category.dump_bulk(), indent=4, cls=ExtendedJsonEncoder))
+    # print()
+
+    item_3 = Category.objects.get(slug="item-3")
+    item_3_1 = Category.objects.get(slug="item-3-1")
+
+    # 'get_tree' returns a queryset, not a tree structure
+    assert [item.slug for item in Category.get_tree()] == [
+        "item-1",
+        "item-1-1",
+        "item-2",
+        "item-3",
+        "item-3-1",
+        "item-3-1-1",
+        "item-3-1-2",
+        "item-3-1-3",
+        "item-3-1-4",
+        "item-3-2",
+    ]
+    assert [item.slug for item in Category.get_tree().filter(language="fr")] == [
+        "item-3-1-4",
+    ]
+    assert [item.slug for item in Category.get_tree(parent=item_3)] == [
+        "item-3",
+        "item-3-1",
+        "item-3-1-1",
+        "item-3-1-2",
+        "item-3-1-3",
+        "item-3-1-4",
+        "item-3-2",
+    ]
+    assert [item.slug for item in Category.get_tree(parent=item_3_1)] == [
+        "item-3-1",
+        "item-3-1-1",
+        "item-3-1-2",
+        "item-3-1-3",
+        "item-3-1-4",
+    ]
+
+    # Single object getters
+    assert item_3.get_parent() == None
+    assert item_3_1.get_parent().slug == item_3.slug
+
+    # parenting getters return a queryset
+    assert [item.slug for item in item_3.get_children()] == ["item-3-1", "item-3-2"]
+    assert [item.slug for item in item_3.get_descendants().filter(language="en")] == [
+        "item-3-1",
+        "item-3-1-1",
+        "item-3-1-2",
+        "item-3-1-3",
+        "item-3-2",
+    ]
+
+    # 'get_annotated_list_qs' allow to get annotated list from a queryset
+    notated = [
+        (obj.slug, data)
+        for obj, data in Category.get_annotated_list_qs(
+            item_3.get_descendants().filter(language="en")
+        )
+    ]
+    assert notated == [
+        ("item-3-1", {"open": True, "close": [], "level": 0}),
+        ("item-3-1-1", {"open": True, "close": [], "level": 1}),
+        ("item-3-1-2", {"open": False, "close": [], "level": 1}),
+        ("item-3-1-3", {"open": False, "close": [0], "level": 1}),
+        ("item-3-2", {"open": False, "close": [0], "level": 0})
+    ]

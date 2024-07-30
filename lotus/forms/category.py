@@ -1,11 +1,14 @@
 from django import forms
 from django.conf import settings
 from django.db import models
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from ..models import Category
+from treebeard.forms import MoveNodeForm, movenodeform_factory
 
-from .translated import TranslatedModelChoiceField
+from ..models import Category
+from ..formfields import TranslatedModelChoiceField
 
 
 # Use the right field depending 'ckeditor_uploader' app is enabled or not
@@ -22,32 +25,118 @@ if CONFIG_NAME not in CKEDITOR_CONFIG:
     CONFIG_NAME = "default"
 
 
-class CategoryAdminForm(forms.ModelForm):
+class TranslatedMoveNodeForm(MoveNodeForm):
+    """
+    According to treebeard documentation it is recommended to not directly inherit from
+    MoveNodeForm and prefer to use ``movenodeform_factory`` to build the proper form
+    class to extend.
+    """
+
+    @staticmethod
+    def mk_indent(level):
+        return '&nbsp;&nbsp;&nbsp;&nbsp;' * (level - 1)
+
+    @classmethod
+    def add_subtree(cls, for_node, node, options, excluded=None):
+        """
+        Recursively build options tree that are not excluded.
+        """
+        excluded = excluded or []
+
+        if cls.is_loop_safe(for_node, node):
+            for item, _ in node.get_annotated_list(node):
+                # Ignore excluded items
+                if item.pk in excluded:
+                    continue
+
+                name = "{indent}{name} [{lang}]".format(
+                    indent=cls.mk_indent(item.get_depth()),
+                    name=escape(item),
+                    lang=item.get_language_display(),
+                )
+                options.append(
+                    (
+                        item.pk,
+                        mark_safe(name),
+                    )
+                )
+
+    @classmethod
+    def mk_dropdown_tree(cls, model, for_node=None):
+        """
+        Build the choice list for available Category nodes.
+
+        The currently edited Category, if any, will be excluded along its descendants.
+        """
+        descendants = []
+        if for_node:
+            descendants = list(
+                for_node.get_descendants().values_list("id", flat=True)
+            ) + [for_node.pk]
+
+        options = [(None, _('-- root --'))]
+        for node in model.get_root_nodes():
+            cls.add_subtree(for_node, node, options, excluded=descendants)
+        return options
+
+
+MyNodeForm = movenodeform_factory(Category, form=TranslatedMoveNodeForm)
+"""
+Build the Form class with proper Metas and stuff calibrated by treebeard, this the one
+to inherit to extend.
+"""
+
+
+class CategoryAdminForm(MyNodeForm):
     """
     Category form for admin.
+
+    .. Note::
+        Form is customized to manage treebeard fields as we need it (with our
+        constraints).
     """
     def __init__(self, *args, **kwargs):
+        # We only support the sorted child appending so force its initial field value
+        # here
+        if "initial" not in kwargs:
+            kwargs["initial"] = {}
+        kwargs["initial"].update({"_position": "sorted-child"})
+
         super().__init__(*args, **kwargs)
 
-        # Model choices querysets for create form get all objects since there is no
-        # data yet to constraint
-        if not self.instance.pk:
-            original_queryset = Category.objects.filter(original__isnull=True)
-        # Model choices querysets for change form filter objects against constraints
-        else:
-            # Avoid selecting itself, a translation or object with the same language
-            original_queryset = Category.objects.filter(original__isnull=True).exclude(
-                models.Q(id=self.instance.id) |
-                models.Q(language=self.instance.language)
-            )
+        # Rename treebeard attribute for something more comprehensive
+        self.fields["_ref_node_id"].label = _("Parent")
+        # Make position hidden since we only support the sorted child appending
+        self.fields["_position"].widget = forms.HiddenInput()
 
         # Apply choice limit on 'original' field queryset to avoid selecting
         # itself or object with the same language
-        # NOTE: This trick drop the help_text from model
         self.fields["original"] = TranslatedModelChoiceField(
-            queryset=original_queryset,
+            queryset=self.get_original_relation_queryset(),
             required=False,
             blank=True,
+        )
+
+    def get_original_relation_queryset(self):
+        """
+        Get available categories queryset for original field selection.
+
+        Returns:
+            Queryset: Queryset of available category. Basically only the original
+            categories are available. And in addition when form is in edition mode,
+            queryset is filtered with some constraints to avoid selecting the category
+            itself, a translation or object with the same language.
+        """
+        base_queryset = Category.objects.filter(original__isnull=True)
+
+        # Model choice querysets for creation form get all objects since there is no
+        # data yet to constraint
+        if not self.instance.pk:
+            return base_queryset
+
+        return base_queryset.exclude(
+            models.Q(id=self.instance.id) |
+            models.Q(language=self.instance.language)
         )
 
     def clean(self):
@@ -55,9 +144,41 @@ class CategoryAdminForm(forms.ModelForm):
         Add custom global input cleaner validations.
         """
         cleaned_data = super().clean()
-        original = cleaned_data.get("original")
         language = cleaned_data.get("language")
+        original = cleaned_data.get("original")
+        ref_node_id = cleaned_data.get("_ref_node_id") or None
 
+        # Cast possible selected node choice as a Category object
+        parent = None
+        if ref_node_id:
+            parent = Category.objects.get(pk=int(ref_node_id))
+
+        # Parent must have the same language than current category
+        if parent:
+            if parent.language != language:
+                self.add_error(
+                    "_ref_node_id",
+                    forms.ValidationError(
+                        _(
+                            "You can't have a parent category with a different "
+                            "language."
+                        ),
+                        code="invalid",
+                    ),
+                )
+                self.add_error(
+                    "language",
+                    forms.ValidationError(
+                        _(
+                            "You can't have a language different from the parent "
+                            "category one."
+                        ),
+                        code="invalid",
+                    ),
+                )
+
+
+        # Original must not be in the same language than current category
         if original and original.language == language:
             self.add_error(
                 "language",
@@ -79,6 +200,8 @@ class CategoryAdminForm(forms.ModelForm):
                 ),
             )
 
+        # Block save if language has been changed to another but the category still
+        # have articles in previous language
         if (
             self.instance.pk and
             self.instance.articles.exclude(language=language).count() > 0

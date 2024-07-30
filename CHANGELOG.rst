@@ -3,6 +3,29 @@
 Changelog
 =========
 
+Unreleased work on "category_tree" branch
+-----------------------------------------
+
+* Added django-treebeard to requirements and install it into sandbox;
+* Added treebeard usage on Category model;
+* Fixed tests that may fail because of new Category fields from treebeard;
+* Adapted Category form to manage the treebeard fields as we need;
+
+.. Note::
+    django-treebeard has a specific way to store parenting with two fields, the node
+    (Category object) to link to and the position where to add it.
+
+    Position is used to define order where the child is located in its parent children.
+    We don't want of this since we only order on title and we don't need or want to
+    manage position from the admin list.
+
+    Because of this the position field is hided and always set to ``sorted-child`` so
+    child is added using sorting on title.
+
+    Also the tree can not be displayed where languages are mixed, we cannot mix the
+    parenting and languages trees.
+
+
 Version 0.8.1 - 2023/12/01
 --------------------------
 

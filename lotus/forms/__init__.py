@@ -1,10 +1,7 @@
 from .album import AlbumAdminForm, AlbumItemAdminForm
 from .article import ArticleAdminForm
 from .category import CategoryAdminForm
-from .translated import (
-    TranslatedModelChoiceField, TranslatedModelMultipleChoiceField,
-    TranslateToLangForm,
-)
+from .translated import TranslateToLangForm
 
 
 __all__ = [
@@ -12,7 +9,5 @@ __all__ = [
     "AlbumItemAdminForm",
     "ArticleAdminForm",
     "CategoryAdminForm",
-    "TranslatedModelChoiceField",
-    "TranslatedModelMultipleChoiceField",
     "TranslateToLangForm",
 ]

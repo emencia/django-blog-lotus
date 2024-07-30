@@ -1,6 +1,6 @@
 from django.db import models
 
-from treebeard.mp_tree import MP_NodeManager
+from treebeard.mp_tree import MP_NodeManager, MP_NodeQuerySet
 
 from .lookups import LookupBuilder
 
@@ -113,12 +113,24 @@ class ArticleQuerySet(BasePublishedQuerySet, BaseTranslatedQuerySet):
     pass
 
 
+class CategoryQuerySet(BaseTranslatedQuerySet, MP_NodeQuerySet):
+    """
+    Category queryset mix treebeard and translation QuerySet classes.
+    """
+    pass
+
+
 class CategoryManager(MP_NodeManager):
     """
-    Categroy objects manager.
+    Category objects manager.
     """
     def get_queryset(self):
-        return BaseTranslatedQuerySet(self.model, using=self._db)
+        # NOTE: MP_NodeManager queryset enforce '.order_by("path")', not sure if it
+        # is required or not for a correct tree behavior, disabled for now since this
+        # would drop the default expected order (base on title)
+        # For now we can see at least something like dump_bulk is still working without
+        # ordering on path, so it may seems ok (since we don't want about tree ordering)
+        return CategoryQuerySet(self.model, using=self._db)
 
     def get_for_lang(self, language):
         return self.get_queryset().get_for_lang(language)

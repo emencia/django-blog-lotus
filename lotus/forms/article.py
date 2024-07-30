@@ -8,7 +8,7 @@ from dal import autocomplete
 
 from ..models import Article, Category
 
-from .translated import (
+from ..formfields import (
     TranslatedModelChoiceField, TranslatedModelMultipleChoiceField
 )
 

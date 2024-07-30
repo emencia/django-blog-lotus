@@ -12,6 +12,8 @@ from ..utils.imaging import DjangoSampleImageCrafter
 class CategoryFactory(factory.django.DjangoModelFactory):
     """
     Factory to create instance of a Category.
+
+    The treebeard attributes values are computed to always create a root category.
     """
     language = settings.LANGUAGE_CODE
     original = None

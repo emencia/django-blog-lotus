@@ -31,6 +31,7 @@ Enable required applications in your settings : ::
         "dal",
         "dal_select2",
         # Here the builtin django apps ...
+        "treebeard",
         "sorl.thumbnail",
         "smart_media",
         "ckeditor",

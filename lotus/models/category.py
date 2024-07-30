@@ -96,6 +96,11 @@ class Category(SmartFormatMixin, MP_Node, Translated):
     List of field order commonly used in frontend view/api
     """
 
+    node_order_by = ["title"]
+    """
+    Treebeard attribute used for ordering with position name
+    """
+
     objects = CategoryManager()
 
     class Meta:
