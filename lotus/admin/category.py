@@ -4,6 +4,7 @@ from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from smart_media.admin import SmartModelAdmin
+# from treebeard.admin import TreeAdmin
 
 from ..forms import CategoryAdminForm
 from ..models import Category
@@ -18,8 +19,13 @@ Shortcut to get setting as a dict
 """
 
 
+# class CategoryAdmin(SmartModelAdmin, TreeAdmin):
 @admin.register(Category)
 class CategoryAdmin(SmartModelAdmin):
+    """
+    NOTE: Usage of TreeAdmin is not really working, listing follow the order on title
+    instead of path + title. This lead to broken tree display.
+    """
     form = CategoryAdminForm
     list_display = (
         "title",

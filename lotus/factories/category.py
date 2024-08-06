@@ -13,7 +13,14 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     """
     Factory to create instance of a Category.
 
-    The treebeard attributes values are computed to always create a root category.
+    The treebeard attributes values are computed to always create a root category but
+    in some usage cases it can fails to build a proper tree path since it is based
+    on factory sequence and  don't care about possible parent. In this situation we
+    recommend you to use ``Category.load_bulk()`` instead, this way you may be able to
+    build the bulk data from factories and let treebeard correctly computing tree paths.
+
+    If you use this factory for tests without any relation to ``parent`` field usage,
+    you don't need to mind about this.
     """
     language = settings.LANGUAGE_CODE
     original = None

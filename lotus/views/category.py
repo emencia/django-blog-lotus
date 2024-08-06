@@ -18,6 +18,13 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
+# WARNING: Temporarily during development
+from django.http import HttpResponse
+from django.views.generic import View
+from bigtree import dict_to_tree, yield_tree
+from lotus.utils.trees import queryset_to_flat_dict
+
+
 class CategoryIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
                         LanguageMixin, ListView):
     """
@@ -104,14 +111,11 @@ class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView,
 
 
 # WARNING: Temporarily during development
-from django.http import HttpResponse
-from django.views.generic import View
 class CategoryTreeView(LotusContextStage, PreviewModeMixin, LanguageMixin, View):
     """
-    Tree of categories in plain/text format.
+    Display an unicode tree of categories in plain/text format.
 
-    Categories are properly filtered on language since anyway we can't display a tree
-    of all categories with mixed languages.
+    Categories are properly filtered on language.
     """
     model = Category
     lotus_stage = "categories"
@@ -120,9 +124,10 @@ class CategoryTreeView(LotusContextStage, PreviewModeMixin, LanguageMixin, View)
         """
         Build queryset base with language filtering to list categories.
         """
-        q = self.model.objects.get_for_lang(self.get_language_code())
+        # q = self.model.objects.get_for_lang(self.get_language_code())
+        q = self.model.objects.all()
 
-        # NOTE: Deprecated usage of ``*self.model.COMMON_ORDER_BY`` in order_by since
+        # Drop usage of ``*self.model.COMMON_ORDER_BY`` in 'order_by' since
         # treebeard is used to add new node sorted on title, so path resolution should
         # be identical to the previous behavior before treebeard implementation.
         return q.order_by("path")
@@ -131,7 +136,8 @@ class CategoryTreeView(LotusContextStage, PreviewModeMixin, LanguageMixin, View)
         """
         Build output items
         """
-        title = "For language '{}'".format(self.get_language_code())
+        # title = "For language '{}'".format(self.get_language_code())
+        title = "All languages mixed"
 
         output = [
             title,
@@ -139,20 +145,31 @@ class CategoryTreeView(LotusContextStage, PreviewModeMixin, LanguageMixin, View)
             "",
         ]
 
-        items = Category.get_annotated_list_qs(self.get_queryset())
-        row = "{indent}{name}"
-        for obj, data in items:
-            indent = ("    " * data["level"]) + "└── "
-            output.append(row.format(
-                indent=indent if data["level"] > 0 else "",
-                name=obj.slug,
+        nodes = queryset_to_flat_dict(
+            self.get_queryset(),
+            nodes={
+                ".": {"pk": 0, "title": ".", "language": "None"},
+            },
+            path_prefix="./",
+        )
+
+        for branch, stem, node in yield_tree(dict_to_tree(nodes), style="rounded"):
+            if node.title == ".":
+                title = node.title
+            else:
+                title = "{} [{}]".format(node.title, node.language)
+
+            output.append("{branch}{stem}{title}".format(
+                branch=branch,
+                stem=stem,
+                title=title,
             ))
 
         return output
 
     def get(self, request):
         """
-        Return built JSON content from features.
+        Return built plain text tree output.
         """
         return HttpResponse(
             "\n".join(self.get_output()),

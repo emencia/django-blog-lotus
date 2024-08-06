@@ -25,26 +25,35 @@ if CONFIG_NAME not in CKEDITOR_CONFIG:
     CONFIG_NAME = "default"
 
 
-class TranslatedMoveNodeForm(MoveNodeForm):
+class CategoryNodeAbstractForm(MoveNodeForm):
     """
+    Abstract node form for Category model.
+
     According to treebeard documentation it is recommended to not directly inherit from
     MoveNodeForm and prefer to use ``movenodeform_factory`` to build the proper form
     class to extend.
     """
+    PARENT_EMPTY_LABEL = _("-- Root --")
 
     @staticmethod
     def mk_indent(level):
-        return '&nbsp;&nbsp;&nbsp;&nbsp;' * (level - 1)
+        if level == 1:
+            return ""
+
+        if level == 2:
+            return "└── "
+
+        return ("&nbsp;&nbsp;&nbsp;&nbsp;" * (level - 1)) + "└── "
 
     @classmethod
     def add_subtree(cls, for_node, node, options, excluded=None):
         """
-        Recursively build options tree that are not excluded.
+        Build options tree with categories that are not excluded.
         """
         excluded = excluded or []
 
         if cls.is_loop_safe(for_node, node):
-            for item, _ in node.get_annotated_list(node):
+            for item, data in node.get_annotated_list(node):
                 # Ignore excluded items
                 if item.pk in excluded:
                     continue
@@ -74,32 +83,32 @@ class TranslatedMoveNodeForm(MoveNodeForm):
                 for_node.get_descendants().values_list("id", flat=True)
             ) + [for_node.pk]
 
-        options = [(None, _('-- root --'))]
+        options = [(None, cls.PARENT_EMPTY_LABEL)]
         for node in model.get_root_nodes():
             cls.add_subtree(for_node, node, options, excluded=descendants)
         return options
 
 
-MyNodeForm = movenodeform_factory(Category, form=TranslatedMoveNodeForm)
+CategoryNodeForm = movenodeform_factory(Category, form=CategoryNodeAbstractForm)
 """
 Build the Form class with proper Metas and stuff calibrated by treebeard, this the one
 to inherit to extend.
 """
 
 
-class CategoryAdminForm(MyNodeForm):
+class CategoryAdminForm(CategoryNodeForm):
     """
     Category form for admin.
 
     .. Note::
-        Form is customized to manage treebeard fields as we need it (with our
-        constraints).
+        Form is customized to manage treebeard fields for our constraint requirements.
     """
     def __init__(self, *args, **kwargs):
-        # We only support the sorted child appending so force its initial field value
-        # here
         if "initial" not in kwargs:
             kwargs["initial"] = {}
+
+        # We only support the sorted child appending so force its initial field value
+        # here
         kwargs["initial"].update({"_position": "sorted-child"})
 
         super().__init__(*args, **kwargs)
@@ -142,6 +151,11 @@ class CategoryAdminForm(MyNodeForm):
     def clean(self):
         """
         Add custom global input cleaner validations.
+
+        WARNING: It seems it is possible to define an "original" category even if the
+        current category itself has translations which should make it as the original
+        for these translations, so the current category could not be a translation.
+        This is the same behavior with articles.
         """
         cleaned_data = super().clean()
         language = cleaned_data.get("language")
@@ -177,7 +191,6 @@ class CategoryAdminForm(MyNodeForm):
                     ),
                 )
 
-
         # Original must not be in the same language than current category
         if original and original.language == language:
             self.add_error(
@@ -200,23 +213,38 @@ class CategoryAdminForm(MyNodeForm):
                 ),
             )
 
-        # Block save if language has been changed to another but the category still
-        # have articles in previous language
-        if (
-            self.instance.pk and
-            self.instance.articles.exclude(language=language).count() > 0
-        ):
-            self.add_error(
-                "language",
-                forms.ValidationError(
-                    _(
-                        "Some article in different language relate to this "
-                        "category, you can't change language until those article "
-                        "are not related anymore."
+        # For edition mode
+        if self.instance.pk:
+            # Block save if language has been changed to another but the category still
+            # have articles in previous language
+            if self.instance.articles.exclude(language=language).count() > 0:
+                self.add_error(
+                    "language",
+                    forms.ValidationError(
+                        _(
+                            "Some article in different language relate to this "
+                            "category, you can't change language until those article "
+                            "are not related anymore."
+                        ),
+                        code="invalid-language",
                     ),
-                    code="invalid-language",
-                ),
-            )
+                )
+
+            # Current category can not change language if it have descendants
+            # since they are in different language.
+            if self.instance.get_descendants().exclude(language=language).count() > 0:
+                self.add_error(
+                    "language",
+                    forms.ValidationError(
+                        _(
+                            "Some categories in different language are children of "
+                            "this category, you can't change language until those "
+                            "categories are not related anymore or adopted the same "
+                            "language."
+                        ),
+                        code="invalid-language",
+                    ),
+                )
 
     class Meta:
         model = Category

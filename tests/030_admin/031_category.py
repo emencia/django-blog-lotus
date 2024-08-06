@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -7,8 +8,9 @@ from lotus.factories import multilingual_category, ArticleFactory, CategoryFacto
 from lotus.forms import CategoryAdminForm
 from lotus.models import Category
 from lotus.utils.tests import (
-    DUMMY_GIF_BYTES, html_pyquery, compact_form_errors, build_post_data_from_object,
-    get_admin_add_url, get_admin_change_url, get_admin_list_url,
+    DUMMY_GIF_BYTES, html_pyquery, compact_form_errors,
+    build_post_data_from_object, get_admin_add_url, get_admin_change_url,
+    get_admin_list_url,
 )
 
 
@@ -67,9 +69,6 @@ def test_category_admin_change_form(db):
     }
 
     f = CategoryAdminForm(data, file_data, instance=obj)
-
-    f.is_valid()
-    print(f.errors.as_data())
 
     # No validation errors
     assert f.is_valid() is True
@@ -191,7 +190,7 @@ def test_category_admin_article_relations_validation(db):
     }
 
 
-def test_category_preview_modelchoice_create_labels(db):
+def test_category_admin_create_labels(db):
     """
     Admin create form should have language names in model choices fields.
     """
@@ -212,7 +211,7 @@ def test_category_preview_modelchoice_create_labels(db):
     ]
 
 
-def test_category_preview_modelchoice_change_labels(db):
+def test_category_admin_change_labels(db):
     """
     Admin change form should have language names in model choices fields.
     """
@@ -337,3 +336,151 @@ def test_category_admin_translate_button_expected(db, admin_client):
     original_id = dom.find("#lotus-translate-original-form input[name='original']")
     assert len(original_id) == 1
     assert int(original_id[0].get("value")) == created_beef["original"].id
+
+
+def test_category_admin_form_parent_select(settings, tests_settings, db, admin_client):
+    """
+    Parent field should correctly list available categories with a tree alike display.
+
+    Note how all languages are listed since we need user to be able to switch to another
+    one when possible.
+    """
+    settings.LANGUAGE_CODE = "en"
+
+    sample = json.loads(
+        (tests_settings.fixtures_path / "category_tree.json").read_text()
+    )
+    Category.load_bulk(sample["tree"])
+
+    # In creation form the select input lists all categories
+    url = get_admin_add_url(Category)
+    response = admin_client.get(url)
+    assert response.status_code == 200
+    dom = html_pyquery(response)
+    # print(json.dumps(
+    #     [item.text for item in dom.find("#id__ref_node_id option")],
+    #     indent=4,
+    #     ensure_ascii=False
+    # ))
+    assert [item.text for item in dom.find("#id__ref_node_id option")] == [
+        CategoryAdminForm.PARENT_EMPTY_LABEL,
+        "Item 1 [English]",
+        "└── Item 1.1 [English]",
+        "Item 2 [English]",
+        "Item 3 [English]",
+        "└── Item 3.1 [English]",
+        "        └── Item 3.1.1 [English]",
+        "        └── Item 3.1.2 [English]",
+        "        └── Item 3.1.3 [English]",
+        "        └── Item 3.1.4 [Français]",
+        "└── Item 3.2 [English]"
+    ]
+
+    # In edition form current category is excluded from options
+    item_1 = Category.objects.get(slug="item-1")
+    url = get_admin_change_url(item_1)
+    response = admin_client.get(url)
+    assert response.status_code == 200
+    dom = html_pyquery(response)
+
+    assert [item.text for item in dom.find("#id__ref_node_id option")] == [
+        CategoryAdminForm.PARENT_EMPTY_LABEL,
+        "Item 2 [English]",
+        "Item 3 [English]",
+        "└── Item 3.1 [English]",
+        "        └── Item 3.1.1 [English]",
+        "        └── Item 3.1.2 [English]",
+        "        └── Item 3.1.3 [English]",
+        "        └── Item 3.1.4 [Français]",
+        "└── Item 3.2 [English]"
+    ]
+
+    # In edition form current category and its descendants are excluded from options
+    item_3 = Category.objects.get(slug="item-3")
+    url = get_admin_change_url(item_3)
+    response = admin_client.get(url)
+    assert response.status_code == 200
+    dom = html_pyquery(response)
+    assert [item.text for item in dom.find("#id__ref_node_id option")] == [
+        CategoryAdminForm.PARENT_EMPTY_LABEL,
+        "Item 1 [English]",
+        "└── Item 1.1 [English]",
+        "Item 2 [English]"
+    ]
+
+
+def test_category_admin_form_parent_constraints(db, settings):
+    """
+    When user try to select a parent in different language than the current category
+    itself this should trigger a form validation error.
+    """
+    settings.LANGUAGE_CODE = "en"
+
+    ignored = ["id", "category", "articles"]
+
+    egg_object = CategoryFactory(title="egg", language="en")
+    oeuf_object = CategoryFactory(title="oeuf", language="fr")
+
+    omelette_build = CategoryFactory.build(title="omelette", language="fr")
+
+    # Try to save object with a parent category with a different language will fail
+    f = CategoryAdminForm(
+        build_post_data_from_object(Category, omelette_build, ignore=ignored, extra={
+            "_ref_node_id": egg_object.id,
+            "_position": "sorted-child",
+        })
+    )
+    assert f.is_valid() is False
+    assert compact_form_errors(f) == {
+        "_ref_node_id": ["invalid"],
+        "language": ["invalid"],
+    }
+
+    # Try to save object with a parent category the same language will succeed
+    f = CategoryAdminForm(
+        build_post_data_from_object(Category, omelette_build, ignore=ignored, extra={
+            "_ref_node_id": oeuf_object.id,
+            "_position": "sorted-child",
+        })
+    )
+    assert f.is_valid() is True
+
+
+def test_category_admin_form_parent_descendants(db, settings, tests_settings):
+    """
+    Language should not be changed if current category has descendants with
+    another language than the new selected one.
+    """
+    settings.LANGUAGE_CODE = "en"
+
+    ignored = ["id", "category", "articles"]
+
+    # Start with some root objects
+    CategoryFactory(title="Egg", language="en")
+    oeuf_object = CategoryFactory(title="Oeuf", language="fr")
+    omelette_object = CategoryFactory(title="Omelette", language="fr")
+    victoria_object = CategoryFactory(title="Omelette Victoria", language="fr")
+
+    # Make 'Omelette' as a child of 'Oeuf'
+    omelette_object.move_into(oeuf_object)
+    # Reload cached object instance since path has been changed
+    omelette_object.refresh_from_db()
+    # Make 'Victoria' as a child of 'Omelette'
+    victoria_object.move_into(omelette_object)
+    victoria_object.refresh_from_db()
+
+    # Try to save Oeuf object with a different language will fail since of its
+    # descendants language
+    f = CategoryAdminForm(
+        build_post_data_from_object(Category, oeuf_object, ignore=ignored, extra={
+            "_position": "sorted-child",
+            "language": "en",
+        }),
+        instance=oeuf_object,
+    )
+    is_valid = f.is_valid()
+
+    assert is_valid is False
+    assert compact_form_errors(f) == {
+        "language": ["invalid-language"],
+    }

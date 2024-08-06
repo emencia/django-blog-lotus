@@ -220,6 +220,30 @@ def compact_form_errors(form):
     return errors
 
 
+def flatten_form_errors(form):
+    """
+    Build a dict of list for field errors messages.
+
+    This is a helper for errors to quickly get all field errors. You need to execute
+    form validation before using this, by example with Form's ``is_valid()`` method.
+
+    Arguments:
+        form (django.forms.Form): A bounded form.
+
+    Returns:
+        dict: A dict of invalid fields, each item is indexed by field name and
+        value is a list of error messages.
+    """
+    errors = {}
+
+    for name, validationerror in form.errors.as_data().items():
+        errors[name] = []
+        for item in validationerror:
+            errors[name].extend(item.messages)
+
+    return errors
+
+
 def build_post_data_from_object(model, obj, ignore=["id"], extra=None):
     """
     Build a payload suitable to a POST request from given object data.

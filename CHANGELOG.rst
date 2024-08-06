@@ -10,6 +10,11 @@ Unreleased work on "category_tree" branch
 * Added treebeard usage on Category model;
 * Fixed tests that may fail because of new Category fields from treebeard;
 * Adapted Category form to manage the treebeard fields as we need;
+* Added some validation in Category admin form about constraints about language and
+  parenting to ensure tree is not corrupted;
+* Added tests around model, form and admin;
+* TODO: There is many tests for forms inside '030_admin' modules, they would be better
+  fitted in a new test module like '030_forms' (and move on other test modules to +010);
 
 .. Note::
     django-treebeard has a specific way to store parenting with two fields, the node
@@ -24,6 +29,12 @@ Unreleased work on "category_tree" branch
 
     Also the tree can not be displayed where languages are mixed, we cannot mix the
     parenting and languages trees.
+
+.. Note::
+    Development requirements includes bigtree along some tests around it. This is
+    currently not used from Lotus internally and will probably never since bigtree usage
+    here is mostly for unicode tree. It is useful during Category tree feature but will
+    probably to remove once finished.
 
 
 Version 0.8.1 - 2023/12/01

@@ -158,6 +158,21 @@ class Category(SmartFormatMixin, MP_Node, Translated):
     def get_cover_format(self):
         return self.media_format(self.cover)
 
+    def move_into(self, parent):
+        """
+        Move object as a child of given parent.
+
+        This is a shortcut around MP_Node.move() method but with positionning forced
+        on 'sorted child' technic because it is the only one that fit to Lotus needs.
+
+        You should never try to manually push a Category as a child of a parent
+        Category because it will probably not correctly manage the node path rewriting.
+
+        Arguments:
+            parent (Category): A category object to define as the parent.
+        """
+        self.move(parent, pos="sorted-child")
+
     def save(self, *args, **kwargs):
         # Auto update 'modified' value on each save
         self.modified = timezone.now()
