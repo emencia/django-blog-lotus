@@ -98,6 +98,7 @@ clean-backend-install:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Cleaning backend install <---$(FORMATRESET)\n"
 	@echo ""
+	rm -Rf dist
 	rm -Rf $(PACKAGE_SLUG).egg-info
 	rm -Rf $(VENV_PATH)
 .PHONY: clean-backend-install
@@ -337,7 +338,7 @@ test:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Tests <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTEST) -vv --reuse-db tests/
+	$(PYTEST) --reuse-db tests/
 	rm -Rf var/media-tests/
 .PHONY: test
 
@@ -345,7 +346,7 @@ test-initial:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Tests from zero <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTEST) -vv --reuse-db --create-db tests/
+	$(PYTEST) --reuse-db --create-db tests/
 	rm -Rf var/media-tests/
 .PHONY: test-initial
 

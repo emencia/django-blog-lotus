@@ -13,8 +13,6 @@ Unreleased work on "category_tree" branch
 * Added some validation in Category admin form about constraints about language and
   parenting to ensure tree is not corrupted;
 * Added tests around model, form and admin;
-* TODO: There is many tests for forms inside '030_admin' modules, they would be better
-  fitted in a new test module like '030_forms' (and move on other test modules to +010);
 
 .. Note::
     django-treebeard has a specific way to store parenting with two fields, the node
@@ -24,7 +22,7 @@ Unreleased work on "category_tree" branch
     We don't want of this since we only order on title and we don't need or want to
     manage position from the admin list.
 
-    Because of this the position field is hided and always set to ``sorted-child`` so
+    Because of this the position field is hidden and always set to ``sorted-child`` so
     child is added using sorting on title.
 
     Also the tree can not be displayed where languages are mixed, we cannot mix the
