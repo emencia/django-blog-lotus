@@ -9,6 +9,7 @@ from django.db import transaction
 
 from bigtree import dict_to_tree, yield_tree
 
+from lotus.exceptions import LanguageMismatchError
 from lotus.factories import CategoryFactory, multilingual_category
 from lotus.models import Category
 from lotus.utils.imaging import DjangoSampleImageCrafter
@@ -121,6 +122,43 @@ def test_category_constraints(db):
             "UNIQUE constraint failed: "
             "lotus_category.original_id, lotus_category.language"
         )
+
+
+def test_category_move_into(db):
+    """
+    Model object method 'move_into' allows to insert an object as a child of another
+    object but only for the same language.
+    """
+    picsou_category = CategoryFactory(
+        title="Picsou",
+        slug="picsou",
+        language="en",
+    )
+    donald_category = CategoryFactory(
+        title="Donald",
+        slug="donald",
+        language="en",
+    )
+    flairsou_category = CategoryFactory(
+        title="Flairsou",
+        slug="flairsou",
+        language="fr",
+    )
+
+    # Insert a category with the same language
+    donald_category.move_into(picsou_category)
+
+    # Try to insert a category with a different language
+    with pytest.raises(LanguageMismatchError) as excinfo:
+        flairsou_category.move_into(picsou_category)
+
+    assert str(excinfo.value) == (
+        "Object with language 'fr' can not be moved as a child of another object "
+        "with language 'en'"
+    )
+
+    # Proper children has been well saved
+    assert [k.slug for k in picsou_category.get_children()] == ["donald"]
 
 
 def test_multilingual_category(db):

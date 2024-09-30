@@ -27,6 +27,7 @@
                     <div class="description p-2 fs-5">{{ category_object.description|safe }}</div>
                 </div>
 
+                {% if object_list %}
                 <div class="articles container">
                     <h2>{% trans "Articles" %}</h2>
 
@@ -39,6 +40,7 @@
                     </div>
                     {% include "lotus/pagination.html" %}
                 </div>
+                {% endif %}
             </div>
 
             <div class="col-12 col-lg-3">
@@ -65,6 +67,17 @@
                         {% include "lotus/category/partials/siblings.html" with siblings=sibling_stats.siblings %}
                     </div>
                 {% endif %}
+
+                {% with subcategories=category_object.get_subcategories %}
+                    {% if subcategories %}
+                        <div class="siblings card mb-4">
+                            <div class="card-header">
+                                <strong>{% trans "Subcategories" %}</strong>
+                            </div>
+                            {% include "lotus/category/partials/subcategories.html" with subcategories=subcategories %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
             </div>
         </div>
     </div>

@@ -1,0 +1,11 @@
+{% load i18n %}{% spaceless %}
+    {% if subcategories %}
+        <ul class="category-subcategories list-group list-group-flush">
+            {% for category in subcategories %}
+                <li class="sibling list-group-item">
+                    <a href="{{ category.get_absolute_url }}">{{ category }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endspaceless %}

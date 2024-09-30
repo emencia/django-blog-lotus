@@ -48,7 +48,7 @@ class CategoryIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin
         """
         Build queryset base with language filtering to list categories.
         """
-        q = self.model.objects.get_for_lang(self.get_language_code())
+        q = self.model.objects.filter(depth=1).get_for_lang(self.get_language_code())
 
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
@@ -71,16 +71,30 @@ class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView,
 
     @property
     def crumbs(self):
-        details_kwargs = {
-            "slug": self.object.slug,
-        }
+        # Start with previous paths
+        crumbs = [(
+            CategoryIndexView.crumb_title,
+            reverse(CategoryIndexView.crumb_urlname)
+        )]
 
-        return [
-            (CategoryIndexView.crumb_title, reverse(
-                CategoryIndexView.crumb_urlname
-            )),
-            (self.object.title, reverse(self.crumb_urlname, kwargs=details_kwargs)),
-        ]
+        # Append ancestors
+        if self.object.depth > 1:
+            queryset = self.object.get_ancestors().filter(
+                language=self.get_language_code()
+            )
+            for ancestor in queryset:
+                crumbs.append((
+                    ancestor.title,
+                    reverse(self.crumb_urlname, kwargs={"slug": ancestor.slug})
+                ))
+
+        # Last item is the current category
+        crumbs.append((
+            self.object.title,
+            reverse(self.crumb_urlname, kwargs={"slug": self.object.slug})
+        ))
+
+        return crumbs
 
     def get_queryset_for_object(self):
         """

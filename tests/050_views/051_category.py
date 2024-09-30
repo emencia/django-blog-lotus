@@ -74,14 +74,38 @@ def test_category_view_list(db, client):
     assert expected_item_page_2 == link_title_page_2
 
 
+def test_category_view_list_depth(db, client):
+    """
+    Only the root categories should be listed from category index.
+    """
+    picsou_category = CategoryFactory(
+        title="Picsou",
+        slug="picsou",
+    )
+    flairsou_category = CategoryFactory(
+        title="Flairsou",
+        slug="flairsou",
+    )
+    # Makes flairsou a child of picsou
+    flairsou_category.move_into(picsou_category)
+
+    urlname = "lotus:category-index"
+    response = client.get(reverse(urlname))
+    assert response.status_code == 200
+
+    dom = html_pyquery(response)
+    items = dom.find("#lotus-content .category-list-container .list .category")
+    assert len(items) == 1
+
+
 def test_category_view_detail_404(db, client):
     """
     Trying to get unexisting Category should return a 404 response.
     """
-    # Create a dummy object to get correct URL then delete it
+    # Create a dummy object to get a correct URL then delete it
     flairsou_category = CategoryFactory(
-        title="Picsou",
-        slug="picsou",
+        title="Flairsou",
+        slug="flairsou",
     )
     url = flairsou_category.get_absolute_url()
     flairsou_category.delete()
@@ -405,3 +429,50 @@ def test_category_view_detail_metas(db, client):
     assert meta_title.text == "Donald"
     assert len(meta_description) == 1
     assert meta_description[0].get("content") == "Blah blah blah"
+
+
+def test_category_view_detail_breadcrumb(client, db, settings):
+    """
+    Breadcrumbs from detail view should list category ancestors if any and only for
+    the same category language.
+    """
+    def crumb_titles(items):
+        """
+        A convenient way to build the crumb title list from breadcrumbs HTML elements
+        """
+        crumbs = []
+        for k in items:
+            if k.cssselect("a"):
+                crumbs.append(k.cssselect("a")[0].text)
+            else:
+                crumbs.append(k.text)
+        return crumbs
+
+    settings.LANGUAGE_CODE = "en"
+
+    picsou = CategoryFactory(title="Picsou", slug="picsou")
+    donald = CategoryFactory(title="Donald", slug="donald")
+    flairsou = CategoryFactory(title="Flairsou", slug="flairsou", language="fr")
+
+    donald.move_into(picsou)
+    # Bypass Category.move_into() to cheat on language
+    flairsou.move(picsou, pos="sorted-child")
+
+    # Picsou has no ancestors
+    response = client.get(picsou.get_absolute_url())
+    assert response.status_code == 200
+    items = html_pyquery(response).find(".breadcrumb .breadcrumb-item")
+    assert crumb_titles(items) == ["Home", "Categories", "Picsou"]
+
+    # Donald has Picsou ancestor
+    response = client.get(donald.get_absolute_url())
+    assert response.status_code == 200
+    items = html_pyquery(response).find(".breadcrumb .breadcrumb-item")
+    assert crumb_titles(items) == ["Home", "Categories", "Picsou", "Donald"]
+
+    # Flairsou has Picsou ancestor but it is filtered out from queryset because of
+    # different language
+    response = client.get(flairsou.get_absolute_url())
+    assert response.status_code == 200
+    items = html_pyquery(response).find(".breadcrumb .breadcrumb-item")
+    assert crumb_titles(items) == ["Accueil", "Catégories", "Flairsou"]

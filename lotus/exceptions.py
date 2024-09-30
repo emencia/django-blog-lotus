@@ -13,3 +13,10 @@ class DummyError(LotusException):
     Dummy exception sample to raise from your code.
     """
     pass
+
+
+class LanguageMismatchError(LotusException):
+    """
+    Raised when expected object language does not match.
+    """
+    pass

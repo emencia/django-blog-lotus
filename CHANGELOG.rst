@@ -13,6 +13,21 @@ Unreleased work on "category_tree" branch
 * Added some validation in Category admin form about constraints about language and
   parenting to ensure tree is not corrupted;
 * Added tests around model, form and admin;
+* TODO: Implement category children listing:
+
+  - [x] Only list root categories from index;
+  - [x] Children are listed only from their parent details;
+  - [x] Category detail breadcrumb should include possible ancestors;
+  - [x] No nesting or tree displayed in articles, just list all category indifferently
+    from their depth;
+  - [ ] Finally a tree view should be helpful but maybe optional;
+  - [ ] Faire un bilan en documentation ou docstring des contrôles pour empêcher de
+    mélanger des parents/enfants avec des langues différentes;
+
+* For further the "category_tree" step:
+
+    - [ ] Add more block around content from detail templates to ease customization;
+
 
 .. Note::
     django-treebeard has a specific way to store parenting with two fields, the node

@@ -11,7 +11,7 @@ from smart_media.modelfields import SmartMediaField
 from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
 
 from ..managers import CategoryManager
-
+from ..exceptions import LanguageMismatchError
 from .translated import Translated
 
 
@@ -148,12 +148,24 @@ class Category(SmartFormatMixin, MP_Node, Translated):
 
     def get_edit_url(self):
         """
-        Return absolute URL to edit article from admin.
+        Return absolute URL to edit category from admin.
 
         Returns:
             string: An URL.
         """
         return reverse("admin:lotus_category_change", args=(self.id,))
+
+    def get_subcategories(self):
+        """
+        Return category children, results are enforced on category language.
+
+        Returns:
+            queryset: List of children categories.
+        """
+        if not self.numchild:
+            return []
+
+        return self.get_children().filter(language=self.language).order_by("title")
 
     def get_cover_format(self):
         return self.media_format(self.cover)
@@ -165,12 +177,27 @@ class Category(SmartFormatMixin, MP_Node, Translated):
         This is a shortcut around MP_Node.move() method but with positionning forced
         on 'sorted child' technic because it is the only one that fit to Lotus needs.
 
-        You should never try to manually push a Category as a child of a parent
+        You should never try to manually set a Category as a child of a parent
         Category because it will probably not correctly manage the node path rewriting.
+
+        Raises:
+            LanguageMismatchError: If both object language and parent language
+                are differents.
 
         Arguments:
             parent (Category): A category object to define as the parent.
         """
+        # Enforce language validation before performing tree insertion
+        if parent.language != self.language:
+            msg = (
+                "Object with language '{current_lang}' can not be moved as a child of "
+                "another object with language '{parent_lang}'"
+            )
+            raise LanguageMismatchError(msg.format(
+                parent_lang=parent.language,
+                current_lang=self.language,
+            ))
+
         self.move(parent, pos="sorted-child")
 
     def save(self, *args, **kwargs):
