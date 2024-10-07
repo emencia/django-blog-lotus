@@ -4,9 +4,35 @@
 // settings and objects
 @import "./tools/rem";
 @import "./tools/content_urls";
+@import "./tools/flexbox";
 
 // Load project settings
 @import "./settings/site";
+
+:root {
+    --primary: #264b5d;
+    --primary-fg: #f7f7f7;
+    --body-fg: #eeeeee;
+    --body-bg: #121212;
+    --body-quiet-color: #e0e0e0;
+    --body-loud-color: #ffffff;
+    --breadcrumbs-link-fg: #e0e0e0;
+    --breadcrumbs-bg: var(--primary);
+    --link-fg: #81d4fa;
+    --link-hover-color: #4ac1f7;
+    --link-selected-fg: #6f94c6;
+    --hairline-color: #272727;
+    --border-color: #353535;
+    --error-fg: #e35f5f;
+    --message-success-bg: #006b1b;
+    --message-warning-bg: #583305;
+    --message-error-bg: #570808;
+    --darkened-bg: #212121;
+    --selected-bg: #1b1b1b;
+    --selected-row: #00363a;
+    --close-button-bg: #333333;
+    --close-button-hover-bg: #666666;
+}
 
 .app-lotus {
     // django-ckeditor widget improvement
@@ -16,5 +42,149 @@
         flex: auto 1;
         // And this should work with admin-style
         width: 100%;
+    }
+}
+
+// Category tree component
+.lotus-category-tree {
+
+    .tree {
+        --spacing: 1.5rem;
+        --radius: 10px;
+        --summary-x-padding: 0.8rem;
+        --summary-y-padding: 0.5rem;
+        --active-bullet-bg-color: #696;
+        --inactive-bullet-bg-color: #dddddd;
+        --structure-line-color: #dddddd;
+
+        margin: 0;
+        padding: 0;
+
+        .item {
+            margin: -1px 0 0 0;
+            padding: 0;
+            list-style-type: none;
+            display: block;
+            position: relative;
+            padding-left: calc(2 * var(--spacing) - var(--radius) - 2px);
+
+            // Draw the base of the bullet icon
+            &::after,
+            .summary::before {
+                content: '';
+                display: block;
+                position: absolute;
+                top: calc(
+                    calc(
+                        var(--spacing) / 2 - var(--radius)
+                    ) + var(--summary-y-padding)
+                );
+                left: calc(var(--spacing) - var(--radius) - 1px);
+                width: calc(2 * var(--radius));
+                height: calc(2 * var(--radius));
+                border-radius: 50%;
+                background: var(--inactive-bullet-bg-color);
+            }
+
+            .details {
+                margin: -1px 0 0 0;
+                padding: 0;
+                list-style-type: none;
+
+                .summary {
+                    display: flex;
+                    margin: 0;
+                    border: 1px solid var(--border-color);
+                    background-color: var(--darkened-bg);
+
+                    // Include the foldable bullet icon, default position will use the
+                    // "closable" glyph (the first one from image)
+                    &::before {
+                        z-index: 1;
+                        background: var(--active-bullet-bg-color) url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAAZUlEQVRIS+2TOwoAMAhD9f6H7mfoItJaAqKiqzSmT8MUvDi4P2qD6IZqEByrNglehRL5fW8a2AYvWHMSPCt93Yv1JhE9lSAiqH0K0cu5YkmhU1wuxa/0evZNIfE0JGe1QZR+eIIT3zIwFfN1vWYAAAAASUVORK5CYII=) 0 0;
+                    }
+
+                    a {
+                        @include sv-flex(1, 1, auto)
+                        padding: var(--summary-y-padding) var(--summary-y-padding);
+                    }
+
+                    .language {
+                        @include sv-flex(0, 0, 5rem)
+                        padding: var(--summary-y-padding) var(--summary-y-padding);
+                        border-left: 1px solid var(--border-color);
+                        text-align: center;
+                    }
+
+                    .original {
+                        @include sv-flex(0, 0, 5rem)
+                        padding: var(--summary-y-padding) var(--summary-y-padding);
+                        border-left: 1px solid var(--border-color);
+                        text-align: left;
+                    }
+                }
+
+                .nodes {
+                    // Children node list is hidden on default until elemen has been
+                    // marked as "open"
+                    display: none;
+                    margin: 0;
+                    padding: 0;
+                    margin-left: calc(var(--radius) - var(--spacing));
+                    padding-left: 0;
+
+                    .item {
+                        // Draw the pipe line between items
+                        border-left: 2px solid var(--structure-line-color);
+
+                        // Stop on last child to avoid tee line
+                        &:last-child {
+                            border-color: transparent;
+                        }
+
+                        // Draw the elbow line on branch item
+                        &:before {
+                            content: "";
+                            display: block;
+                            position: absolute;
+                            top: calc(
+                                calc(
+                                    var(--spacing) / -2
+                                ) + 6px
+                            );
+                            left: -2px;
+                            width: calc(var(--spacing) + 2px);
+                            height: calc(var(--spacing) + 1px);
+                            border: solid var(--structure-line-color);
+                            border-width: 0 0 2px 2px;
+                        }
+                    }
+                }
+
+                // For when the item has been marked "open"
+                &[open] {
+                    & > .summary::before {
+                        // Position the background to use the "openable" glyph (the second
+                        // one from image)
+                        background-position: calc(-2 * var(--radius)) 0;
+                    }
+
+                    & > .nodes {
+                        display: block;
+                    }
+                }
+            }
+
+            // For items without any children
+            &.no-children {
+                // Hide the bullet and line stuff
+                .summary {
+                    &::before {
+                        display: none;
+                    }
+                }
+            }
+
+        }
     }
 }

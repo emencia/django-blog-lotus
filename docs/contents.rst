@@ -76,7 +76,7 @@ a single or many articles.
 With translated articles, you are free select either the same albums for original
 article and its translations or create a different album for original and translations.
 
-.. NOTE::
+.. Note::
 
     You can not share a same media item to many different albums since a media item is
     tied to a single album.

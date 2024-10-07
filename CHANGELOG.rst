@@ -13,6 +13,8 @@ Unreleased work on "category_tree" branch
 * Added some validation in Category admin form about constraints about language and
   parenting to ensure tree is not corrupted;
 * Added tests around model, form and admin;
+* Added a new admin view to list a tree of categories, this is currently in beta and
+  will need some more work in UI/UX before to be ready to override the admin changelist;
 * TODO: Implement category children listing:
 
   - [x] Only list root categories from index;
@@ -20,12 +22,18 @@ Unreleased work on "category_tree" branch
   - [x] Category detail breadcrumb should include possible ancestors;
   - [x] No nesting or tree displayed in articles, just list all category indifferently
     from their depth;
-  - [ ] Finally a tree view should be helpful but maybe optional;
-  - [ ] Faire un bilan en documentation ou docstring des contrôles pour empêcher de
-    mélanger des parents/enfants avec des langues différentes;
+  - [x] Finally a tree view should be helpful but maybe optional;
+  - [ ] Setting to disable ancestor from breadcrumbs;
+  - [ ] We should have a test to ensure delete() correctly delete and cascade to
+    children;
+  - [ ] Remove temporary/useless r&d stuff;
+  - [ ] Make a resume in documentation about constraint checking which avoid to mess
+    category with different language;
 
-* For further the "category_tree" step:
+* For after the "category_tree" step:
 
+    - [ ] Move to "lotus.compat.import_zoneinfo.ZoneInfo" usage instead of old compat
+      import way;
     - [ ] Add more block around content from detail templates to ease customization;
 
 

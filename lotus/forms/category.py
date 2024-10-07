@@ -18,7 +18,7 @@ else:
     from ckeditor.widgets import CKEditorWidget
 
 
-# Use the specific CKEditor config if any
+# Use the specific CKEditor config if defined
 CONFIG_NAME = "lotus"
 CKEDITOR_CONFIG = getattr(settings, "CKEDITOR_CONFIGS", {})
 if CONFIG_NAME not in CKEDITOR_CONFIG:
@@ -28,6 +28,9 @@ if CONFIG_NAME not in CKEDITOR_CONFIG:
 class CategoryNodeAbstractForm(MoveNodeForm):
     """
     Abstract node form for Category model.
+
+    This abstract only cares about the form stuff related to treebeard, everything else
+    will live in the concrete form class.
 
     According to treebeard documentation it is recommended to not directly inherit from
     MoveNodeForm and prefer to use ``movenodeform_factory`` to build the proper form
@@ -92,7 +95,7 @@ class CategoryNodeAbstractForm(MoveNodeForm):
 CategoryNodeForm = movenodeform_factory(Category, form=CategoryNodeAbstractForm)
 """
 Build the Form class with proper Metas and stuff calibrated by treebeard, this the one
-to inherit to extend.
+to inherit and extend.
 """
 
 
@@ -107,13 +110,14 @@ class CategoryAdminForm(CategoryNodeForm):
         if "initial" not in kwargs:
             kwargs["initial"] = {}
 
-        # We only support the sorted child appending so force its initial field value
-        # here
+        # We only support the 'sorted child' appending. So here we force its initial
+        # field value and finally the field won't be displayed so it will always use
+        # this value
         kwargs["initial"].update({"_position": "sorted-child"})
 
         super().__init__(*args, **kwargs)
 
-        # Rename treebeard attribute for something more comprehensive
+        # Rename treebeard "node id" attribute label for something more comprehensive
         self.fields["_ref_node_id"].label = _("Parent")
         # Make position hidden since we only support the sorted child appending
         self.fields["_position"].widget = forms.HiddenInput()
@@ -155,20 +159,20 @@ class CategoryAdminForm(CategoryNodeForm):
         WARNING: It seems it is possible to define an "original" category even if the
         current category itself has translations which should make it as the original
         for these translations, so the current category could not be a translation.
-        This is the same behavior with articles.
+        This is the same behavior with articles. Issue #79.
         """
         cleaned_data = super().clean()
         language = cleaned_data.get("language")
         original = cleaned_data.get("original")
         ref_node_id = cleaned_data.get("_ref_node_id") or None
 
-        # Cast possible selected node choice as a Category object
+        # Cast possible selected parend node choice as a Category object
         parent = None
         if ref_node_id:
             parent = Category.objects.get(pk=int(ref_node_id))
 
-        # Parent must have the same language than current category
         if parent:
+            # Parent must have the same language than current category
             if parent.language != language:
                 self.add_error(
                     "_ref_node_id",

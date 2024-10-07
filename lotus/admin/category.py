@@ -8,7 +8,7 @@ from smart_media.admin import SmartModelAdmin
 
 from ..forms import CategoryAdminForm
 from ..models import Category
-from ..views.admin import CategoryAdminTranslateView
+from ..views.admin import CategoryAdminTranslateView, CategoryAdminTreeView
 
 from ..admin_filters import LanguageListFilter, TranslationStateListFilter
 
@@ -119,7 +119,15 @@ class CategoryAdmin(SmartModelAdmin):
                 ),
                 {"model_admin": self},
                 name="lotus_category_translate_original",
-            )
+            ),
+            path(
+                "tree/",
+                self.admin_site.admin_view(
+                    CategoryAdminTreeView.as_view(),
+                ),
+                {"model_admin": self},
+                name="lotus_category_tree",
+            ),
         ]
 
         return extra_urls + urls

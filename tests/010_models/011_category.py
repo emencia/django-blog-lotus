@@ -1,3 +1,4 @@
+import datetime
 import json
 from pathlib import Path
 
@@ -8,13 +9,16 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 
 from bigtree import dict_to_tree, yield_tree
+from freezegun import freeze_time
 
 from lotus.exceptions import LanguageMismatchError
 from lotus.factories import CategoryFactory, multilingual_category
 from lotus.models import Category
 from lotus.utils.imaging import DjangoSampleImageCrafter
 from lotus.utils.tests import queryset_values
-from lotus.utils.trees import nest_list_to_flat_dict, queryset_to_flat_dict
+from lotus.utils.trees import (
+    nested_list_to_flat_dict, queryset_to_flat_dict, compress_nested_tree,
+)
 
 
 def test_category_basic(db):
@@ -299,9 +303,11 @@ def test_category_tree(tests_settings, db):
     """
     Check about treebear implementation behaviors during development.
     """
-    sample = json.loads(
-        (tests_settings.fixtures_path / "category_tree.json").read_text()
+    sample_path = (
+        tests_settings.fixtures_path / "category_tree.json"
     )
+    sample = json.loads(sample_path.read_text())
+
     Category.load_bulk(sample["tree"])
 
     # from lotus.utils.jsons import ExtendedJsonEncoder
@@ -384,15 +390,16 @@ def test_category_bulk_tree_render(tests_settings, db, django_assert_num_queries
     Note than node dumps is for all Categories, there is no way to filter it as a
     queryset.
     """
-    # Load sample category tree
-    sample = json.loads(
-        (tests_settings.fixtures_path / "category_tree.json").read_text()
+    sample_path = (
+        tests_settings.fixtures_path / "category_tree.json"
     )
+    sample = json.loads(sample_path.read_text())
+
     Category.load_bulk(sample["tree"])
 
     # Build flat dict suitable for bigtree, this only perform a single queryset
     with django_assert_num_queries(1):
-        nodes = nest_list_to_flat_dict(
+        nodes = nested_list_to_flat_dict(
             Category.dump_bulk(),
             nodes={
                 ".": {"pk": 0, "title": ".", "language": None},
@@ -453,10 +460,11 @@ def test_category_queryset_tree_render(tests_settings, db, django_assert_num_que
     This is mostly a sample of how to convert Category tree queryset to bigtree nodes.
     The built trees should fit to the Category tree hierarchy.
     """
-    # Load sample category tree
-    sample = json.loads(
-        (tests_settings.fixtures_path / "category_tree.json").read_text()
+    sample_path = (
+        tests_settings.fixtures_path / "category_tree.json"
     )
+    sample = json.loads(sample_path.read_text())
+
     Category.load_bulk(sample["tree"])
 
     with django_assert_num_queries(1):
@@ -512,4 +520,146 @@ def test_category_queryset_tree_render(tests_settings, db, django_assert_num_que
         "    │   ├── Item 3.1.3 [en]",
         "    │   ╰── Item 3.1.4 [fr]",
         "    ╰── Item 3.2 [en]",
+    ]
+
+
+@freeze_time("2012-10-15 10:00:00")
+def test_category_get_nested_tree_basic(tests_settings, db, django_assert_num_queries):
+    """
+    Method 'get_nested_tree' without filter on a basic set just to demonstrate its
+    output.
+    """
+    now = datetime.datetime.now().replace(tzinfo=datetime.timezone.utc)
+    sample_path = (
+        tests_settings.fixtures_path / "category_tree_basic.json"
+    )
+    sample = json.loads(sample_path.read_text())
+
+    Category.load_bulk(sample["tree"])
+
+    with django_assert_num_queries(1):
+        basic_tree = Category.get_nested_tree()
+
+    assert basic_tree == [
+        {
+            "data": {
+                "language": "en",
+                "original": None,
+                "modified": now,
+                "title": "Item 1",
+                "slug": "item-1",
+                "lead": "",
+                "description": "",
+                "cover": ""
+            },
+            "id": 1
+        },
+        {
+            "data": {
+                "language": "en",
+                "original": None,
+                "modified": now,
+                "title": "Item 2",
+                "slug": "item-2",
+                "lead": "",
+                "description": "",
+                "cover": ""
+            },
+            "id": 2,
+            "children": [
+                {
+                    "data": {
+                        "language": "en",
+                        "original": None,
+                        "modified": now,
+                        "title": "Item 2.1",
+                        "slug": "item-2-1",
+                        "lead": "",
+                        "description": "",
+                        "cover": ""
+                    },
+                    "id": 3,
+                    "children": [
+                        {
+                            "data": {
+                                "language": "en",
+                                "original": None,
+                                "modified": now,
+                                "title": "Item 2.1.1",
+                                "slug": "item-2-1-1",
+                                "lead": "",
+                                "description": "",
+                                "cover": ""
+                            },
+                            "id": 4
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+
+
+def test_category_get_nested_tree_full(tests_settings, db, django_assert_num_queries):
+    """
+    Method 'get_nested_tree' without filter should return the full tree of categories.
+    """
+    sample_path = (
+        tests_settings.fixtures_path / "category_tree_with_different_languages.json"
+    )
+    sample = json.loads(sample_path.read_text())
+    Category.load_bulk(sample["tree"])
+
+    with django_assert_num_queries(1):
+        full_tree = Category.get_nested_tree()
+    assert compress_nested_tree(full_tree) == [
+        "0) <.> [lang=None] [path=.]",
+        "2) <Item 1> [lang=en] [path=./2]",
+        "3) <Item 1.1> [lang=en] [path=./2/3]",
+        "1) <Item 2> [lang=en] [path=./1]",
+        "4) <Item 3> [lang=en] [path=./4]",
+        "5) <Item 3.1> [lang=en] [path=./4/5]",
+        "6) <Item 3.1.1> [lang=en] [path=./4/5/6]",
+        "9) <Item 3.1.2> [lang=en] [path=./4/5/9]",
+        "7) <Item 3.1.3> [lang=en] [path=./4/5/7]",
+        "8) <Item 3.1.4> [lang=fr] [path=./4/5/8]",
+        "10) <Item 3.2> [lang=en] [path=./4/10]",
+        "11) <Item 4> [lang=fr] [path=./11]",
+        "12) <Item 4.1> [lang=en] [path=./11/12]",
+        "13) <Item 4.1.1> [lang=fr] [path=./11/12/13]"
+    ]
+
+
+def test_category_get_nested_tree_filtered(tests_settings, db,
+                                           django_assert_num_queries):
+    """
+    Method 'get_nested_tree' with language argument should return a tree filter after
+    language and resulting tree should omit all branch that are excluded from filter.
+    """
+    sample_path = (
+        tests_settings.fixtures_path / "category_tree_with_different_languages.json"
+    )
+    sample = json.loads(sample_path.read_text())
+    Category.load_bulk(sample["tree"])
+
+    with django_assert_num_queries(1):
+        french_tree = Category.get_nested_tree(language="fr")
+    assert compress_nested_tree(french_tree) == [
+        "0) <.> [lang=None] [path=.]",
+        "11) <Item 4> [lang=fr] [path=./11]",
+    ]
+
+    with django_assert_num_queries(1):
+        english_tree = Category.get_nested_tree(language="en")
+    assert compress_nested_tree(english_tree) == [
+        "0) <.> [lang=None] [path=.]",
+        "2) <Item 1> [lang=en] [path=./2]",
+        "3) <Item 1.1> [lang=en] [path=./2/3]",
+        "1) <Item 2> [lang=en] [path=./1]",
+        "4) <Item 3> [lang=en] [path=./4]",
+        "5) <Item 3.1> [lang=en] [path=./4/5]",
+        "6) <Item 3.1.1> [lang=en] [path=./4/5/6]",
+        "9) <Item 3.1.2> [lang=en] [path=./4/5/9]",
+        "7) <Item 3.1.3> [lang=en] [path=./4/5/7]",
+        "10) <Item 3.2> [lang=en] [path=./4/10]"
     ]

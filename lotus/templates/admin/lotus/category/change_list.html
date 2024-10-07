@@ -1,0 +1,9 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls admin_modify lotus %}
+
+{% block object-tools-items %}
+    <li>
+        <a class="lotus-category-tree" href="{% url "admin:lotus_category_tree" %}">{% trans "Tree list" %}</a>
+    </li>
+    {{ block.super }}
+{% endblock %}

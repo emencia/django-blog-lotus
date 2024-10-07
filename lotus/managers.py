@@ -125,11 +125,18 @@ class CategoryManager(MP_NodeManager):
     Category objects manager.
     """
     def get_queryset(self):
-        # NOTE: MP_NodeManager queryset enforce '.order_by("path")', not sure if it
-        # is required or not for a correct tree behavior, disabled for now since this
-        # would drop the default expected order (base on title)
-        # For now we can see at least something like dump_bulk is still working without
-        # ordering on path, so it may seems ok (since we don't want about tree ordering)
+        """
+        Enforce proper base queryset.
+
+        MP_NodeManager queryset enforce ordering on 'path', while it is needed
+        to get a proper tree with treebeard methods it also impacts 'non-tree'
+        querysets which we don't want because categories are more used without
+        nesting. So we disable it, developper should remind to add path ordering when
+        needed like with ``'.order_by("path", "title")'``
+
+        Note that some treebeard method like ``dump_bulk`` don't really care about
+        this since it computate its tree in a specific way.
+        """
         return CategoryQuerySet(self.model, using=self._db)
 
     def get_for_lang(self, language):

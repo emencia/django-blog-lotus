@@ -1,0 +1,36 @@
+{
+    "tree": [
+        {
+            "data": {
+                "title": "Item 1",
+                "slug": "item-1",
+                "language": "en"
+            }
+        },
+        {
+            "data": {
+                "title": "Item 2",
+                "slug": "item-2",
+                "language": "en"
+            },
+            "children": [
+                {
+                    "data": {
+                        "title": "Item 2.1",
+                        "slug": "item-2-1",
+                        "language": "en"
+                    },
+                    "children": [
+                        {
+                            "data": {
+                                "title": "Item 2.1.1",
+                                "slug": "item-2-1-1",
+                                "language": "en"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

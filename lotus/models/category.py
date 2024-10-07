@@ -1,10 +1,11 @@
+from django.core import serializers
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import translate_url, reverse
 
-from treebeard.mp_tree import MP_Node
+from treebeard.mp_tree import MP_Node, get_result_class
 
 from smart_media.mixins import SmartFormatMixin
 from smart_media.modelfields import SmartMediaField
@@ -121,6 +122,80 @@ class Category(SmartFormatMixin, MP_Node, Translated):
                 name="lotus_unique_cat_original_lang"
             ),
         ]
+
+    @classmethod
+    def get_nested_tree(cls, parent=None, keep_ids=True, filters=None, language=None):
+        """
+        Implement again the ``MP_Node.dump_bulk()`` method to allow for queryset
+        filtering.
+
+        Opposed to "dump_bulk" this method applies some filter on queryset so
+        some children can be ignored from tree if they are in branch from an excluded
+        item. For example with this object tree: ::
+
+            ├── Item 1 [en]
+            │   ╰── Item 1.1 [fr]
+            ├── Item 2 [en]
+            ╰── Item 3 [fr]
+                ╰── Item 3.1 [en]
+
+        If language argument is set with "en" only the english objects will be returned
+        from queryset, this means "Item 1", "Item 2" and "Item 3.1". However since
+        "Item 3.1" is a child of "Item 3" that is excluded from language filter,
+        "Items 3.1" won't be in resulting tree because its parent does not exist in
+        results.
+        """
+        cls = get_result_class(cls)
+
+        if language:
+            qset = cls._get_serializable_model().objects.filter(language=language)
+        else:
+            qset = cls._get_serializable_model().objects.all()
+
+        if parent:
+            qset = qset.filter(path__startswith=parent.path)
+
+        ret, lnk = [], {}
+        pk_field = cls._meta.pk.attname
+
+        for pyobj in serializers.serialize('python', qset):
+            # django's serializer stores the attributes in 'fields'
+            fields = pyobj['fields']
+            path = fields['path']
+            depth = int(len(path) / cls.steplen)
+
+            # this will be useless in load_bulk
+            del fields['depth']
+            del fields['path']
+            del fields['numchild']
+
+            if pk_field in fields:
+                # this happens immediately after a load_bulk
+                del fields[pk_field]
+
+            newobj = {'data': fields}
+            if keep_ids:
+                newobj[pk_field] = pyobj['pk']
+
+            if (not parent and depth == 1) or\
+               (parent and len(path) == len(parent.path)):
+                ret.append(newobj)
+            else:
+                parentpath = cls._get_basepath(path, depth - 1)
+
+                # Ensure we are safe to ignore unknow path relation in case queryset
+                # filter drops some nodes that are linked from granted nodes
+                if parentpath in lnk:
+                    parentobj = lnk[parentpath]
+
+                    if 'children' not in parentobj:
+                        parentobj['children'] = []
+
+                    parentobj['children'].append(newobj)
+
+            lnk[path] = newobj
+
+        return ret
 
     def __str__(self):
         return self.title
