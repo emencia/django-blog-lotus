@@ -30,7 +30,7 @@
             <ul class="object-tools">
             {% block object-tools-items %}
                 <li>
-                    <a class="lotus-category-changelist" href="{% url "admin:lotus_category_changelist" %}">{% trans "Back to the flat list" %}</a>
+                    <a class="lotus-category-changelist" href="{% url "admin:lotus_category_changelist" %}">{% translate "Back to the flat list" %}</a>
                 </li>
                 {{ block.super }}
             {% endblock %}
@@ -58,10 +58,10 @@
 
                     <details data-filter-title="langue" open="">
                         <summary>
-                            Par langue
+                            {% translate "By language" %}
                         </summary>
                         <ul>
-                            <li{% comment %} class="selected"{% endcomment %}><a href="?">Tout</a></li>
+                            <li{% comment %} class="selected"{% endcomment %}><a href="?">{% translate "All" %}</a></li>
                             {% get_available_languages as AVALABLE_LANGUAGES %}
                             {% for code, name in AVALABLE_LANGUAGES %}
                                 <li><a href="?lang={{ code }}">{{ name }}</a></li>

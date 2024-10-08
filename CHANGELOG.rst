@@ -26,6 +26,7 @@ Unreleased work on "category_tree" branch
     from their depth;
   - [x] Finally a tree view should be helpful but maybe optional;
   - [x] Setting to disable ancestor from breadcrumbs;
+  - [x] Add 'parent' column in Category changelist;
   - [ ] We should have a test to ensure delete() correctly delete and cascade to
     children;
   - [ ] Remove temporary/useless r&d stuff;

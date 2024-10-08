@@ -13,9 +13,9 @@
                     {% comment %}<span class="language">{{ item.data.language|language_name }}</span>{% endcomment %}
                     <span class="original">
                         {% if not item.data.original %}
-                            Original
+                            {% translate "Original" %}
                         {% else %}
-                            Translation
+                            {% translate "Translation" %}
                         {% endif %}
                     </span>
                 </div>

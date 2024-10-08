@@ -19,18 +19,19 @@ Shortcut to get setting as a dict
 """
 
 
-# class CategoryAdmin(SmartModelAdmin, TreeAdmin):
 @admin.register(Category)
 class CategoryAdmin(SmartModelAdmin):
     """
-    NOTE: Usage of TreeAdmin is not really working, listing follow the order on title
-    instead of path + title. This lead to broken tree display.
+    NOTE: Usage of TreeAdmin is not really working because queryset follows the order
+    on title instead of path + title. This lead to broken tree display. Also we don't
+    want of drag-n-drop that will fails/messes with languages.
     """
     form = CategoryAdminForm
     list_display = (
         "title",
         "language_name",
         "is_original",
+        "get_parent",
         "article_count",
     )
     list_filter = (
@@ -104,6 +105,10 @@ class CategoryAdmin(SmartModelAdmin):
     def article_count(self, obj):
         return obj.articles.count()
     article_count.short_description = _("articles")
+
+    def get_parent(self, obj):
+        return obj.get_parent()
+    get_parent.short_description = _("parent")
 
     def get_urls(self):
         """
