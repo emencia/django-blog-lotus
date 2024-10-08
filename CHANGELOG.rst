@@ -15,6 +15,8 @@ Unreleased work on "category_tree" branch
 * Added tests around model, form and admin;
 * Added a new admin view to list a tree of categories, this is currently in beta and
   will need some more work in UI/UX before to be ready to override the admin changelist;
+* Added new setting ``LOTUS_CATEGORY_SHORT_CRUMBS`` to disable category ancestors
+  listing in breadcrumb;
 * TODO: Implement category children listing:
 
   - [x] Only list root categories from index;
@@ -23,7 +25,7 @@ Unreleased work on "category_tree" branch
   - [x] No nesting or tree displayed in articles, just list all category indifferently
     from their depth;
   - [x] Finally a tree view should be helpful but maybe optional;
-  - [ ] Setting to disable ancestor from breadcrumbs;
+  - [x] Setting to disable ancestor from breadcrumbs;
   - [ ] We should have a test to ensure delete() correctly delete and cascade to
     children;
   - [ ] Remove temporary/useless r&d stuff;

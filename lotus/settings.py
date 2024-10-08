@@ -127,6 +127,13 @@ is the title to display. You must not remove any of these, just change the value
 
 """
 
+LOTUS_CATEGORY_SHORT_CRUMBS = False
+"""
+Manage the length of category breadcrumbs. When false, all category ancestor are listed
+in crumbs. When true, only the current category is listed in crumbs. This is only
+applied on category children.
+"""
+
 LOTUS_ADMIN_ARTICLE_ASSETS = {
     "css": {
         "all": ("css/lotus-admin.css",)

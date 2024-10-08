@@ -10,7 +10,6 @@ from .views import (
     PreviewTogglerView, PreviewArticleDetailView,
     TagIndexView, TagDetailView, TagAutocompleteView,
 )
-from .views.category import CategoryTreeView
 
 
 app_name = "lotus"
@@ -27,9 +26,6 @@ urlpatterns = [
     ),
 
     path("categories/", CategoryIndexView.as_view(), name="category-index"),
-
-    # WARNING: Probably temporarily only
-    path("categories/tree/", CategoryTreeView.as_view(), name="category-tree"),
 
     path(
         "categories/<slug:slug>/",

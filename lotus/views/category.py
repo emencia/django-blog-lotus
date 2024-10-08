@@ -18,13 +18,6 @@ except ImportError:
     from .mixins import NoOperationBreadcrumMixin as BaseBreadcrumbMixin
 
 
-# WARNING: Temporarily during development
-from django.http import HttpResponse
-from django.views.generic import View
-from bigtree import dict_to_tree, yield_tree
-from lotus.utils.trees import queryset_to_flat_dict
-
-
 class CategoryIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin,
                         LanguageMixin, ListView):
     """
@@ -78,7 +71,7 @@ class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView,
         )]
 
         # Append ancestors
-        if self.object.depth > 1:
+        if not settings.LOTUS_CATEGORY_SHORT_CRUMBS and self.object.depth > 1:
             queryset = self.object.get_ancestors().filter(
                 language=self.get_language_code()
             )
@@ -122,70 +115,3 @@ class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView,
 
         # Let the ListView mechanics manage list pagination from given queryset
         return super().get(request, *args, **kwargs)
-
-
-# WARNING: Temporarily during development
-class CategoryTreeView(LotusContextStage, PreviewModeMixin, LanguageMixin, View):
-    """
-    Display an unicode tree of categories in plain/text format.
-
-    Categories are properly filtered on language.
-    """
-    model = Category
-    lotus_stage = "categories"
-
-    def get_queryset(self):
-        """
-        Build queryset base with language filtering to list categories.
-        """
-        # q = self.model.objects.get_for_lang(self.get_language_code())
-        q = self.model.objects.all()
-
-        # Drop usage of ``*self.model.COMMON_ORDER_BY`` in 'order_by' since
-        # treebeard is used to add new node sorted on title, so path resolution should
-        # be identical to the previous behavior before treebeard implementation.
-        return q.order_by("path")
-
-    def get_output(self):
-        """
-        Build output items
-        """
-        # title = "For language '{}'".format(self.get_language_code())
-        title = "All languages mixed"
-
-        output = [
-            title,
-            "=" * len(title),
-            "",
-        ]
-
-        nodes = queryset_to_flat_dict(
-            self.get_queryset(),
-            nodes={
-                ".": {"pk": 0, "title": ".", "language": "None"},
-            },
-            path_prefix="./",
-        )
-
-        for branch, stem, node in yield_tree(dict_to_tree(nodes), style="rounded"):
-            if node.title == ".":
-                title = node.title
-            else:
-                title = "{} [{}]".format(node.title, node.language)
-
-            output.append("{branch}{stem}{title}".format(
-                branch=branch,
-                stem=stem,
-                title=title,
-            ))
-
-        return output
-
-    def get(self, request):
-        """
-        Return built plain text tree output.
-        """
-        return HttpResponse(
-            "\n".join(self.get_output()),
-            content_type="text/plain; charset=utf-8"
-        )
