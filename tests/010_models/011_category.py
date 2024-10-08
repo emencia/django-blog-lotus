@@ -299,6 +299,28 @@ def test_category_model_file_purge(db):
     assert Path(pong.cover.path).exists() is True
 
 
+def test_category_delete_tree(tests_settings, db):
+    """
+    Ensure that the category deletion cascade is respected when deleting a top level
+    category, its descendants are removed also.
+    """
+    sample_path = (
+        tests_settings.fixtures_path / "category_tree_basic.json"
+    )
+    sample = json.loads(sample_path.read_text())
+
+    Category.load_bulk(sample["tree"])
+
+    # Loaded dump contains 4 categories and 3 are in the same branch (starting from
+    # 'item-2')
+    assert Category.objects.count() == 4
+
+    # Deleting the 'item-2' deletes it along it descendants
+    item_2 = Category.objects.get(slug="item-2")
+    item_2.delete()
+    assert Category.objects.count() == 1
+
+
 def test_category_tree(tests_settings, db):
     """
     Check about treebear implementation behaviors during development.

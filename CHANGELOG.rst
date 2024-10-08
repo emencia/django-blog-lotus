@@ -27,9 +27,10 @@ Unreleased work on "category_tree" branch
   - [x] Finally a tree view should be helpful but maybe optional;
   - [x] Setting to disable ancestor from breadcrumbs;
   - [x] Add 'parent' column in Category changelist;
-  - [ ] We should have a test to ensure delete() correctly delete and cascade to
+  - [x] We should have a test to ensure delete() correctly delete and cascade to
     children;
-  - [ ] Remove temporary/useless r&d stuff;
+  - [x] Remove temporary/useless r&d stuff;
+  - [ ] We would need a template tag to render a Category tree;
   - [ ] Make a resume in documentation about constraint checking which avoid to mess
     category with different language;
 
