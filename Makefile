@@ -189,7 +189,7 @@ install-backend:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing backend requirements <---$(FORMATRESET)\n"
 	@echo ""
-	$(PIP_BIN) install -e .[api,breadcrumbs,dev,quality,release,doc,doc-live]
+	$(PIP_BIN) install -e .[api,breadcrumbs,dev,quality,release,doc,doc-live,sandbox]
 .PHONY: install-backend
 
 install-frontend:
@@ -291,6 +291,13 @@ run:
 	@echo ""
 	$(DJANGO_MANAGE_BIN) runserver 0.0.0.0:8001
 .PHONY: run
+
+run-jazzmin:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running development server for Jazzmin version <---$(FORMATRESET)\n"
+	@echo ""
+	$(PYTHON_BIN) $(DJANGO_MANAGE) runserver 0.0.0.0:8005 --settings=settings.jazzmin
+.PHONY: run-jazzmin
 
 css:
 	@echo ""
