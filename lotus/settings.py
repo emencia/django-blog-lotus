@@ -75,13 +75,13 @@ default lotus templates which may use them so you will have to override these te
 
 LOTUS_ARTICLE_SIBLING_TEMPLATE = "lotus/article/partials/siblings.html"
 """
-Default template to use for template tag ``get_translation_siblings`` with an Article
+Default template used for template tag ``get_translation_siblings`` with an Article
 object.
 """
 
 LOTUS_CATEGORY_SIBLING_TEMPLATE = "lotus/category/partials/siblings.html"
 """
-Default template to use for template tag ``get_translation_siblings`` with an Category
+Default template used for template tag ``get_translation_siblings`` with an Category
 object.
 """
 
@@ -97,17 +97,22 @@ Template context variable name to set the preview mode in views.
 
 LOTUS_PREVIEW_SWITCH_TEMPLATE = "lotus/preview_switch.html"
 """
-Template path to use to render template tag ``preview_switch``.
+Template path used to render template tag ``preview_switch``.
 """
 
 LOTUS_CATEGORIES_TAG_TEMPLATE = "lotus/category/partials/tag_get_categories.html"
 """
-Template path to use to render template tag ``get_categories``.
+Template path used to render template tag ``get_categories_html``.
+"""
+
+LOTUS_CATEGORY_TREE_TAG_TEMPLATE = "lotus/category/partials/tag_get_category_tree.html"
+"""
+Template path used to render template tag ``get_category_tree_html``.
 """
 
 LOTUS_ALBUM_TAG_TEMPLATE = "lotus/album/partials/tag_get_album_html.html"
 """
-Template path to use to render template tag ``get_album_html``.
+Template path used to render template tag ``get_album_html``.
 """
 
 LOTUS_CRUMBS_TITLES = {
@@ -117,7 +122,7 @@ LOTUS_CRUMBS_TITLES = {
     "tag-index": _("Tags"),
 }
 """
-Crumb title to use for views breadcrumbs, for each item key uses the url name and value
+Crumb title used for views breadcrumbs, for each item key uses the url name and value
 is the title to display. You must not remove any of these, just change the value.
 
 .. Note::

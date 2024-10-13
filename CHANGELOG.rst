@@ -6,60 +6,21 @@ Changelog
 Unreleased work on "category_tree" branch
 -----------------------------------------
 
-* Added django-treebeard to requirements and install it into sandbox;
+* Added django-treebeard to requirements;
 * Added treebeard usage on Category model;
 * Fixed tests that may fail because of new Category fields from treebeard;
-* Adapted Category form to manage the treebeard fields as we need;
-* Added some validation in Category admin form about constraints about language and
+* Adapted Category form to manage the treebeard fields;
+* Added some validation in Category admin form for constraints about language and
   parenting to ensure tree is not corrupted;
 * Added tests around model, form and admin;
 * Added a new admin view to list a tree of categories, this is currently in beta and
   will need some more work in UI/UX before to be ready to override the admin changelist;
+* Added new template tag ``get_category_tree_html`` to display a tree of all categories
+  for current language;
 * Added new setting ``LOTUS_CATEGORY_SHORT_CRUMBS`` to disable category ancestors
   listing in breadcrumb;
-* TODO: Implement category children listing:
-
-  - [x] Only list root categories from index;
-  - [x] Children are listed only from their parent details;
-  - [x] Category detail breadcrumb should include possible ancestors;
-  - [x] No nesting or tree displayed in articles, just list all category indifferently
-    from their depth;
-  - [x] Finally a tree view should be helpful but maybe optional;
-  - [x] Setting to disable ancestor from breadcrumbs;
-  - [x] Add 'parent' column in Category changelist;
-  - [x] We should have a test to ensure delete() correctly delete and cascade to
-    children;
-  - [x] Remove temporary/useless r&d stuff;
-  - [ ] We would need a template tag to render a Category tree;
-  - [ ] Make a resume in documentation about constraint checking which avoid to mess
-    category with different language;
-
-* For after the "category_tree" step:
-
-    - [ ] Move to "lotus.compat.import_zoneinfo.ZoneInfo" usage instead of old compat
-      import way;
-    - [ ] Add more block around content from detail templates to ease customization;
-
-
-.. Note::
-    django-treebeard has a specific way to store parenting with two fields, the node
-    (Category object) to link to and the position where to add it.
-
-    Position is used to define order where the child is located in its parent children.
-    We don't want of this since we only order on title and we don't need or want to
-    manage position from the admin list.
-
-    Because of this the position field is hidden and always set to ``sorted-child`` so
-    child is added using sorting on title.
-
-    Also the tree can not be displayed where languages are mixed, we cannot mix the
-    parenting and languages trees.
-
-.. Note::
-    Development requirements includes bigtree along some tests around it. This is
-    currently not used from Lotus internally and will probably never since bigtree usage
-    here is mostly for unicode tree. It is useful during Category tree feature but will
-    probably to remove once finished.
+* Added new setting ``LOTUS_CATEGORY_TREE_TAG_TEMPLATE`` to define a custom default
+  template for template tag ``get_category_tree_html``;
 
 
 Version 0.8.1 - 2023/12/01

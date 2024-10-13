@@ -5,6 +5,7 @@
 .. _django-smart-media: https://github.com/sveetch/django-smart-media
 .. _django-taggit: https://github.com/jazzband/django-taggit
 .. _djangorestframework: https://www.django-rest-framework.org/
+.. _django-treebeard: https://github.com/django-treebeard/django-treebeard
 
 
 =================
@@ -19,6 +20,7 @@ Features
 
 * Multilingual articles and categories (but still compatible with single language site);
 * Categories, albums and tags for Articles;
+* Category tree;
 * Featuring, pinning, private and draft modes;
 * Configured `CKEditor <https://ckeditor.com/ckeditor-4/>`_ to write rich text in admin;
 * Preview mode for admins;
@@ -39,6 +41,7 @@ Dependencies
 * `django-ckeditor`_>=6.0.0;
 * `django-smart-media`_;
 * `django-taggit`_>=3.1.0;
+* `django-treebeard`_>=4.3,!=4.5;
 * `django-view-breadcrumbs`_>=2.2.1 (optional);
 * `djangorestframework`_>=3.14.0 (optional);
 

@@ -1,30 +1,31 @@
-{% load i18n static %}{% spaceless %}<ul class="{% if root_node %}tree {% else %}nodes {% endif %}">
-    {% for item in nodes %}
-        <li class="item{% if not item.children %} no-children{% endif %}">
-            <div class="details"{% if item.children %} open{% endif %}>
-                <div class="summary">
-                    <a href="{% url "admin:lotus_category_change" object_id=item.id %}">
-                        {{ item.data.title }}
-                        {% comment %}{% if not item.data.original %}
-                            <sup><small>&nbsp;(original)</small></sup>
-                        {% endif %}{% endcomment %}
-                        <sup><small>&nbsp;({{ item.data.language|language_name|lower }})</small></sup>
-                    </a>
-                    {% comment %}<span class="language">{{ item.data.language|language_name }}</span>{% endcomment %}
-                    <span class="original">
-                        {% if not item.data.original %}
-                            {% translate "Original" %}
-                        {% else %}
-                            {% translate "Translation" %}
-                        {% endif %}
-                    </span>
-                </div>
+{% load i18n static %}{% spaceless %}
+    <ul class="{% if root_node %}tree {% else %}nodes {% endif %}">
+        {% for item in nodes %}
+            <li class="item{% if not item.children %} no-children{% endif %}">
+                <div class="details"{% if item.children %} open{% endif %}>
+                    <div class="summary">
+                        <a href="{% url "admin:lotus_category_change" object_id=item.id %}">
+                            {{ item.data.title }}
+                            {% comment %}{% if not item.data.original %}
+                                <sup><small>&nbsp;(original)</small></sup>
+                            {% endif %}{% endcomment %}
+                            <sup><small>&nbsp;({{ item.data.language|language_name|lower }})</small></sup>
+                        </a>
+                        {% comment %}<span class="language">{{ item.data.language|language_name }}</span>{% endcomment %}
+                        <span class="original">
+                            {% if not item.data.original %}
+                                {% translate "Original" %}
+                            {% else %}
+                                {% translate "Translation" %}
+                            {% endif %}
+                        </span>
+                    </div>
 
-                {% if item.children %}
-                    {% include "admin/lotus/category/partials/_recursive_tree_children.html" with nodes=item.children only %}
-                {% endif %}
-            </div>
-        </li>
-    {% endfor %}
-</ul>
+                    {% if item.children %}
+                        {% include "admin/lotus/category/partials/_recursive_tree_children.html" with nodes=item.children only %}
+                    {% endif %}
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
 {% endspaceless %}

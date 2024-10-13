@@ -15,7 +15,7 @@ def article_state_list(context, article, **kwargs):
     This is a shortcut around ``Article.get_states`` to be able to use the ``lotus_now``
     context variable or force another value.
 
-    Example:
+    Exemple:
         At least you must give an Article object: ::
 
             {% load lotus %}
@@ -57,7 +57,7 @@ def article_states(context, article, **kwargs):
 
     Identical to ``article_state_list`` but return a string instead of list.
 
-    Example:
+    Exemple:
         At least you must give an Article object: ::
 
             {% load lotus %}
@@ -106,7 +106,7 @@ def translation_siblings(context, source, tag_name=None, **kwargs):
     template context variable ``lotus_now`` (as implemented in ``ArticleFilterMixin``)
     or it can be given through the tag argument ``now``.
 
-    Example:
+    Exemple:
         At least you must give an Article object: ::
 
             {% load lotus %}
@@ -199,7 +199,7 @@ def translation_siblings_html(context, source, **kwargs):
     """
     Work like ``translation_siblings`` but render HTML from a template instead.
 
-    Example:
+    Exemple:
         At least you must give an Article object: ::
 
             {% load lotus %}
@@ -259,7 +259,7 @@ def preview_switch(context):
     """
     Display a button to enable or disable preview mode.
 
-    Example:
+    Exemple:
         This tag does not expect any argument: ::
 
             {% load lotus %}
@@ -312,7 +312,7 @@ def check_object_lang_availability(context, source, **kwargs):
     Determine if an object has a language that are not available from ``LANGUAGES``
     setting.
 
-    Example:
+    Exemple:
         This tag does not expect any other argument than ``source``: ::
 
             {% load lotus %}
@@ -355,7 +355,7 @@ def article_get_related(context, article, **kwargs):
     ``ArticleFilterMixin.apply_article_lookups`` that is already supplied in Article
     detail view and viewset.
 
-    Example:
+    Exemple:
         You must give an Article object: ::
 
             {% load lotus %}
@@ -386,24 +386,22 @@ def get_categories(context, current=None):
     """
     Generates and returns a list of all categories for current language.
 
-    Example:
+    .. Note::
+        This does not care about category tree, everything is returned in a flat list.
+
+    Exemple:
         This tag does not require any argument to work: ::
 
             {% load lotus %}
             {% get_categories_html [current=mycategory] %}
-
-        And accept optional arguments:
-
-        * ``current`` argument expect a category object to check against each item,
-            the matching item will be marked as active.
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
             context variable for template where the tag is included.
 
     Keyword Arguments:
-        current (lotus.models.article.Category): A category object to check against
-            each item, the matching item will be marked as active.
+        current (lotus.models.article.Category): A category object to use in template
+            to find the current category in the tree so it can marked as an active item.
 
     Returns:
         dict: A dictionary containing a list of dictionaries, each of which has the
@@ -438,17 +436,11 @@ def get_categories_html(context, current=None, template=None):
     """
     Work like ``get_categories`` but render HTML from a template instead.
 
-    Example:
+    Exemple:
         This tag does not require any argument to work: ::
 
             {% load lotus %}
             {% get_categories_html [current=mycategory] [template="foo/bar.html"] %}
-
-        And accept optional arguments:
-
-        * ``current``: expect a category object to check against each item,
-            the matching item will be marked as active;
-        * ``template``: a string for a template path to use;
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
@@ -456,8 +448,8 @@ def get_categories_html(context, current=None, template=None):
             with an Article object, so it should be safe to be empty for a Category.
 
     Keyword Arguments:
-        current (lotus.models.article.Category): A category object to check against
-            each item, the matching item will be marked as active.
+        current (lotus.models.article.Category): A category object to use in template
+            to find the current category in the tree so it can marked as an active item.
         template (string): A path for custom template to use. If not given a default
             one will be used from setting ``LOTUS_CATEGORIES_TAG_TEMPLATE``.
 
@@ -477,11 +469,50 @@ def get_categories_html(context, current=None, template=None):
 
 
 @register.simple_tag(takes_context=True)
+def get_category_tree_html(context, current=None, template=None):
+    """
+    Build HTML of the category tree for current language.
+
+    Exemple:
+        This tag does not require any argument to work: ::
+
+            {% load lotus %}
+            {% get_category_tree_html [current=mycategory] [template="foo/bar.html"] %}
+
+    Arguments:
+        context (object): Either a ``django.template.Context`` or a dictionnary for
+            context variable for template where the tag is included. This is only used
+            with an Article object, so it should be safe to be empty for a Category.
+
+    Keyword Arguments:
+        current (lotus.models.article.Category): A category object to use in template
+            to find the current category in the tree so it can marked as an active item.
+        template (string): A path for custom template to use. If not given a default
+            one will be used from setting ``LOTUS_CATEGORY_TREE_TAG_TEMPLATE``.
+
+    Returns:
+        string: Rendered template tag fragment.
+
+    """  # noqa: E501
+    # Use given template if any else the default one from settings
+    template_path = template or settings.LOTUS_CATEGORY_TREE_TAG_TEMPLATE
+
+    request = context.get("request", None)
+    language = get_language_code(request=request)
+
+    return loader.get_template(template_path).render({
+        "nodes": Category.get_nested_tree(language=language),
+        "current": current,
+        "root_node": True,
+    })
+
+
+@register.simple_tag(takes_context=True)
 def get_album_html(context, album, template=None):
     """
     Render an Album object with a template.
 
-    Example:
+    Exemple:
         This tag requires ``album`` argument to work: ::
 
             {% load lotus %}

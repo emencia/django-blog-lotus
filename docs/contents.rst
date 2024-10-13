@@ -36,9 +36,17 @@ Category
 
 A category is just a **container to organize your main article thematics**.
 
-Category has a title, a cover and a free optional description.
+Category has a title, a lead, a cover and a free optional description.
 
-Category detail will list its related articles.
+A category can define a parent category so it will be assumed as a child of the parent.
+
+.. Warning::
+    A category can not be a parent of another category with different languages, if
+    you try to do so the admin form will raise an error.
+
+* The category list view will only lists the first level categories;
+* The category detail view will list its related articles and its possible children
+  categories;
 
 
 Tag

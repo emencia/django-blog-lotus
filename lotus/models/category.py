@@ -124,7 +124,7 @@ class Category(SmartFormatMixin, MP_Node, Translated):
         ]
 
     @classmethod
-    def get_nested_tree(cls, parent=None, keep_ids=True, filters=None, language=None):
+    def get_nested_tree(cls, parent=None, keep_ids=True, language=None):
         """
         Implement again the ``MP_Node.dump_bulk()`` method to allow for queryset
         filtering.
@@ -158,24 +158,24 @@ class Category(SmartFormatMixin, MP_Node, Translated):
         ret, lnk = [], {}
         pk_field = cls._meta.pk.attname
 
-        for pyobj in serializers.serialize('python', qset):
+        for pyobj in serializers.serialize("python", qset):
             # django's serializer stores the attributes in 'fields'
-            fields = pyobj['fields']
-            path = fields['path']
+            fields = pyobj["fields"]
+            path = fields["path"]
             depth = int(len(path) / cls.steplen)
 
             # this will be useless in load_bulk
-            del fields['depth']
-            del fields['path']
-            del fields['numchild']
+            del fields["depth"]
+            del fields["path"]
+            del fields["numchild"]
 
             if pk_field in fields:
                 # this happens immediately after a load_bulk
                 del fields[pk_field]
 
-            newobj = {'data': fields}
+            newobj = {"data": fields}
             if keep_ids:
-                newobj[pk_field] = pyobj['pk']
+                newobj[pk_field] = pyobj["pk"]
 
             if (not parent and depth == 1) or\
                (parent and len(path) == len(parent.path)):
@@ -188,10 +188,10 @@ class Category(SmartFormatMixin, MP_Node, Translated):
                 if parentpath in lnk:
                     parentobj = lnk[parentpath]
 
-                    if 'children' not in parentobj:
-                        parentobj['children'] = []
+                    if "children" not in parentobj:
+                        parentobj["children"] = []
 
-                    parentobj['children'].append(newobj)
+                    parentobj["children"].append(newobj)
 
             lnk[path] = newobj
 
