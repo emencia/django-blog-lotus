@@ -43,6 +43,8 @@ to know about migrating your project.
   `diskette <https://diskette.readthedocs.io/en/latest/>`_ to
   include default configuration to manage dumps for Lotus data;
 * Configured and enabled Diskette usage in sandbox;
+* Added minimal requirement versions to help Pip resolving;
+* Updated script to freeze local dependencies;
 
 
 Version 0.8.1 - 2023/12/01

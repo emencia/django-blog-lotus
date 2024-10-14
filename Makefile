@@ -354,7 +354,7 @@ freeze-dependencies:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Freezing backend dependencies versions <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTHON_BIN) freezer.py
+	$(PYTHON_BIN) freezer.py ${PACKAGE_NAME} --destination=frozen.txt
 .PHONY: freeze-dependencies
 
 tox:
