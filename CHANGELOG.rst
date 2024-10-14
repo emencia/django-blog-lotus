@@ -21,6 +21,10 @@ Unreleased work on "category_tree" branch
   listing in breadcrumb;
 * Added new setting ``LOTUS_CATEGORY_TREE_TAG_TEMPLATE`` to define a custom default
   template for template tag ``get_category_tree_html``;
+* Added new extra requirements section ``sandbox`` dedicated to sandbox only third party
+  application. It is currently not installed from the Makefile task ``install``;
+* Added requirement ``drf-redesign`` to sandbox extra requirements;
+* Update Category serializers and its tests to include 'parent' field;
 
 
 Version 0.8.1 - 2023/12/01

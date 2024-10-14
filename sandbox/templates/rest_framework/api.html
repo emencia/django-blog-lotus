@@ -1,0 +1,24 @@
+{% extends "rest_framework/api.html" %}
+{% load i18n %}
+
+{% comment %}
+Currently we enforce float property on form so the language menu does not break header
+with default DRF browser. DRF browser with drf-redesign is still displayed well anyway.
+{% endcomment %}
+{% block branding %}
+    {{ block.super }}
+    <form action="{% url 'set_language' %}" method="post" style="float:right">{% csrf_token %}
+        <input name="next" type="hidden" value="{{ redirect_to }}">
+        <select name="language">
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+            {% for language in languages %}
+                <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                    {{ language.name_local }} ({{ language.code }})
+                </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Go">
+    </form>
+{% endblock %}

@@ -21,6 +21,7 @@ Or without any features: ::
 
 For development install see :ref:`install_development`.
 
+.. _install_config_from_scratch:
 
 Configuration from scratch
 **************************

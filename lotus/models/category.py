@@ -273,6 +273,7 @@ class Category(SmartFormatMixin, MP_Node, Translated):
                 current_lang=self.language,
             ))
 
+        print("🎨 move_into:", self.slug, "🔀", parent.slug)
         self.move(parent, pos="sorted-child")
 
     def save(self, *args, **kwargs):

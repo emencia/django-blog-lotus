@@ -43,7 +43,7 @@ def test_category_categoryserializer(db, settings, api_client):
     Serializer 'CategorySerializer' should returns the full payload as expected
     depending serializer has been given (from context) a filtering function or not.
     """
-    settings.LANGUAGE_CODE = "fr"
+    settings.LANGUAGE_CODE = "en"
 
     # Build a dummy request, we don't care about requested URL.
     request_factory = APIRequestFactory()
@@ -61,9 +61,7 @@ def test_category_categoryserializer(db, settings, api_client):
         "lead": "",
         "description": "",
         "cover": None,
-        "path": "",
         "depth": None,
-        "numchild": None,
     }
 
     # Timezone defined from project settings, used to format displayed date
@@ -72,7 +70,17 @@ def test_category_categoryserializer(db, settings, api_client):
     now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=ZoneInfo("UTC"))
     tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
 
-    ping = CategoryFactory(slug="ping")
+    pang = CategoryFactory(title="Pang", slug="pang")
+    ping = CategoryFactory(title="Ping", slug="ping")
+    pong = CategoryFactory(title="Pong", slug="pong")
+    # Make a tree of categories such as Pang > Ping > Pong
+    ping.move_into(pang)
+    pong.move_into(ping)
+    # Object need to be reloaded since treebear has made path changes
+    pang.refresh_from_db()
+    ping.refresh_from_db()
+    pong.refresh_from_db()
+
     bingo = TagFactory(name="Bingo", slug="bingo")
     picsou = AuthorFactory(first_name="Picsou", last_name="McDuck")
 
@@ -106,7 +114,6 @@ def test_category_categoryserializer(db, settings, api_client):
         "request": request,
         "lotus_now": now,
     })
-
     # print(json.dumps(serialized.data, indent=4))
 
     # Use JSON render that will flatten data (turn OrderedDict as simple dict) to
@@ -116,6 +123,14 @@ def test_category_categoryserializer(db, settings, api_client):
         "url": "http://testserver/api/category/{}/".format(ping.id),
         "original": None,
         "detail_url": ping.get_absolute_url(),
+        "parent": {
+            "url": "http://testserver/api/category/{}/".format(pang.id),
+            "detail_url": pang.get_absolute_url(),
+            "language": pang.language,
+            "title": pang.title,
+            "lead": pang.lead,
+            "cover": "http://testserver" + pang.cover.url,
+        },
         "articles": [
             {
                 "detail_url": tomorrow_article.get_absolute_url(),
@@ -163,9 +178,7 @@ def test_category_categoryserializer(db, settings, api_client):
         "modified": ping.modified.astimezone(site_tz).isoformat(),
         "cover": "http://testserver" + ping.cover.url,
         "description": ping.description,
-        "path": ping.path,
         "depth": ping.depth,
-        "numchild": ping.numchild,
     }
 
     # Craft a proper viewset class with a request and that can be used to give
@@ -190,6 +203,14 @@ def test_category_categoryserializer(db, settings, api_client):
         "url": "http://testserver/api/category/{}/".format(ping.id),
         "original": None,
         "detail_url": ping.get_absolute_url(),
+        "parent": {
+            "url": "http://testserver/api/category/{}/".format(pang.id),
+            "detail_url": pang.get_absolute_url(),
+            "language": pang.language,
+            "title": pang.title,
+            "lead": pang.lead,
+            "cover": "http://testserver" + pang.cover.url,
+        },
         "articles": [
             {
                 "detail_url": now_article.get_absolute_url(),
@@ -211,9 +232,7 @@ def test_category_categoryserializer(db, settings, api_client):
         "modified": ping.modified.astimezone(site_tz).isoformat(),
         "cover": "http://testserver" + ping.cover.url,
         "description": ping.description,
-        "path": ping.path,
         "depth": ping.depth,
-        "numchild": ping.numchild,
     }
 
 

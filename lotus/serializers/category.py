@@ -6,6 +6,9 @@ from ..models import Category
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     """
     Other used model serializer are imported into methods to avoid circular references.
+
+    .. Todo::
+        Display possible category children.
     """
     original = serializers.HyperlinkedRelatedField(
         many=False,
@@ -13,16 +16,32 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         view_name="lotus-api:category-detail"
     )
     detail_url = serializers.SerializerMethodField()
+    parent = serializers.SerializerMethodField()
     articles = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
-        fields = "__all__"
+        exclude = ["path", "numchild"]
         extra_kwargs = {
             "url": {
                 "view_name": "lotus-api:category-detail"
             },
         }
+
+    def get_parent(self, obj):
+        """
+        Return the possible parent category.
+        """
+        parent = obj.get_parent()
+
+        if not parent:
+            return None
+
+        return CategoryMinimalSerializer(
+            parent,
+            many=False,
+            context=self.context
+        ).data
 
     def get_detail_url(self, obj):
         """
