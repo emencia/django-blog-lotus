@@ -34,6 +34,8 @@ to know about migrating your project.
 * Updated Category serializers and its tests to include 'parent' field;
 * Fixed syntax error in some help text from ``lotus_demo`` command, close #78;
 * Fixed invalid documentation configuration referencing another repository, close #77;
+* Fixed Article item fragment template that was still displaying the categories part
+  even if it does not have any relatded category, close #73;
 
 
 Version 0.8.1 - 2023/12/01

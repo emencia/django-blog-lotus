@@ -13,12 +13,16 @@
         <div class="introduction card-text">{{ article_object.introduction|safe }}</div>
     </div>
 
-    <div class="card-footer pt-0 border-0 bg-transparent text-dark">
-        <small class="me-1 text-muted">In</small>
-        {% for category in article_object.get_categories %}
-            <small class="category">{{ category.title }}</small>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </div>
+    {% with article_categories=article_object.get_categories %}
+        {% if article_categories %}
+            <div class="card-footer pt-0 border-0 bg-transparent text-dark">
+                <small class="me-1 text-muted">In</small>
+                {% for category in article_categories %}
+                    <small class="category">{{ category.title }}</small>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     {% if user.is_authenticated and user.is_staff %}
         {% article_state_list article as article_states %}
