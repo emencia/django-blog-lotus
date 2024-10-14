@@ -247,7 +247,6 @@ except ModuleNotFoundError:
 else:
     API_AVAILABLE = True
     INSTALLED_APPS.extend([
-        "drf_redesign",
         "rest_framework",
     ])
 
