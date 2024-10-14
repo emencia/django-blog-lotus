@@ -10,25 +10,29 @@ A major release with new feature *Category tree*, see
 `Migration to 0.9.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-8-1-to-0-9-0>`_
 to know about migrating your project.
 
-* Added django-treebeard to requirements;
-* Added treebeard usage on Category model;
-* Fixed tests that may fail because of new Category fields from treebeard;
-* Adapted Category form to manage the treebeard fields;
-* Added some validation in Category admin form for constraints about language and
-  parenting to ensure tree is not corrupted;
-* Added tests around model, form and admin;
-* Added a new admin view to list a tree of categories, this is currently in beta and
-  will need some more work in UI/UX before to be ready to override the admin changelist;
-* Added new template tag ``get_category_tree_html`` to display a tree of all categories
-  for current language;
-* Added new setting ``LOTUS_CATEGORY_SHORT_CRUMBS`` to disable category ancestors
-  listing in breadcrumb;
-* Added new setting ``LOTUS_CATEGORY_TREE_TAG_TEMPLATE`` to define a custom default
-  template for template tag ``get_category_tree_html``;
+* Added new feature 'Category tree':
+
+  * Added django-treebeard to requirements;
+  * Added treebeard usage on Category model;
+  * Fixed tests that may fail because of new Category fields from treebeard;
+  * Adapted Category form to manage the treebeard fields;
+  * Added some validation in Category admin form for constraints about language and
+    parenting to ensure tree is not corrupted;
+  * Added tests around model, form and admin;
+  * Added a new admin view to list a tree of categories, this is currently in beta and
+    will need some more work in UI/UX before to be ready to override the admin changelist;
+  * Added new template tag ``get_category_tree_html`` to display a tree of all categories
+    for current language;
+  * Added new setting ``LOTUS_CATEGORY_SHORT_CRUMBS`` to disable category ancestors
+    listing in breadcrumb;
+  * Added new setting ``LOTUS_CATEGORY_TREE_TAG_TEMPLATE`` to define a custom default
+    template for template tag ``get_category_tree_html``;
+
 * Added new extra requirements section ``sandbox`` dedicated to sandbox only third party
   application. It is currently not installed from the Makefile task ``install``;
 * Added requirement ``drf-redesign`` to sandbox extra requirements;
 * Updated Category serializers and its tests to include 'parent' field;
+* Fixed syntax error in some help text from ``lotus_demo`` command; close #78;
 
 
 Version 0.8.1 - 2023/12/01

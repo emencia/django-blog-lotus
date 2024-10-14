@@ -92,7 +92,7 @@ class Command(BaseCommand):
             type=int,
             default=12,
             help=(
-                "Maximum of item to add to each album. Must equal or greater than 1.",
+                "Maximum of item to add to each album. Must equal or greater than 1."
             ),
         )
         parser.add_argument(
@@ -140,7 +140,7 @@ class Command(BaseCommand):
             default=5,
             help=(
                 "Maximum of Tag to add to each article. Must be less than tag length "
-                "to create.",
+                "to create."
             ),
         )
         parser.add_argument(
