@@ -5,13 +5,15 @@ FRONTEND_DIR=frontend
 SANDBOX_DIR=sandbox
 STATICFILES_DIR=$(SANDBOX_DIR)/static-sources
 
+DJANGO_MANAGE_PATH=$(SANDBOX_DIR)/manage.py
+
 PYTHON_BIN=$(VENV_PATH)/bin/python
-PIP=$(VENV_PATH)/bin/pip
-DJANGO_MANAGE=$(SANDBOX_DIR)/manage.py
-FLAKE=$(VENV_PATH)/bin/flake8
-PYTEST=$(VENV_PATH)/bin/pytest
-TWINE=$(VENV_PATH)/bin/twine
-TOX=$(VENV_PATH)/bin/tox
+PIP_BIN=$(VENV_PATH)/bin/pip
+FLAKE_BIN=$(VENV_PATH)/bin/flake8
+PYTEST_BIN=$(VENV_PATH)/bin/pytest
+DJANGO_MANAGE_BIN=$(PYTHON_BIN) $(DJANGO_MANAGE_PATH)
+TWINE_BIN=$(VENV_PATH)/bin/twine
+TOX_BIN=$(VENV_PATH)/bin/tox
 SPHINX_RELOAD_BIN=$(PYTHON_BIN) docs/sphinx_reload.py
 
 DEMO_DJANGO_SECRET_KEY=samplesecretfordev
@@ -27,6 +29,9 @@ FORMATRESET:=$(shell tput sgr0)
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo
+	@echo "  Cleaning"
+	@echo "  ========"
+	@echo
 	@echo "  clean                         -- to clean EVERYTHING (Warning)"
 	@echo "  clean-var                     -- to clean data (uploaded medias, database, etc..)"
 	@echo "  clean-doc                     -- to remove documentation builds"
@@ -35,45 +40,61 @@ help:
 	@echo "  clean-frontend-build          -- to clean frontend built files"
 	@echo "  clean-pycache                 -- to remove all __pycache__, this is recursive from current directory"
 	@echo
+	@echo "  Installation"
+	@echo "  ============"
+	@echo
+	@echo "  install                       -- to install backend and frontend"
 	@echo "  install-backend               -- to install backend requirements with Virtualenv and Pip"
 	@echo "  install-frontend              -- to install frontend requirements with Npm"
-	@echo "  install                       -- to install backend and frontend"
 	@echo
-	@echo "  run                           -- to run Django development server"
+	@echo "  Django commands"
+	@echo "  ==============="
+	@echo
+	@echo "  demo                          -- to fill database with demo datas (this removes every existing Author, Article and Category objects)"
 	@echo "  migrate                       -- to apply demo database migrations"
 	@echo "  migrations                    -- to create new migrations for application after changes"
-	@echo "  check-migrations              -- to check for pending migrations (do not write anything)"
-	@echo "  check-django                  -- to run Django System check framework"
-	@echo "  superuser                     -- to create a superuser for Django admin"
-	@echo "  demo                          -- to fill database with demo datas (this removes every existing Author, Article and Category objects)"
 	@echo "  minimal-demo                  -- to fill database with minimal demo datas (this removes every existing Author, Article and Category objects)"
-	@echo
-	@echo "  po                            -- to update every PO files from app and sandbox sources for enabled languages"
 	@echo "  mo                            -- to build MO files from app and sandbox PO files"
+	@echo "  po                            -- to update every PO files from app and sandbox sources for enabled languages"
+	@echo "  run                           -- to run Django development server"
+	@echo "  superuser                     -- to create a superuser for Django admin"
+	@echo
+	@echo "  Frontend commands"
+	@echo "  ================="
 	@echo
 	@echo "  css                           -- to build uncompressed CSS from Sass sources"
-	@echo "  icon-font                     -- to copy bootstrap-icons font to static"
-	@echo "  watch-css                     -- to watch for Sass changes to rebuild CSS"
 	@echo "  css-prod                      -- to build compressed and minified CSS from Sass sources"
-	@echo
-	@echo "  js                            -- to build uncompressed Javascript from sources"
-	@echo "  watch-js                      -- to watch for Javascript sources changes to rebuild assets"
-	@echo "  js-prod                       -- to build minified JS assets"
-	@echo
 	@echo "  frontend                      -- to build uncompressed frontend assets (CSS, JS, etc..)"
 	@echo "  frontend-prod                 -- to build minified frontend assets (CSS, JS, etc..)"
+	@echo "  icon-font                     -- to copy bootstrap-icons font to static"
+	@echo "  js                            -- to build uncompressed Javascript from sources"
+	@echo "  js-prod                       -- to build minified JS assets"
+	@echo "  watch-css                     -- to watch for Sass changes to rebuild CSS"
+	@echo "  watch-js                      -- to watch for Javascript sources changes to rebuild assets"
+	@echo
+	@echo
+	@echo "  Documentation"
+	@echo "  ============="
 	@echo
 	@echo "  docs                          -- to build documentation"
 	@echo "  livedocs                      -- to run livereload server to rebuild documentation on source changes"
 	@echo
+	@echo "  Quality"
+	@echo "  ======="
+	@echo
+	@echo "  check-django                  -- to run Django System check framework"
+	@echo "  check-migrations              -- to check for pending migrations (do not write anything)"
+	@echo "  check-release                 -- to check package release before uploading it to PyPi"
 	@echo "  flake                         -- to launch Flake8 checking"
+	@echo "  freeze-dependencies           -- to write a frozen.txt file with installed dependencies versions"
+	@echo "  quality                       -- to launch every quality tasks"
 	@echo "  test                          -- to launch base test suite using Pytest"
 	@echo "  test-initial                  -- to launch tests with pytest and re-initialized database (for after new application or model changes)"
 	@echo "  tox                           -- to launch tests for every Tox environments"
-	@echo "  freeze-dependencies           -- to write a frozen.txt file with installed dependencies versions"
-	@echo "  quality                       -- to launch Flake8 checking and every tests suites"
 	@echo
-	@echo "  check-release                 -- to check package release before uploading it to PyPi"
+	@echo "  Release"
+	@echo "  ======="
+	@echo
 	@echo "  release                       -- to release package for latest version on PyPi (once release has been pushed to repository)"
 	@echo
 
@@ -144,8 +165,8 @@ venv:
 	@echo ""
 	virtualenv -p $(PYTHON_INTERPRETER) $(VENV_PATH)
 	# This is required for those ones using old distribution
-	$(PIP) install --upgrade pip
-	$(PIP) install --upgrade setuptools
+	$(PIP_BIN) install --upgrade pip
+	$(PIP_BIN) install --upgrade setuptools
 .PHONY: venv
 
 create-var-dirs:
@@ -167,7 +188,7 @@ install-backend:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing backend requirements <---$(FORMATRESET)\n"
 	@echo ""
-	$(PIP) install -e .[api,breadcrumbs,dev,quality,release,doc,doc-live]
+	$(PIP_BIN) install -e .[api,breadcrumbs,dev,quality,release,doc,doc-live]
 .PHONY: install-backend
 
 install-frontend:
@@ -186,58 +207,58 @@ check-django:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Django System check framework <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTHON_BIN) $(DJANGO_MANAGE) check
+	$(DJANGO_MANAGE_BIN) check
 .PHONY: check-django
 
 migrations:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Making application migrations <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTHON_BIN) $(DJANGO_MANAGE) makemigrations $(APPLICATION_NAME)
+	$(DJANGO_MANAGE_BIN) makemigrations $(APPLICATION_NAME)
 .PHONY: migrations
 
 check-migrations:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Checking for pending project applications models migrations <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTHON_BIN) $(DJANGO_MANAGE) makemigrations --dry-run -v 3 $(APPLICATION_NAME)
-	$(PYTHON_BIN) $(DJANGO_MANAGE) makemigrations --check -v 3 $(APPLICATION_NAME)
+	$(DJANGO_MANAGE_BIN) makemigrations --dry-run -v 3 $(APPLICATION_NAME)
+	$(DJANGO_MANAGE_BIN) makemigrations --check -v 3 $(APPLICATION_NAME)
 .PHONY: check-migrations
 
 migrate:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Applying pending migrations <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTHON_BIN) $(DJANGO_MANAGE) migrate
+	$(DJANGO_MANAGE_BIN) migrate
 .PHONY: migrate
 
 superuser:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Creating new superuser <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTHON_BIN) $(DJANGO_MANAGE) createsuperuser
+	$(DJANGO_MANAGE_BIN) createsuperuser
 .PHONY: superuser
 
 po:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Updating PO from 'lotus' app <---$(FORMATRESET)\n"
 	@echo ""
-	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot --no-obsolete
+	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE_PATH) makemessages -a --keep-pot --no-obsolete
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Updating PO from sandbox <---$(FORMATRESET)\n"
 	@echo ""
-	@cd $(SANDBOX_DIR); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) makemessages -a --keep-pot --no-obsolete
+	@cd $(SANDBOX_DIR); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE_PATH) makemessages -a --keep-pot --no-obsolete
 .PHONY: po
 
 mo:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building MO from 'lotus' app <---$(FORMATRESET)\n"
 	@echo ""
-	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages --verbosity 3
+	@cd $(APPLICATION_NAME); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE_PATH) compilemessages --verbosity 3
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Building MO from sandbox <---$(FORMATRESET)\n"
 	@echo ""
-	@cd $(SANDBOX_DIR); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE) compilemessages --verbosity 3
+	@cd $(SANDBOX_DIR); ../$(PYTHON_BIN) ../$(DJANGO_MANAGE_PATH) compilemessages --verbosity 3
 .PHONY: mo
 
 demo:
@@ -245,7 +266,7 @@ demo:
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Filling with demo datas <---$(FORMATRESET)\n"
 	@echo ""
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
- 	$(PYTHON_BIN) $(DJANGO_MANAGE) lotus_demo --flush-all --translation=fr --translation=de --font ./tests/data_fixtures/font/VeraMono.ttf
+ 	$(DJANGO_MANAGE_BIN) lotus_demo --flush-all --translation=fr --translation=de --font ./tests/data_fixtures/font/VeraMono.ttf
 .PHONY: demo
 
 demo-minimal:
@@ -253,14 +274,14 @@ demo-minimal:
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Filling with minimal demo datas <---$(FORMATRESET)\n"
 	@echo ""
 	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
-	$(PYTHON_BIN) $(DJANGO_MANAGE) lotus_demo --flush-all --albums=4 --item-per-album=3 --authors=2 --categories=2 --tags=2 --tag-per-article=1 --articles=8 --font ./tests/data_fixtures/font/VeraMono.ttf
+	$(DJANGO_MANAGE_BIN) lotus_demo --flush-all --albums=4 --item-per-album=3 --authors=2 --categories=2 --tags=2 --tag-per-article=1 --articles=8 --font ./tests/data_fixtures/font/VeraMono.ttf
 .PHONY: demo-minimal
 
 run:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running development server <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTHON_BIN) $(DJANGO_MANAGE) runserver 0.0.0.0:8001
+	$(DJANGO_MANAGE_BIN) runserver 0.0.0.0:8001
 .PHONY: run
 
 css:
@@ -331,14 +352,14 @@ flake:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Flake check <---$(FORMATRESET)\n"
 	@echo ""
-	$(FLAKE) --statistics --show-source $(APPLICATION_NAME) sandbox tests
+	$(FLAKE_BIN) --statistics --show-source $(APPLICATION_NAME) sandbox tests
 .PHONY: flake
 
 test:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Tests <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTEST) --reuse-db tests/
+	$(PYTEST_BIN) --reuse-db tests/
 	rm -Rf var/media-tests/
 .PHONY: test
 
@@ -346,7 +367,7 @@ test-initial:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Tests from zero <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTEST) --reuse-db --create-db tests/
+	$(PYTEST_BIN) --reuse-db --create-db tests/
 	rm -Rf var/media-tests/
 .PHONY: test-initial
 
@@ -361,7 +382,7 @@ tox:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Launching tests with Tox environments <---$(FORMATRESET)\n"
 	@echo ""
-	$(TOX)
+	$(TOX_BIN)
 .PHONY: tox
 
 build-package:
@@ -376,14 +397,14 @@ release: build-package
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Releasing <---$(FORMATRESET)\n"
 	@echo ""
-	$(TWINE) upload dist/*
+	$(TWINE_BIN) upload dist/*
 .PHONY: release
 
 check-release: build-package
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Checking package <---$(FORMATRESET)\n"
 	@echo ""
-	$(TWINE) check dist/*
+	$(TWINE_BIN) check dist/*
 .PHONY: check-release
 
 quality: check-django check-migrations test-initial flake docs check-release freeze-dependencies

@@ -45,6 +45,7 @@ to know about migrating your project.
 * Configured and enabled Diskette usage in sandbox;
 * Added minimal requirement versions to help Pip resolving;
 * Updated script to freeze local dependencies;
+* Updated Makefile for minor enhancements;
 
 
 Version 0.8.1 - 2023/12/01
