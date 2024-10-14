@@ -32,7 +32,8 @@ to know about migrating your project.
   application. It is currently not installed from the Makefile task ``install``;
 * Added requirement ``drf-redesign`` to sandbox extra requirements;
 * Updated Category serializers and its tests to include 'parent' field;
-* Fixed syntax error in some help text from ``lotus_demo`` command; close #78;
+* Fixed syntax error in some help text from ``lotus_demo`` command, close #78;
+* Fixed invalid documentation configuration referencing another repository, close #77;
 
 
 Version 0.8.1 - 2023/12/01
