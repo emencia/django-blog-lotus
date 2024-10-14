@@ -36,6 +36,11 @@ to know about migrating your project.
 * Fixed invalid documentation configuration referencing another repository, close #77;
 * Fixed Article item fragment template that was still displaying the categories part
   even if it does not have any relatded category, close #73;
+* Added Diskette configuration in contrib
+* Added ``lotus.contrib.disk.DISKETTE_DEFINITIONS`` list to use with
+  `diskette <https://diskette.readthedocs.io/en/latest/>`_ to
+  include default configuration to manage dumps for Lotus data;
+* Configured and enabled Diskette usage in sandbox;
 
 
 Version 0.8.1 - 2023/12/01

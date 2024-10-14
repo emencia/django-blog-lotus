@@ -153,10 +153,6 @@ INSTALLED_APPS = [
     "django.contrib.sites",
     "django.contrib.staticfiles",
     "django.forms",
-    "treebeard",
-    "sorl.thumbnail",
-    "smart_media",
-    "lotus",
 ]
 
 LOGIN_REDIRECT_URL = "/"
@@ -165,6 +161,23 @@ LOGOUT_REDIRECT_URL = "/"
 # Ensure we can override applications widgets templates from project template
 # directory, require also 'django.forms' in INSTALLED_APPS
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
+
+"""
+Django Treebeard part
+"""
+INSTALLED_APPS.append(
+    "treebeard",
+)
+
+"""
+Smart media and Sorl parts
+"""
+from smart_media.settings import *  # noqa: E402,F401,F403
+
+INSTALLED_APPS.extend([
+    "sorl.thumbnail",
+    "smart_media",
+])
 
 """
 CKEditor part
@@ -265,7 +278,50 @@ else:
 
 
 """
-SPECIFIC BASE APPLICATIONS SETTINGS BELOW
+Diskette part
 """
-from smart_media.settings import *  # noqa: E402,F401,F403
+from diskette.settings import *  # noqa: E402,F401,F403
+from lotus.contrib.disk import DISKETTE_DEFINITIONS as LOTUS_DEFINITIONS  # noqa: E402
+
+INSTALLED_APPS.append(
+    "diskette",
+)
+
+DISKETTE_APPS = [
+    [
+        "django.contrib.auth", {
+            "comments": "django.contrib.auth: user and groups, no perms",
+            "natural_foreign": True,
+            "models": ["auth.Group", "auth.User"]
+        }
+    ],
+    [
+        "django.contrib.sites", {
+            "comments": "django.contrib.sites",
+            "natural_foreign": True,
+            "models": "sites"
+        }
+    ]
+] + LOTUS_DEFINITIONS
+
+# A list of *Unix shell-style wildcards* patterns to filter out some storages files
+DISKETTE_STORAGES_EXCLUDES = ["cache/*", "uploads/*"]
+
+# A list of Path objects for storage to collect and dump
+DISKETTE_STORAGES = [MEDIA_ROOT]
+
+# For where are stored created dump
+DISKETTE_DUMP_PATH = VAR_PATH
+
+# For where to extract archive storages contents
+DISKETTE_LOAD_STORAGES_PATH = BASE_DIR
+
+
+"""
+Lotus part
+"""
 from lotus.settings import *  # noqa: E402,F401,F403
+
+INSTALLED_APPS.append(
+    "lotus",
+)

@@ -1,5 +1,6 @@
-# Frozen requirement versions from '0.8.1' installation
+# Frozen requirement versions from '0.9.0rc5' installation
 bigtree==0.19.3
+diskette==0.3.6
 Django==4.2.6
 django-autocomplete-light==3.9.7
 django-ckeditor==6.7.1
