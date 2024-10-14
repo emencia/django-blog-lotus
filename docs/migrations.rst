@@ -19,10 +19,10 @@ New feature 'Category tree'
     #. Apply new migrations;
     #. Update your category detail template;
     #. If you use a custom template for Category detail view you will need to update it
-       to include the new `Subcategories part <https://github.com/emencia/django-blog-lotus/blob/development/lotus/templates/lotus/category/detail.html#L71>`_ and its related `fragment to list subcategories <https://github.com/emencia/django-blog-lotus/blob/development/lotus/templates/lotus/category/partials/subcategories.html>`_ and possibly a minor fix around `Article listing part <https://github.com/emencia/django-blog-lotus/blob/development/lotus/templates/lotus/category/detail.html#L30>`_. However this is not a breaking change and everything should work without it, just you won't benefit from Category tree feature;
+       to include the new `Subcategories part <https://github.com/emencia/django-blog-lotus/blob/v0.9.0/lotus/templates/lotus/category/detail.html#L71>`_ and its related `fragment to list subcategories <https://github.com/emencia/django-blog-lotus/blob/v0.9.0/lotus/templates/lotus/category/partials/subcategories.html>`_ and possibly a minor fix around `Article listing part <https://github.com/emencia/django-blog-lotus/blob/v0.9.0/lotus/templates/lotus/category/detail.html#L30>`_. However this is not a breaking change and everything should work without it, just you won't benefit from Category tree feature;
 
     Finally if your project is customizing Django admin, you may look into
-    `last changes on Lotus admin <https://github.com/emencia/django-blog-lotus/blob/9b9093f8345054018daf7334451c85dc62fcb3e0/lotus/templates/admin/lotus/category/change_list.html>`_
+    `last changes on Lotus admin <https://github.com/emencia/django-blog-lotus/blob/v0.9.0/lotus/templates/admin/lotus/category/change_list.html>`_
     templates that may have changed a little bit to include a link for
     the Category tree and some new Category fields.
 

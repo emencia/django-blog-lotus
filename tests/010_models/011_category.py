@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
 
-from bigtree import dict_to_tree, yield_tree
 from freezegun import freeze_time
 
 from lotus.exceptions import LanguageMismatchError
@@ -16,9 +15,7 @@ from lotus.factories import CategoryFactory, multilingual_category
 from lotus.models import Category
 from lotus.utils.imaging import DjangoSampleImageCrafter
 from lotus.utils.tests import queryset_values
-from lotus.utils.trees import (
-    nested_list_to_flat_dict, queryset_to_flat_dict, compress_nested_tree,
-)
+from lotus.utils.trees import compress_nested_tree
 
 
 def test_category_basic(db):
@@ -401,147 +398,6 @@ def test_category_tree(tests_settings, db):
         ("item-3-1-2", {"open": False, "close": [], "level": 1}),
         ("item-3-1-3", {"open": False, "close": [0], "level": 1}),
         ("item-3-2", {"open": False, "close": [0], "level": 0})
-    ]
-
-
-def test_category_bulk_tree_render(tests_settings, db, django_assert_num_queries):
-    """
-    This is mostly a sample of how to convert treebeard node dump to bigtree nodes. The
-    built trees should fit to the Category tree hierarchy.
-
-    Note than node dumps is for all Categories, there is no way to filter it as a
-    queryset.
-    """
-    sample_path = (
-        tests_settings.fixtures_path / "category_tree.json"
-    )
-    sample = json.loads(sample_path.read_text())
-
-    Category.load_bulk(sample["tree"])
-
-    # Build flat dict suitable for bigtree, this only perform a single queryset
-    with django_assert_num_queries(1):
-        nodes = nested_list_to_flat_dict(
-            Category.dump_bulk(),
-            nodes={
-                ".": {"pk": 0, "title": ".", "language": None},
-            },
-            parent_path=".",
-            depth=1,
-        )
-
-    # Check built dict
-    dict_output = [
-        "{pk}) {title} {path}".format(
-            title=data["title"],
-            path=path,
-            pk=data["pk"],
-        )
-        for path, data in nodes.items()
-    ]
-    assert dict_output == [
-        "0) . .",
-        "2) Item 1 ./2",
-        "3) Item 1.1 ./2/3",
-        "1) Item 2 ./1",
-        "4) Item 3 ./4",
-        "5) Item 3.1 ./4/5",
-        "6) Item 3.1.1 ./4/5/6",
-        "9) Item 3.1.2 ./4/5/9",
-        "7) Item 3.1.3 ./4/5/7",
-        "8) Item 3.1.4 ./4/5/8",
-        "10) Item 3.2 ./4/10",
-    ]
-
-    # Build tree with bigtree from built dict and check output
-    tree_output = [
-        "{branch}{stem}{title}".format(
-            branch=branch,
-            stem=stem,
-            title=node.title,
-        )
-        for branch, stem, node in yield_tree(dict_to_tree(nodes), style="rounded")
-    ]
-    assert tree_output == [
-        ".",
-        "├── Item 1",
-        "│   ╰── Item 1.1",
-        "├── Item 2",
-        "╰── Item 3",
-        "    ├── Item 3.1",
-        "    │   ├── Item 3.1.1",
-        "    │   ├── Item 3.1.2",
-        "    │   ├── Item 3.1.3",
-        "    │   ╰── Item 3.1.4",
-        "    ╰── Item 3.2",
-    ]
-
-
-def test_category_queryset_tree_render(tests_settings, db, django_assert_num_queries):
-    """
-    This is mostly a sample of how to convert Category tree queryset to bigtree nodes.
-    The built trees should fit to the Category tree hierarchy.
-    """
-    sample_path = (
-        tests_settings.fixtures_path / "category_tree.json"
-    )
-    sample = json.loads(sample_path.read_text())
-
-    Category.load_bulk(sample["tree"])
-
-    with django_assert_num_queries(1):
-        nodes = queryset_to_flat_dict(
-            Category.get_tree(),
-            nodes={
-                ".": {"pk": 0, "title": ".", "language": None},
-            },
-            path_prefix="./",
-        )
-
-    # Check built dict
-    dict_output = [
-        "{pk}) {title} {path}".format(
-            title=data["title"],
-            path=path,
-            pk=data["pk"],
-        )
-        for path, data in nodes.items()
-    ]
-    assert dict_output == [
-        "0) . .",
-        "2) Item 1 ./0001",
-        "3) Item 1.1 ./0001/0001",
-        "1) Item 2 ./0002",
-        "4) Item 3 ./0003",
-        "5) Item 3.1 ./0003/0001",
-        "6) Item 3.1.1 ./0003/0001/0001",
-        "9) Item 3.1.2 ./0003/0001/0002",
-        "7) Item 3.1.3 ./0003/0001/0003",
-        "8) Item 3.1.4 ./0003/0001/0004",
-        "10) Item 3.2 ./0003/0002",
-    ]
-
-    # Build tree with bigtree from built dict and check output
-    tree_output = [
-        "{branch}{stem}{title}".format(
-            branch=branch,
-            stem=stem,
-            title="{} [{}]".format(node.title, node.language),
-        )
-        for branch, stem, node in yield_tree(dict_to_tree(nodes), style="rounded")
-    ]
-    assert tree_output == [
-        ". [None]",
-        "├── Item 1 [en]",
-        "│   ╰── Item 1.1 [en]",
-        "├── Item 2 [en]",
-        "╰── Item 3 [en]",
-        "    ├── Item 3.1 [en]",
-        "    │   ├── Item 3.1.1 [en]",
-        "    │   ├── Item 3.1.2 [en]",
-        "    │   ├── Item 3.1.3 [en]",
-        "    │   ╰── Item 3.1.4 [fr]",
-        "    ╰── Item 3.2 [en]",
     ]
 
 

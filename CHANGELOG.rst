@@ -10,6 +10,8 @@ A major release with new feature *Category tree*, see
 `Migration to 0.9.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-8-1-to-0-9-0>`_
 to know about migrating your project.
 
+**This will be the last version to support Django<4.1.**
+
 * Added new feature 'Category tree':
 
   * Added django-treebeard to requirements;
@@ -62,9 +64,6 @@ Version 0.8.0 - 2023/11/22
 A major release with new feature *Article album*, see
 `Migration to 0.8.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-7-0-to-0-8-0>`_
 to know about migrating your project.
-
-**This will be the last major version to support Django 4.0, the next version will
-require Django 4.1 at least.**
 
 * Added new feature "Article album":
 
