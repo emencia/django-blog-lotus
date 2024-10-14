@@ -81,7 +81,7 @@ clean-pycache:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Clearing Python cache <---$(FORMATRESET)\n"
 	@echo ""
-	rm -Rf .tox
+	rm -Rf .tox build
 	rm -Rf .pytest_cache
 	find . -type d -name "__pycache__"|xargs rm -Rf
 	find . -name "*\.pyc"|xargs rm -f
@@ -167,7 +167,7 @@ install-backend:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing backend requirements <---$(FORMATRESET)\n"
 	@echo ""
-	$(PIP) install -e .[api,breadcrumbs,dev,quality,doc,doc-live]
+	$(PIP) install -e .[api,breadcrumbs,dev,quality,release,doc,doc-live]
 .PHONY: install-backend
 
 install-frontend:
