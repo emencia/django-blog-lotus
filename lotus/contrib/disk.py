@@ -1,8 +1,3 @@
-"""
-`Diskette <https://diskette.readthedocs.io/>`_ configuration that you can use in your
-project.
-"""
-
 DISKETTE_DEFINITIONS = [
     [
         "lotus",
@@ -25,5 +20,6 @@ DISKETTE_DEFINITIONS = [
     ]
 ]
 """
-List of diskette definitions related to application.
+`Diskette <https://diskette.readthedocs.io/>`_ configuration that you can use in your
+project.
 """

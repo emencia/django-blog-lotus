@@ -36,7 +36,7 @@ Features
 Dependencies
 ************
 
-* `Python`_>=3.8;
+* `Python`_>=3.9;
 * `Django`_>=3.2;
 * `django-ckeditor`_>=6.0.0;
 * `django-smart-media`_;

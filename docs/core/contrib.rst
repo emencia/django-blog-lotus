@@ -8,3 +8,8 @@ Contrib
 
 .. automodule:: lotus.contrib.django_configuration
    :members:
+
+.. _contrib_references_diskette:
+
+.. automodule:: lotus.contrib.disk
+   :members:

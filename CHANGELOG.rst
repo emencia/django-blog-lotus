@@ -3,7 +3,7 @@
 Changelog
 =========
 
-Version 0.9.0 - Unreleased
+Version 0.9.0 - 2024/10/15
 --------------------------
 
 A major release with new feature *Category tree*, see
@@ -12,15 +12,13 @@ to know about migrating your project.
 
 **This will be the last version to support Django<4.1.**
 
+* Dropped support for Python 3.8;
 * Added new feature 'Category tree':
 
-  * Added django-treebeard to requirements;
-  * Added treebeard usage on Category model;
-  * Fixed tests that may fail because of new Category fields from treebeard;
+  * Added django-treebeard to requirements and applied usage in Category model;
   * Adapted Category form to manage the treebeard fields;
   * Added some validation in Category admin form for constraints about language and
     parenting to ensure tree is not corrupted;
-  * Added tests around model, form and admin;
   * Added a new admin view to list a tree of categories, this is currently in beta and
     will need some more work in UI/UX before to be ready to override the admin changelist;
   * Added new template tag ``get_category_tree_html`` to display a tree of all categories
