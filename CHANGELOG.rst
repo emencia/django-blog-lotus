@@ -3,8 +3,12 @@
 Changelog
 =========
 
-Unreleased work on "category_tree" branch
------------------------------------------
+Version 0.9.0 - Unreleased
+--------------------------
+
+A major release with new feature *Category tree*, see
+`Migration to 0.9.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-8-1-to-0-9-0>`_
+to know about migrating your project.
 
 * Added django-treebeard to requirements;
 * Added treebeard usage on Category model;
@@ -24,7 +28,7 @@ Unreleased work on "category_tree" branch
 * Added new extra requirements section ``sandbox`` dedicated to sandbox only third party
   application. It is currently not installed from the Makefile task ``install``;
 * Added requirement ``drf-redesign`` to sandbox extra requirements;
-* Update Category serializers and its tests to include 'parent' field;
+* Updated Category serializers and its tests to include 'parent' field;
 
 
 Version 0.8.1 - 2023/12/01

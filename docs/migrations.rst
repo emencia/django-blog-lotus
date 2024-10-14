@@ -4,6 +4,29 @@
 Migrations
 ==========
 
+From 0.8.1 to 0.9.0
+*******************
+
+New feature 'Category tree'
+    Updating to this new release will install **django-treebeard** and new migrations.
+
+    You must proceed to in order:
+
+    #. Upgrade to the Lotus 0.9.0, this will install dependency to **django-treebeard**;
+    #. You must add ``django-treebeard`` in setting ``INSTALLED_APPS``, preferably after
+       ``dal`` and before ``lotus``, you can see a proper sample in
+       :ref:`install_config_from_scratch`;
+    #. Apply new migrations;
+    #. Update your category detail template;
+    #. If you use a custom template for Category detail view you will need to update it
+       to include the new `Subcategories part <https://github.com/emencia/django-blog-lotus/blob/development/lotus/templates/lotus/category/detail.html#L71>`_ and its related `fragment to list subcategories <https://github.com/emencia/django-blog-lotus/blob/development/lotus/templates/lotus/category/partials/subcategories.html>`_ and possibly a minor fix around `Article listing part <https://github.com/emencia/django-blog-lotus/blob/development/lotus/templates/lotus/category/detail.html#L30>`_. However this is not a breaking change and everything should work without it, just you won't benefit from Category tree feature;
+
+    Finally if your project is customizing Django admin, you may look into
+    `last changes on Lotus admin <https://github.com/emencia/django-blog-lotus/blob/9b9093f8345054018daf7334451c85dc62fcb3e0/lotus/templates/admin/lotus/category/change_list.html>`_
+    templates that may have changed a little bit to include a link for
+    the Category tree and some new Category fields.
+
+
 From 0.8.0 to 0.8.1
 *******************
 
@@ -11,7 +34,7 @@ New migration
     A new basic model migration has been added to add a ``modified`` field on some
     models, you just have to apply it on your project.
 
-New feature Sitemap
+New feature 'Sitemap'
     This new feature is available but you will need to enable it, see install guide in
     documentation Sitemap :ref:`install_sitemaps`.
 
@@ -19,7 +42,7 @@ New feature Sitemap
 From 0.7.0 to 0.8.0
 *******************
 
-New feature Album
+New feature 'Album'
     * If you use a custom template for Article detail view you will need to update it
       to include the `Album part <https://github.com/emencia/django-blog-lotus/blob/v0.8.0/lotus/templates/lotus/article/detail.html#L34>`_;
     * If you copied the Sass sources frontend, you will need to update Bootstrap settings to
@@ -29,7 +52,7 @@ New feature Album
       :ref:`intro_install_settings` documentation if you don't import the default
       settings from Lotus;
 
-New feature Canonical URL
+New feature 'Canonical URL'
     * You need to add ``django.contrib.sites.middleware.CurrentSiteMiddleware`` middleware
       to your ``settings.MIDDLEWARES``;
     * A new template block ``{% block header-resource-extra %}`` has to be added in
@@ -65,7 +88,7 @@ Improved related article in Article detail view
     to know what to copy. This is important since the old template only applied language
     filtering and totally ignore publication criterias;
 
-New feature API
+New feature 'API'
     You may now enable the API with installing package extra requirement ``api`` and
     then follow install guide about API :ref:`install_api`;
 
