@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-12 02:35+0200\n"
+"POT-Creation-Date: 2024-10-15 02:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,49 +17,61 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: admin/article.py:73 admin/category.py:54
+#: admin/album.py:18
+msgid "Album item"
+msgstr ""
+
+#: admin/album.py:32 models/album.py:35
+msgid "Album"
+msgstr ""
+
+#: admin/article.py:74 admin/category.py:63
 msgid "Language"
 msgstr ""
 
-#: admin/article.py:80
+#: admin/article.py:81
 msgid "Parameters"
 msgstr ""
 
-#: admin/article.py:88
+#: admin/article.py:89
 msgid "Dates"
 msgstr ""
 
-#: admin/article.py:96 admin/category.py:61
+#: admin/article.py:97 admin/category.py:70
 msgid "Content"
 msgstr ""
 
-#: admin/article.py:106 admin/category.py:69
+#: admin/article.py:107 admin/category.py:78
 msgid "SEO"
 msgstr ""
 
-#: admin/article.py:114
+#: admin/article.py:115
 msgid "Relations"
 msgstr ""
 
-#: admin/article.py:132 admin/category.py:81 admin_filters.py:11
+#: admin/article.py:138 admin/category.py:94 admin_filters.py:11
 #: models/translated.py:12
 msgid "language"
 msgstr ""
 
-#: admin/article.py:140
+#: admin/article.py:146
 msgid "publish date"
 msgstr ""
 
-#: admin/article.py:148
+#: admin/article.py:154
 msgid "published"
 msgstr ""
 
-#: admin/article.py:156 admin/category.py:89
+#: admin/article.py:162 admin/category.py:102
 msgid "original"
 msgstr ""
 
-#: admin/category.py:94
+#: admin/category.py:107
 msgid "articles"
+msgstr ""
+
+#: admin/category.py:111
+msgid "parent"
 msgstr ""
 
 #: admin_filters.py:34
@@ -98,30 +110,85 @@ msgstr ""
 msgid "available"
 msgstr ""
 
-#: forms/article.py:106 forms/category.py:66
+#: forms/article.py:97 forms/category.py:204
 msgid "You can't have a language identical to the original relation."
 msgstr ""
 
-#: forms/article.py:116 forms/category.py:76
+#: forms/article.py:107 forms/category.py:214
 msgid "You can't have an original relation in the same language."
 msgstr ""
 
-#: forms/article.py:132
+#: forms/article.py:123
 msgid "You can't have related articles in different language."
 msgstr ""
 
-#: forms/article.py:148
+#: forms/article.py:139
 msgid "You can't have categories in different language."
 msgstr ""
 
-#: forms/category.py:90
+#: forms/category.py:39
+msgid "-- Root --"
+msgstr ""
+
+#: forms/category.py:121
+msgid "Parent"
+msgstr ""
+
+#: forms/category.py:181
+msgid "You can't have a parent category with a different language."
+msgstr ""
+
+#: forms/category.py:191
+msgid "You can't have a language different from the parent category one."
+msgstr ""
+
+#: forms/category.py:229
 msgid ""
 "Some article in different language relate to this category, you can't change "
 "language until those article are not related anymore."
 msgstr ""
 
-#: forms/translated.py:34
+#: forms/category.py:244
+msgid ""
+"Some categories in different language are children of this category, you "
+"can't change language until those categories are not related anymore or "
+"adopted the same language."
+msgstr ""
+
+#: forms/translated.py:10
 msgid "Available languages"
+msgstr ""
+
+#: models/album.py:16
+msgid "Title"
+msgstr ""
+
+#: models/album.py:26 models/album.py:59 models/category.py:38
+msgid "modification date"
+msgstr ""
+
+#: models/album.py:36
+msgid "Albums"
+msgstr ""
+
+#: models/album.py:68 models/article.py:136 models/category.py:47
+msgid "title"
+msgstr ""
+
+#: models/album.py:78
+msgid "Order"
+msgstr ""
+
+#: models/album.py:87
+msgid "File"
+msgstr ""
+
+#: models/album.py:106
+msgid "Article album"
+msgstr ""
+
+#: models/album.py:107
+msgid "Articles albums"
 msgstr ""
 
 #: models/article.py:28
@@ -192,11 +259,7 @@ msgstr ""
 msgid "last update"
 msgstr ""
 
-#: models/article.py:136 models/category.py:34
-msgid "title"
-msgstr ""
-
-#: models/article.py:146 models/category.py:44
+#: models/article.py:146 models/category.py:57
 msgid "slug"
 msgstr ""
 
@@ -214,11 +277,11 @@ msgid ""
 "title is used."
 msgstr ""
 
-#: models/article.py:172 models/category.py:52
+#: models/article.py:172 models/category.py:65
 msgid "lead"
 msgstr ""
 
-#: models/article.py:175 models/category.py:55
+#: models/article.py:175 models/category.py:68
 msgid "Lead paragraph, commonly used for SEO purposes in page meta tags."
 msgstr ""
 
@@ -230,7 +293,7 @@ msgstr ""
 msgid "content"
 msgstr ""
 
-#: models/article.py:200 models/category.py:71
+#: models/article.py:200 models/category.py:84
 msgid "cover image"
 msgstr ""
 
@@ -258,48 +321,48 @@ msgstr ""
 msgid "related articles"
 msgstr ""
 
-#: models/article.py:276
+#: models/article.py:287
 msgid "Article"
 msgstr ""
 
-#: models/article.py:277 settings.py:101 templates/lotus/article/list.html:4
+#: models/article.py:288 settings.py:119 templates/lotus/article/list.html:4
 #: templates/lotus/article/list.html:8 templates/lotus/author/detail.html:11
-#: templates/lotus/category/detail.html:31 templates/lotus/tag/detail.html:11
+#: templates/lotus/category/detail.html:32 templates/lotus/tag/detail.html:11
 msgid "Articles"
 msgstr ""
 
-#: models/category.py:26
+#: models/category.py:30
 msgid "Mark this category as a translation of an original category."
 msgstr ""
 
-#: models/category.py:63
+#: models/category.py:76
 msgid "description"
 msgstr ""
 
-#: models/category.py:91
+#: models/category.py:109
 msgid "Category"
 msgstr ""
 
-#: models/category.py:92 settings.py:103
-#: templates/lotus/article/detail.html:123 templates/lotus/category/list.html:4
+#: models/category.py:110 settings.py:121
+#: templates/lotus/article/detail.html:127 templates/lotus/category/list.html:4
 #: templates/lotus/category/list.html:8
 msgid "Categories"
 msgstr ""
 
-#: settings.py:102 templates/lotus/article/detail.html:158
+#: settings.py:120 templates/lotus/article/detail.html:162
 #: templates/lotus/author/list.html:4 templates/lotus/author/list.html:8
 msgid "Authors"
 msgstr ""
 
-#: settings.py:104 templates/lotus/article/detail.html:140
+#: settings.py:122 templates/lotus/article/detail.html:144
 #: templates/lotus/tag/list.html:4 templates/lotus/tag/list.html:8
 msgid "Tags"
 msgstr ""
 
 #: templates/admin/lotus/article/change_form.html:20
 #: templates/admin/lotus/category/change_form.html:20
-#: templates/lotus/article/detail.html:45
-#: templates/lotus/category/detail.html:54
+#: templates/lotus/article/detail.html:49
+#: templates/lotus/category/detail.html:56
 msgid "Translate"
 msgstr ""
 
@@ -323,6 +386,7 @@ msgstr ""
 
 #: templates/admin/lotus/article/translate_original.html:7
 #: templates/admin/lotus/category/translate_original.html:7
+#: templates/admin/lotus/category/tree.html:19
 msgid "Home"
 msgstr ""
 
@@ -362,6 +426,18 @@ msgstr ""
 msgid "Existing language(s) for this category:"
 msgstr ""
 
+#: templates/admin/lotus/category/change_list.html:6
+msgid "Tree list"
+msgstr ""
+
+#: templates/admin/lotus/category/partials/_recursive_tree_children.html:19
+msgid "Original"
+msgstr ""
+
+#: templates/admin/lotus/category/partials/_recursive_tree_children.html:21
+msgid "Translation"
+msgstr ""
+
 #: templates/admin/lotus/category/translate_original.html:17
 msgid "No available languages for this category."
 msgstr ""
@@ -379,55 +455,71 @@ msgid ""
 "create form to translate the original category '%(title)s' instead."
 msgstr ""
 
-#: templates/lotus/article/detail.html:39
-#: templates/lotus/category/detail.html:48
+#: templates/admin/lotus/category/tree.html:33
+msgid "Back to the flat list"
+msgstr ""
+
+#: templates/admin/lotus/category/tree.html:58
+msgid "Filter"
+msgstr ""
+
+#: templates/admin/lotus/category/tree.html:62
+msgid "By language"
+msgstr ""
+
+#: templates/admin/lotus/category/tree.html:66
+msgid "All"
+msgstr ""
+
+#: templates/lotus/article/detail.html:43
+#: templates/lotus/category/detail.html:50
 msgid "Edit"
 msgstr ""
 
-#: templates/lotus/article/detail.html:53
+#: templates/lotus/article/detail.html:57
 msgid "Cover"
 msgstr ""
 
-#: templates/lotus/article/detail.html:72
+#: templates/lotus/article/detail.html:76
 msgid "States"
 msgstr ""
 
-#: templates/lotus/article/detail.html:77
-#: templates/lotus/article/partials/item.html:28
+#: templates/lotus/article/detail.html:81
+#: templates/lotus/article/partials/item.html:32
 msgid "Featured"
 msgstr ""
 
-#: templates/lotus/article/detail.html:82
-#: templates/lotus/article/partials/item.html:31
+#: templates/lotus/article/detail.html:86
+#: templates/lotus/article/partials/item.html:35
 msgid "Pinned"
 msgstr ""
 
-#: templates/lotus/article/detail.html:87
-#: templates/lotus/article/partials/item.html:34
+#: templates/lotus/article/detail.html:91
+#: templates/lotus/article/partials/item.html:38
 msgid "Draft"
 msgstr ""
 
-#: templates/lotus/article/detail.html:92
-#: templates/lotus/article/partials/item.html:37
+#: templates/lotus/article/detail.html:96
+#: templates/lotus/article/partials/item.html:41
 msgid "Private"
 msgstr ""
 
-#: templates/lotus/article/detail.html:97
-#: templates/lotus/article/partials/item.html:40
+#: templates/lotus/article/detail.html:101
+#: templates/lotus/article/partials/item.html:44
 msgid "Scheduled publication"
 msgstr ""
 
-#: templates/lotus/article/detail.html:102
-#: templates/lotus/article/partials/item.html:43
+#: templates/lotus/article/detail.html:106
+#: templates/lotus/article/partials/item.html:47
 msgid "Ended publication"
 msgstr ""
 
-#: templates/lotus/article/detail.html:113
-#: templates/lotus/category/detail.html:63
+#: templates/lotus/article/detail.html:117
+#: templates/lotus/category/detail.html:65
 msgid "Available in languages"
 msgstr ""
 
-#: templates/lotus/article/detail.html:173
+#: templates/lotus/article/detail.html:177
 msgid "Related articles"
 msgstr ""
 
@@ -449,6 +541,10 @@ msgstr ""
 msgid "Is not original"
 msgstr ""
 
+#: templates/lotus/category/detail.html:75
+msgid "Subcategories"
+msgstr ""
+
 #: templates/lotus/pagination.html:3
 msgid "Pagination"
 msgstr ""
@@ -461,12 +557,25 @@ msgstr ""
 msgid "Enable preview"
 msgstr ""
 
+#: views/admin/category.py:51
+msgid "Language '{}' is unknown from 'settings.LANGUAGES'"
+msgstr ""
+
+#: views/admin/category.py:71
+#, python-format
+msgid "Category tree for language '%(lang)s'"
+msgstr ""
+
+#: views/admin/category.py:75
+msgid "Category tree"
+msgstr ""
+
 #: views/admin/mixins.py:98
 #, python-format
 msgid "Translate '%(title)s'"
 msgstr ""
 
-#: views/article.py:110
+#: views/article.py:105
 #, python-format
 msgid "No %(verbose_name)s found matching the query"
 msgstr ""

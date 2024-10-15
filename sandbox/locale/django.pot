@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-12 02:35+0200\n"
+"POT-Creation-Date: 2024-10-15 02:48+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,23 +17,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: templates/skeleton.html:6 templates/skeleton.html:23
-#: templates/skeleton.html:24
+#: templates/skeleton.html:6 templates/skeleton.html:25
+#: templates/skeleton.html:26
 msgid "Lotus weblog"
 msgstr ""
 
-#: templates/skeleton.html:34
+#: templates/skeleton.html:36
 msgid "Articles"
 msgstr ""
 
-#: templates/skeleton.html:37
+#: templates/skeleton.html:39
 msgid "Categories"
 msgstr ""
 
-#: templates/skeleton.html:40
+#: templates/skeleton.html:42
 msgid "Authors"
 msgstr ""
 
-#: templates/skeleton.html:43
+#: templates/skeleton.html:45
 msgid "Tags"
 msgstr ""
