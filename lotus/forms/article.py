@@ -58,6 +58,9 @@ class ArticleAdminForm(autocomplete.FutureModelForm):
                 language=self.instance.language
             )
 
+        # Enforce the right ordering for flat category list
+        category_queryset = category_queryset.order_by(*Category.COMMON_ORDER_BY)
+
         # Use the right model choices fields for translated relations
         # NOTE: This trick drop the help_text from model
         self.fields["original"] = TranslatedModelChoiceField(

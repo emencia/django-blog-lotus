@@ -429,6 +429,8 @@ class Command(BaseCommand):
             if originals:
                 context["original"] = reserved_originals[i - 1]
 
+            # NOTE: Using factory is making a broken tree because factory always define
+            # a dummy path
             obj = CategoryFactory(**context)
 
             self.stdout.write("  {index}) Category: {title}".format(
@@ -436,6 +438,9 @@ class Command(BaseCommand):
                 title=obj.title,
             ))
             created.append(obj)
+
+        # WARNING: A quick fix resolution for factory that only produce a dummy path.
+        Category.fix_tree(fix_paths=True)
 
         return created
 

@@ -27,7 +27,7 @@ class CategorySitemap(TranslatedSitemapAbstract):
         """
         Return model items to reference.
         """
-        q = self.model.objects.all()
+        q = self.model.objects.all().order_by(*Category.COMMON_ORDER_BY)
 
         if self.translations:
             return q.filter(original__isnull=True)

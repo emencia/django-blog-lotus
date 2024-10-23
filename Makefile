@@ -57,6 +57,7 @@ help:
 	@echo "  mo                            -- to build MO files from app and sandbox PO files"
 	@echo "  po                            -- to update every PO files from app and sandbox sources for enabled languages"
 	@echo "  run                           -- to run Django development server"
+	@echo "  shell                         -- to run Django development shell"
 	@echo "  superuser                     -- to create a superuser for Django admin"
 	@echo
 	@echo "  Frontend commands"
@@ -231,6 +232,13 @@ migrate:
 	@echo ""
 	$(DJANGO_MANAGE_BIN) migrate
 .PHONY: migrate
+
+shell:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running development shell <---$(FORMATRESET)\n"
+	@echo ""
+	$(DJANGO_MANAGE_BIN) shell
+.PHONY: shell
 
 superuser:
 	@echo ""

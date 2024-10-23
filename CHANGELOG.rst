@@ -3,6 +3,20 @@
 Changelog
 =========
 
+Development
+-----------
+
+* Updated french translations in PO;
+* Updated every Category queryset to use the right ordering for flat or tree listing,
+  this should fix issue where some nodes could be missing in tree listing;
+* Improved ``Category.get_nested_tree()`` to add a "branch mode" where only nodes from
+  a tree branch will be unfolded;
+* Changed ``Category.get_nested_tree()`` which accept new arguments ``current`` and
+  ``branch``;
+* Improved template tag ``get_category_tree_html`` which includes last changes from
+  ``Category.get_nested_tree()``;
+
+
 Version 0.9.0 - 2024/10/15
 --------------------------
 

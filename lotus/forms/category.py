@@ -52,6 +52,8 @@ class CategoryNodeAbstractForm(MoveNodeForm):
     def add_subtree(cls, for_node, node, options, excluded=None):
         """
         Build options tree with categories that are not excluded.
+
+        TODO: Right tree order should be applied on queryset
         """
         excluded = excluded or []
 
@@ -79,6 +81,8 @@ class CategoryNodeAbstractForm(MoveNodeForm):
         Build the choice list for available Category nodes.
 
         The currently edited Category, if any, will be excluded along its descendants.
+
+        TODO: Right tree order should be applied on queryset
         """
         descendants = []
         if for_node:
@@ -140,7 +144,9 @@ class CategoryAdminForm(CategoryNodeForm):
             queryset is filtered with some constraints to avoid selecting the category
             itself, a translation or object with the same language.
         """
-        base_queryset = Category.objects.filter(original__isnull=True)
+        base_queryset = Category.objects.filter(
+            original__isnull=True
+        ).order_by(*Category.COMMON_ORDER_BY)
 
         # Model choice querysets for creation form get all objects since there is no
         # data yet to constraint

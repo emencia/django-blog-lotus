@@ -377,6 +377,11 @@ class Article(SmartFormatMixin, Translated):
         """
         Return article categories, results are enforced on article language.
 
+        .. Todo::
+
+            This should use Category.COMMON_ORDER_BY instead of hardcoded field (even
+            it is right)
+
         Returns:
             queryset: List of article categories.
         """

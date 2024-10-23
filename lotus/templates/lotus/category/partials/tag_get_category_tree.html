@@ -1,12 +1,14 @@
-{% load i18n %}{% spaceless %}
+{% load i18n lotus %}{% spaceless %}
     {% if root_node %}<nav class="nav">{% endif %}
         <ul class="{% if root_node %}tree{% else %}nodes{% endif %}">
             {% for item in nodes %}
-                <li class="item{% if item.children %} has-children{% endif %}">
-                    <a href="{% url "lotus:category-detail" slug=item.data.slug %}">{{ item.data.title }}</a>
+                <li class="item{% if item.active %} active{% endif %}{% if item.children %} has-children{% endif %}">
+                    <a href="{% url "lotus:category-detail" slug=item.data.slug %}">
+                        {{ item.data.title }}
+                    </a>
 
                     {% if item.children %}
-                        {% include "lotus/category/partials/tag_get_category_tree.html" with nodes=item.children only %}
+                        {% include "lotus/category/partials/tag_get_category_tree.html" with nodes=item.children parent=parent current=current only %}
                     {% endif %}
                 </li>
             {% endfor %}

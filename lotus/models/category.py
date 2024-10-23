@@ -94,12 +94,22 @@ class Category(SmartFormatMixin, MP_Node, Translated):
 
     COMMON_ORDER_BY = ["title"]
     """
-    List of field order commonly used in frontend view/api
+    List of field order commonly used in frontend view/api.
+    """
+
+    TREE_ORDER_BY = ["path", "title"]
+    """
+    List of field order to use with any tree queryset.
     """
 
     node_order_by = ["title"]
     """
-    Treebeard attribute used for ordering with position name
+    Treebeard attribute only used for ordering with position name when performing
+    writing operation on categories.
+
+    .. Warning::
+        DO NOT CHANGE, it may corrupt tree for already saved data, however
+        ``Category.fix_tree(fix_paths=True)`` should fix corruption.
     """
 
     objects = CategoryManager()
@@ -124,74 +134,186 @@ class Category(SmartFormatMixin, MP_Node, Translated):
         ]
 
     @classmethod
-    def get_nested_tree(cls, parent=None, keep_ids=True, language=None):
+    def apply_tree_queryset_filter(cls, queryset, language=None, parent=None,
+                                   current=None):
         """
-        Implement again the ``MP_Node.dump_bulk()`` method to allow for queryset
-        filtering.
+        Apply lookups on a queryset to filter items.
 
-        Opposed to "dump_bulk" this method applies some filter on queryset so
-        some children can be ignored from tree if they are in branch from an excluded
-        item. For example with this object tree: ::
+        .. Warning::
+            With some filter combinations this could return empty results.
 
-            ├── Item 1 [en]
-            │   ╰── Item 1.1 [fr]
-            ├── Item 2 [en]
-            ╰── Item 3 [fr]
-                ╰── Item 3.1 [en]
+        Arguments:
+            queryset (Queryset): The queryset where to append filters.
+
+        Keyword Arguments:
+            cls (class object): The model class, typically ``Category``.
+            language (string): Language code to use in queryset filter, every Category
+                in different language will be excluded from results. If not given,
+                all Category from mixed languages are returned.
+            parent (Category): A category object used to start the tree. If not given,
+                we assume than parent is the root of all categories meaning the whole
+                tree will be returned.
+            current (Category): The current category is used to find the tree branch
+                to unfold. When given, only the nodes from the tree branch will be
+                returned along the top level nodes (with the same depth than the
+                parent) and children nodes that are not part of the branch are ignored.
+
+        Returns:
+            Queryset: The given queryset with possible filters. If no filter arguments
+            are given, the queryset is returned unchanged.
+        """
+        if language:
+            queryset = queryset.filter(language=language)
+
+        if not current and not parent:
+            return queryset
+
+        if not current:
+            return queryset.filter(path__startswith=parent.path)
+
+        if not parent:
+            top_depth = parent.depth if parent else 1
+            return queryset.filter(
+                models.Q(depth=top_depth) |
+                models.Q(path__startswith=current.path[0:(Category.steplen * 1)])
+            )
+
+        branch_top_path = current.path[0:(Category.steplen * (parent.depth + 1))]
+        return queryset.filter(
+            models.Q(depth=parent.depth, path__startswith=parent.path) |
+            models.Q(depth__gt=parent.depth, path__startswith=branch_top_path)
+        )
+
+    @classmethod
+    def get_nested_tree(cls, parent=None, language=None, current=None, branch=True,
+                        safe=True):
+        """
+        A convenient method to get a Category tree with language filtered or not.
+
+        This was based on ``MP_Node.dump_bulk()`` method but opposed to it this
+        method applies some filters on queryset.
 
         If language argument is set with "en" only the english objects will be returned
         from queryset, this means "Item 1", "Item 2" and "Item 3.1". However since
         "Item 3.1" is a child of "Item 3" that is excluded from language filter,
         "Items 3.1" won't be in resulting tree because its parent does not exist in
         results.
+
+        The output is probably not suitable anymore with ``MP_Node.load_bulk()``
+        because we keep/add some additional items to a node, opposed to the "dump_bulk"
+        payload.
+
+        .. Warning::
+            With some filter combinations this could return an empty list.
+
+        Arguments:
+            cls (class object): The model class, typically ``Category``.
+            language (string): Language code to use in queryset filter, every Category
+                in different language will be excluded from results. If not given,
+                all Category from mixed languages are returned.
+            parent (Category): A category object used to start the tree. If not given,
+                we assume than parent is the root of all categories meaning the whole
+                tree will be returned.
+            current (Category): Basically the current category is only used to mark a
+                node as "active". But with ``branch`` argument enabled it will be used
+                for the "branch unfolding" mode.
+            branch (boolean): The current category will be used to find the tree branch
+                to unfold. When this is true and ``current`` is given, only the nodes
+                from the tree branch will be returned along the top level nodes (with
+                the same depth than the parent) and children nodes that are not part of
+                the branch are ignored.
+            safe (boolean): Due to the fact we can exclude item from language filter,
+                we can have KeyError exception when building tree. If this argument is
+                true, there won't be any exception for this case and missing key will
+                just be ignored. If false, any exception related to missing node key
+                will be raised.
+
+        Results:
+            list: Recursive list of Category tree. Each item is dictionnary of node
+            values and it will be something like this: ::
+
+                {
+                    "data": {
+                        "language": "en",
+                        "original": None,
+                        "modified": now,
+                        "title": "Item 1",
+                        "slug": "item-1",
+                        "lead": "",
+                        "description": "",
+                        "cover": "",
+                    },
+                    "id": 1,
+                    "active": False,
+                    "depth": 1,
+                    "path": "0001",
+                    "children": []
+                }
+
+            The ``children`` is only present if the node has children.
+
         """
         cls = get_result_class(cls)
 
-        if language:
-            qset = cls._get_serializable_model().objects.filter(language=language)
-        else:
-            qset = cls._get_serializable_model().objects.all()
-
-        if parent:
-            qset = qset.filter(path__startswith=parent.path)
+        # Apply filters then the proper tree ordering
+        queryset = cls.apply_tree_queryset_filter(
+            cls._get_serializable_model().objects.all(),
+            language=language,
+            parent=parent,
+            current=current if branch is True else None,
+        )
+        queryset = queryset.order_by(*cls.TREE_ORDER_BY)
 
         ret, lnk = [], {}
         pk_field = cls._meta.pk.attname
 
-        for pyobj in serializers.serialize("python", qset):
+        for pyobj in serializers.serialize("python", queryset):
             # django's serializer stores the attributes in 'fields'
             fields = pyobj["fields"]
             path = fields["path"]
             depth = int(len(path) / cls.steplen)
 
-            # this will be useless in load_bulk
+            newobj = {"data": fields}
+
+            # Move non data fields out of "data" item
+            newobj[pk_field] = pyobj["pk"]
+            newobj["path"] = fields["path"]
+            newobj["depth"] = fields["depth"]
+
+            # Add active state
+            newobj["active"] = (current.id == pyobj["pk"]) if current else False
+
+            # Clean useless fields from item payload
+            del fields["numchild"]
             del fields["depth"]
             del fields["path"]
-            del fields["numchild"]
 
+            # Remove id from data fields
             if pk_field in fields:
-                # this happens immediately after a load_bulk
                 del fields[pk_field]
 
-            newobj = {"data": fields}
-            if keep_ids:
-                newobj[pk_field] = pyobj["pk"]
-
-            if (not parent and depth == 1) or\
-               (parent and len(path) == len(parent.path)):
+            if (
+                (not parent and depth == 1) or
+                (parent and len(path) == len(parent.path))
+            ):
                 ret.append(newobj)
             else:
                 parentpath = cls._get_basepath(path, depth - 1)
 
-                # Ensure we are safe to ignore unknow path relation in case queryset
-                # filter drops some nodes that are linked from granted nodes
-                if parentpath in lnk:
-                    parentobj = lnk[parentpath]
+                # Ensure unknow path relation don't raise KeyError in case of queryset
+                # filters that drops some nodes linked to granted nodes (mostly with
+                # language filter)
+                # CAUTION: If queryset is not ordered first on 'path' this will drop
+                # some legitimate items
+                if safe and parentpath not in lnk:
+                    continue
 
-                    if "children" not in parentobj:
-                        parentobj["children"] = []
+                parentobj = lnk[parentpath]
 
-                    parentobj["children"].append(newobj)
+                if "children" not in parentobj:
+                    parentobj["children"] = []
+
+                parentobj["children"].append(newobj)
 
             lnk[path] = newobj
 
@@ -273,7 +395,6 @@ class Category(SmartFormatMixin, MP_Node, Translated):
                 current_lang=self.language,
             ))
 
-        print("🎨 move_into:", self.slug, "🔀", parent.slug)
         self.move(parent, pos="sorted-child")
 
     def save(self, *args, **kwargs):

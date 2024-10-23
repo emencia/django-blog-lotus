@@ -384,10 +384,11 @@ def article_get_related(context, article, **kwargs):
 @register.simple_tag(takes_context=True)
 def get_categories(context, current=None):
     """
-    Generates and returns a list of all categories for current language.
+    Generates and returns a flat list of all categories for current language.
 
     .. Note::
         This does not care about category tree, everything is returned in a flat list.
+        See instead ``get_category_tree_html`` for a tree.
 
     Exemple:
         This tag does not require any argument to work: ::
@@ -426,7 +427,7 @@ def get_categories(context, current=None):
                 "url": category.get_absolute_url(),
                 "is_active": (category.id == current.id) if current else False
             }
-            for category in queryset
+            for category in queryset.order_by(*Category.COMMON_ORDER_BY)
         ]
     }
 
@@ -469,15 +470,39 @@ def get_categories_html(context, current=None, template=None):
 
 
 @register.simple_tag(takes_context=True)
-def get_category_tree_html(context, current=None, template=None):
+def get_category_tree_html(context, parent=None, current=None, branch=None,
+                           template=None):
     """
-    Build HTML of the category tree for current language.
+    Build HTML of a category tree for current language.
+
+    The returned tree is not a queryset, it is a recursive list where each node is in
+    the following form: ::
+
+        {
+            "data": {
+                "language": "en",
+                "original": None,
+                "modified": now,
+                "title": "Item 1",
+                "slug": "item-1",
+                "lead": "",
+                "description": "",
+                "cover": "",
+            },
+            "id": 1,
+            "active": False,
+            "depth": 1,
+            "path": "0001",
+            "children": []
+        }
+
+    The ``children`` is in fact only present in payload if the node has children.
 
     Exemple:
         This tag does not require any argument to work: ::
 
             {% load lotus %}
-            {% get_category_tree_html [current=mycategory] [template="foo/bar.html"] %}
+            {% get_category_tree_html [parent=mycategory] [current=anothercategory] [branch=True] [template="foo/bar.html"] %}
 
     Arguments:
         context (object): Either a ``django.template.Context`` or a dictionnary for
@@ -485,8 +510,16 @@ def get_category_tree_html(context, current=None, template=None):
             with an Article object, so it should be safe to be empty for a Category.
 
     Keyword Arguments:
-        current (lotus.models.article.Category): A category object to use in template
-            to find the current category in the tree so it can marked as an active item.
+        parent (Category): A category object used to start the tree. If not given,
+            we assume than parent is the root of all categories meaning the whole
+            tree will be listed.
+        current (Category): Basically the current category is only used to mark a
+            node as "active". But with ``branch`` argument enabled it will be used
+            for the "branch unfolding" mode.
+        branch (boolean): The current category will be used to find the tree branch
+            to unfold. When this is true and ``current`` is given, only the nodes
+            from the tree branch will be unfolded along the top level nodes (with
+            the same depth than the parent).
         template (string): A path for custom template to use. If not given a default
             one will be used from setting ``LOTUS_CATEGORY_TREE_TAG_TEMPLATE``.
 
@@ -499,9 +532,16 @@ def get_category_tree_html(context, current=None, template=None):
 
     request = context.get("request", None)
     language = get_language_code(request=request)
+    branch = branch if branch else False
 
     return loader.get_template(template_path).render({
-        "nodes": Category.get_nested_tree(language=language),
+        "nodes": Category.get_nested_tree(
+            language=language,
+            parent=parent,
+            current=current,
+            branch=branch,
+        ),
+        "parent": parent,
         "current": current,
         "root_node": True,
     })

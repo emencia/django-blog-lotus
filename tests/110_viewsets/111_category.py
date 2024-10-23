@@ -46,6 +46,30 @@ def test_category_viewset_list_payload(db, settings, api_client):
     }
 
 
+@freeze_time("2012-10-15 10:00:00")
+def test_category_viewset_list_order(db, settings, api_client):
+    """
+    Category list should be ordered on common front order for flat list.
+    """
+    pong = CategoryFactory(title="Pong", slug="pong")
+    ang = CategoryFactory(title="Ang", slug="ang")
+    ping = CategoryFactory(title="Ping", slug="ping")
+    # Make a tree of categories such as Ping > Pong
+    pong.move_into(ping)
+
+    response = api_client.get(reverse("lotus-api:category-list"))
+    assert response.status_code == 200
+
+    json_data = response.json()
+    assert json_data["count"] == 3
+
+    assert [item["title"] for item in json_data["results"]] == [
+        ang.title,
+        ping.title,
+        pong.title,
+    ]
+
+
 def test_category_viewset_language(db, settings, api_client):
     """
     Viewset should returns content for required language by client.

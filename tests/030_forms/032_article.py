@@ -385,7 +385,7 @@ def test_article_admin_category_change_validation(db):
 
 def test_article_preview_modelchoice_create_labels(db):
     """
-    Admin create form should have language names in model choices fields.
+    Admin create form should have language name suffixes on each model choice option.
     """
     # Create new objects
     CategoryFactory(title="garlic", language="en")
