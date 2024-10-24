@@ -169,6 +169,31 @@ def test_article_admin_original_change_validation(db):
     }
 
 
+def test_article_admin_original_translation_validation(db):
+    """
+    An original article should not be set as a translation of another original.
+    """
+    # Create new objects
+    obj_fr = ArticleFactory(language="fr", original=None)
+    bis_en = ArticleFactory(language="en", original=None)
+    ArticleFactory(language="en", original=obj_fr)
+
+    # Build initial POST data
+    ignore = [
+        "id", "relations", "article", "authors", "related", "categories", "tags",
+    ]
+    data = build_post_data_from_object(
+        Article, obj_fr, ignore=ignore, extra={"tags": []}
+    )
+
+    data["original"] = bis_en
+    f = ArticleAdminForm(data, instance=obj_fr)
+    assert f.is_valid() is False
+    assert compact_form_errors(f) == {
+        "original": ["invalid-original"],
+    }
+
+
 def test_article_admin_related_create_validation(db):
     """
     Admin create form should not allow to set related article with a different

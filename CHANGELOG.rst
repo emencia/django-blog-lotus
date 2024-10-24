@@ -19,6 +19,9 @@ Development
   or featured;
 * Added new options in Article sitemap setting ``pinned_priority`` and
   ``featured_priority`` to define different value for pinned or feature articles;
+* Added a new validation on Article and Category forms to avoid to make an
+  original object as a translation of another original object. An original can not be
+  a translation;
 
 
 Version 0.9.0 - 2024/10/15

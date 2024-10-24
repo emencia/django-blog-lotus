@@ -62,7 +62,8 @@ class CategoryAdmin(SmartModelAdmin):
         (
             _("Language"), {
                 "fields": (
-                    ("language", "original"),
+                    "language",
+                    "original",
                 )
             }
         ),

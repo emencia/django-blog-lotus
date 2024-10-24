@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-15 02:48+0200\n"
+"POT-Creation-Date: 2024-10-24 12:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,48 +30,48 @@ msgstr ""
 msgid "Language"
 msgstr "Langue"
 
-#: admin/article.py:81
+#: admin/article.py:82
 msgid "Parameters"
 msgstr "Paramètres"
 
-#: admin/article.py:89
+#: admin/article.py:92
 msgid "Dates"
 msgstr "Dates"
 
-#: admin/article.py:97 admin/category.py:70
+#: admin/article.py:100 admin/category.py:71
 msgid "Content"
 msgstr "Contenu"
 
-#: admin/article.py:107 admin/category.py:78
+#: admin/article.py:110 admin/category.py:79
 msgid "SEO"
 msgstr "SEO"
 
-#: admin/article.py:115
+#: admin/article.py:118
 msgid "Relations"
 msgstr "Relations"
 
-#: admin/article.py:138 admin/category.py:94 admin_filters.py:11
+#: admin/article.py:141 admin/category.py:95 admin_filters.py:11
 #: models/translated.py:12
 msgid "language"
 msgstr "langue"
 
-#: admin/article.py:146
+#: admin/article.py:149
 msgid "publish date"
 msgstr "date de publication"
 
-#: admin/article.py:154
+#: admin/article.py:157
 msgid "published"
 msgstr "publié"
 
-#: admin/article.py:162 admin/category.py:102
+#: admin/article.py:165 admin/category.py:103
 msgid "original"
 msgstr "original"
 
-#: admin/category.py:107
+#: admin/category.py:108
 msgid "articles"
 msgstr "articles"
 
-#: admin/category.py:111
+#: admin/category.py:112
 msgid "parent"
 msgstr ""
 
@@ -111,55 +111,72 @@ msgstr "brouillon"
 msgid "available"
 msgstr "disponible"
 
-#: forms/article.py:97 forms/category.py:204
+#: forms/article.py:100 forms/category.py:210
 msgid "You can't have a language identical to the original relation."
 msgstr "Vous ne pouvez avoir une langue identique à celle de l'original."
 
-#: forms/article.py:107 forms/category.py:214
+#: forms/article.py:110 forms/category.py:220
 msgid "You can't have an original relation in the same language."
 msgstr "Vous ne pouvez avoir une relation vers un original de la même langue."
 
-#: forms/article.py:123
+#: forms/article.py:126
 msgid "You can't have related articles in different language."
 msgstr "Vous ne pouvez avoir des articles reliés avec une langue différente."
 
-#: forms/article.py:139
+#: forms/article.py:142
 msgid "You can't have categories in different language."
 msgstr "Vous ne pouvez avoir de catégories avec une langue différente."
+
+#: forms/article.py:156
+msgid ""
+"This article already have a translation so it can not be a translation "
+"itself."
+msgstr ""
+"Cet article a déjà une traduction donc il ne peut être une traduction lui-"
+"même."
 
 #: forms/category.py:39
 msgid "-- Root --"
 msgstr "-- Racine --"
 
-#: forms/category.py:121
+#: forms/category.py:125
 msgid "Parent"
 msgstr ""
 
-#: forms/category.py:181
+#: forms/category.py:187
 msgid "You can't have a parent category with a different language."
-msgstr "Vous ne pouvez pas avoir une catégorie parente dans une langue différente."
+msgstr ""
+"Vous ne pouvez pas avoir une catégorie parente dans une langue différente."
 
-#: forms/category.py:191
+#: forms/category.py:197
 msgid "You can't have a language different from the parent category one."
 msgstr "Vous ne pouvez avoir une langue différente de la catégorie parente."
 
-#: forms/category.py:229
+#: forms/category.py:236
 msgid ""
-"Some article in different language relate to this category, you can't change "
-"language until those article are not related anymore."
+"This category already have a translation so it can not be a translation "
+"itself."
+msgstr ""
+"Cette catégorie a déjà une traduction donc elle ne peut être une traduction "
+"elle-même."
+
+#: forms/category.py:250
+msgid ""
+"Some articles in different language relate to this category, you can't "
+"change language until those articles are not related anymore."
 msgstr ""
 "Certains articles dans une autre langue sont reliés à cette catégorie, vous "
 "ne pouvez changer la langue tant que ces articles n'y sont plus reliés."
 
-#: forms/category.py:244
+#: forms/category.py:265
 msgid ""
 "Some categories in different language are children of this category, you "
 "can't change language until those categories are not related anymore or "
 "adopted the same language."
 msgstr ""
-"Certaines catégories dans une autre langue sont des enfants de cette catégorie, vous "
-"ne pouvez changer la langue tant que ces catégories enfants ne sont plus reliés ici "
-"ou qu'ils n'ont pas adopté la même langue."
+"Certaines catégories dans une autre langue sont des enfants de cette "
+"catégorie, vous ne pouvez changer la langue tant que ces catégories enfants "
+"ne sont plus reliés ici ou qu'ils n'ont pas adopté la même langue."
 
 #: forms/translated.py:10
 msgid "Available languages"
@@ -351,11 +368,11 @@ msgstr ""
 msgid "description"
 msgstr "description"
 
-#: models/category.py:109
+#: models/category.py:119
 msgid "Category"
 msgstr "Catégorie"
 
-#: models/category.py:110 settings.py:121
+#: models/category.py:120 settings.py:121
 #: templates/lotus/article/detail.html:127 templates/lotus/category/list.html:4
 #: templates/lotus/category/list.html:8
 msgid "Categories"

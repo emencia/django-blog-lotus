@@ -84,6 +84,29 @@ def test_category_admin_original_validation(db):
     }
 
 
+def test_category_admin_original_translation_validation(db):
+    """
+    An original category should not be set as a translation of another original.
+    """
+    # Create new objects
+    obj_fr = CategoryFactory(language="fr", original=None)
+    bis_en = CategoryFactory(language="en", original=None)
+    CategoryFactory(language="en", original=obj_fr)
+
+    # Build initial POST data
+    ignore = ["id", "category", "articles"]
+    data = build_post_data_from_object(Category, obj_fr, ignore=ignore, extra={
+        "_position": "sorted-child",
+    })
+
+    data["original"] = bis_en
+    f = CategoryAdminForm(data, instance=obj_fr)
+    assert f.is_valid() is False
+    assert compact_form_errors(f) == {
+        "original": ["invalid-original"],
+    }
+
+
 def test_category_admin_article_relations_validation(db):
     """
     Category admin form should not allow to change language if object already

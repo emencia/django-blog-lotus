@@ -73,7 +73,8 @@ class ArticleAdmin(SmartModelAdmin):
         (
             _("Language"), {
                 "fields": (
-                    ("language", "original"),
+                    "language",
+                    "original",
                 )
             }
         ),
@@ -81,7 +82,9 @@ class ArticleAdmin(SmartModelAdmin):
             _("Parameters"), {
                 "fields": (
                     "status",
-                    ("featured", "pinned", "private"),
+                    "featured",
+                    "pinned",
+                    "private",
                 )
             }
         ),

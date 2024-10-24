@@ -123,7 +123,8 @@ class PreviewArticleDetailView(ArticleDetailView):
         """
         Force preview mode in context (without tampering preview mode in session).
 
-        TODO: Control user staff right to use this
+        .. Todo::
+            Control user staff with a custom permission to use this ?
         """
         context = super().get_context_data(**kwargs)
         context[settings.LOTUS_PREVIEW_VARNAME] = True

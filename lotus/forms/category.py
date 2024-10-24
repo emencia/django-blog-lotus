@@ -225,6 +225,20 @@ class CategoryAdminForm(CategoryNodeForm):
 
         # For edition mode
         if self.instance.pk:
+            # Check if an article has a translation, in this case it can not
+            # select an original object since it is already an original.
+            if original and Category.objects.filter(original_id=self.instance.pk):
+                self.add_error(
+                    "original",
+                    forms.ValidationError(
+                        _(
+                            "This category already have a translation so it can not be "
+                            "a translation itself."
+                        ),
+                        code="invalid-original",
+                    ),
+                )
+
             # Block save if language has been changed to another but the category still
             # have articles in previous language
             if self.instance.articles.exclude(language=language).count() > 0:
@@ -232,8 +246,8 @@ class CategoryAdminForm(CategoryNodeForm):
                     "language",
                     forms.ValidationError(
                         _(
-                            "Some article in different language relate to this "
-                            "category, you can't change language until those article "
+                            "Some articles in different language relate to this "
+                            "category, you can't change language until those articles "
                             "are not related anymore."
                         ),
                         code="invalid-language",

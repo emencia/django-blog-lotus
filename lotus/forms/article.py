@@ -144,6 +144,21 @@ class ArticleAdminForm(autocomplete.FutureModelForm):
                     code="invalid-categories",
                 ),
             )
+        # For edition mode
+        if self.instance.pk:
+            # Check if an article has a translation, in this case it can not
+            # select an original object since it is already an original.
+            if original and Article.objects.filter(original_id=self.instance.pk):
+                self.add_error(
+                    "original",
+                    forms.ValidationError(
+                        _(
+                            "This article already have a translation so it can not be "
+                            "a translation itself."
+                        ),
+                        code="invalid-original",
+                    ),
+                )
 
     class Meta:
         model = Article
