@@ -196,7 +196,9 @@ Supported `Django sitemap framework`_ options are:
 
 LOTUS_SITEMAP_ARTICLE_OPTIONS = {
     "changefreq": "monthly",
-    "priority": 0.5,
+    "priority": 0.51,
+    "pinned_priority": 0.80,
+    "featured_priority": 0.64,
 }
 """
 Article sitemap class options.
@@ -208,8 +210,15 @@ Supported `Django sitemap framework`_ options are:
 * ``priority``;
 * ``protocol``;
 
-And additionnally the option ``translations`` which except a boolean value to enable
-or disable the :ref:`sitemaps_translation_mode`.
+And additionnally the options:
+
+* ``translations`` which expect a boolean value to enable (``True``) or disable
+  (``False``) the :ref:`sitemaps_translation_mode`.
+* ``pinned_priority`` the article get this priority if it has been pinned;
+* ``featured_priority`` the article get this priority if it has been featured;
+
+If article is pinned and featured, pinned state priority is used. Finally both states
+overrides the default priority.
 """
 
 LOTUS_SITEMAP_CATEGORY_OPTIONS = {

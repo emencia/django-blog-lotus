@@ -15,6 +15,10 @@ Development
   ``branch``;
 * Improved template tag ``get_category_tree_html`` which includes last changes from
   ``Category.get_nested_tree()``;
+* Improved Article sitemap class to set another priority value when article is pinned
+  or featured;
+* Added new options in Article sitemap setting ``pinned_priority`` and
+  ``featured_priority`` to define different value for pinned or feature articles;
 
 
 Version 0.9.0 - 2024/10/15

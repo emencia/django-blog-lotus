@@ -85,7 +85,7 @@ def test_articlesitemap_publication(db, client, rf):
             "location": "http://example.com/fr/2012/10/15/french-original/",
             "lastmod": "2012-10-15T10:00:00+00:00",
             "changefreq": "monthly",
-            "priority": "0.5",
+            "priority": "0.51",
             "alternates": []
         },
         {
@@ -93,7 +93,7 @@ def test_articlesitemap_publication(db, client, rf):
             "location": "http://example.com/en/2012/10/14/yesterday/",
             "lastmod": "2012-10-15T10:00:00+00:00",
             "changefreq": "monthly",
-            "priority": "0.5",
+            "priority": "0.51",
             "alternates": [
                 {
                     "location": "http://example.com/fr/2012/10/14/publie-hier/",
@@ -128,6 +128,7 @@ def test_articlesitemap_no_alternates(db, client, rf):
     published_yesterday = ArticleFactory(
         title="published yesterday",
         slug="yesterday",
+        pinned=True,
         publish_date=yesterday.date(),
         publish_time=yesterday.time(),
     )
@@ -172,7 +173,7 @@ def test_articlesitemap_no_alternates(db, client, rf):
             "location": "http://example.com/fr/2012/10/15/french-original/",
             "lastmod": "2012-10-15T10:00:00+00:00",
             "changefreq": "monthly",
-            "priority": "0.5",
+            "priority": "0.51",
             "alternates": []
         },
         {
@@ -180,7 +181,7 @@ def test_articlesitemap_no_alternates(db, client, rf):
             "location": "http://example.com/en/2012/10/14/yesterday/",
             "lastmod": "2012-10-15T10:00:00+00:00",
             "changefreq": "monthly",
-            "priority": "0.5",
+            "priority": "0.8",
             "alternates": []
         },
         {
@@ -188,7 +189,7 @@ def test_articlesitemap_no_alternates(db, client, rf):
             "location": "http://example.com/fr/2012/10/14/publie-hier/",
             "lastmod": "2012-10-15T10:00:00+00:00",
             "changefreq": "monthly",
-            "priority": "0.5",
+            "priority": "0.51",
             "alternates": []
         }
     ]

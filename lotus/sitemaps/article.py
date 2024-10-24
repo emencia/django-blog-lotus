@@ -15,10 +15,13 @@ class ArticleSitemap(TranslatedSitemapAbstract):
 
     Opposed to ``django.contrib.sitemaps.Sitemap`` class, this does not support
     ``i18n``, ``alternates`` and ``x_default`` attributes.
+
+    This sitemap class supports also some additionnal options ``pinned_priority``and
+    ``featured_priority`` that allow to define a specific priority depending the article
+    is pinned, featured or not.
     """
     changefreq = settings.LOTUS_SITEMAP_ARTICLE_OPTIONS.get("changefreq")
     limit = settings.LOTUS_SITEMAP_ARTICLE_OPTIONS.get("limit", 50000)
-    priority = settings.LOTUS_SITEMAP_ARTICLE_OPTIONS.get("priority")
     protocol = settings.LOTUS_SITEMAP_CATEGORY_OPTIONS.get("protocol")
     translations = settings.LOTUS_SITEMAP_ARTICLE_OPTIONS.get("translations", True)
     model = Article
@@ -40,3 +43,18 @@ class ArticleSitemap(TranslatedSitemapAbstract):
 
     def lastmod(self, obj):
         return obj.last_update
+
+    def priority(self, obj):
+        if (
+            settings.LOTUS_SITEMAP_ARTICLE_OPTIONS.get("featured_priority") and
+            obj.featured is True
+        ):
+            return settings.LOTUS_SITEMAP_ARTICLE_OPTIONS.get("featured_priority")
+
+        if (
+            settings.LOTUS_SITEMAP_ARTICLE_OPTIONS.get("pinned_priority") and
+            obj.pinned is True
+        ):
+            return settings.LOTUS_SITEMAP_ARTICLE_OPTIONS.get("pinned_priority")
+
+        return settings.LOTUS_SITEMAP_ARTICLE_OPTIONS.get("priority")
