@@ -18,7 +18,7 @@
                     <div class="image bg-light rounded text-center mb-2 p-2">
                         <a href="{{ article_object.image.url }}" target="_blank">
                             {% media_thumb article_object.image "948x416" as image_thumb %}
-                            <img src="{{ image_thumb.url }}" class="rounded" alt="">
+                            <img src="{{ image_thumb.url }}" class="rounded" alt="{{ article_object.image_alt_text }}">
                         </a>
                     </div>
                 {% endif %}
@@ -61,7 +61,7 @@
                                 {% if article_object.cover %}
                                     <a href="{{ article_object.cover.url }}" target="_blank">
                                         {% media_thumb article_object.cover "300x200" crop="center" as cover_thumb %}
-                                        <img src="{{ cover_thumb.url }}" class="rounded img-fluid" alt="">
+                                        <img src="{{ cover_thumb.url }}" class="rounded img-fluid" alt="{{ article_object.cover_alt_text }}">
                                     </a>
                                 {% endif %}
                             </li>

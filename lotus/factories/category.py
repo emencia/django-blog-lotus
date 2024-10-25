@@ -29,6 +29,7 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     description = factory.Faker("text", max_nb_chars=150)
     depth = 1
     path = factory.Sequence(lambda n: MP_Node._get_path(None, 1, n))
+    cover_alt_text = factory.Faker("text", max_nb_chars=50)
 
     class Meta:
         model = Category

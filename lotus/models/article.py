@@ -202,12 +202,20 @@ class Article(SmartFormatMixin, Translated):
         max_length=255,
         blank=True,
         default="",
-        help_text=_(
-            "Article cover image."
-        ),
+        help_text=_("Article cover image."),
     )
     """
     Optional cover image.
+    """
+
+    cover_alt_text = models.CharField(
+        _("cover alternative text"),
+        blank=True,
+        max_length=125,
+        default="",
+    )
+    """
+    Optional alternative text for cover image.
     """
 
     image = SmartMediaField(
@@ -216,12 +224,20 @@ class Article(SmartFormatMixin, Translated):
         max_length=255,
         blank=True,
         default="",
-        help_text=_(
-            "Article large image."
-        ),
+        help_text=_("Article large image."),
     )
     """
-    Optional large image.
+    Optional main image.
+    """
+
+    image_alt_text = models.CharField(
+        _("main alternative text"),
+        blank=True,
+        max_length=125,
+        default="",
+    )
+    """
+    Optional alternative text for main image.
     """
 
     categories = models.ManyToManyField(

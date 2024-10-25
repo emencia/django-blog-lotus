@@ -72,7 +72,9 @@ def test_article_articleserializer(db, api_client):
         "introduction": "",
         "content": "",
         "cover": None,
+        "cover_alt_text": "",
         "image": None,
+        "image_alt_text": "",
     }
 
     # Date references
@@ -181,7 +183,9 @@ def test_article_articleserializer(db, api_client):
         "introduction": article.introduction,
         "content": article.content,
         "cover": "http://testserver" + article.cover.url,
+        "cover_alt_text": article.cover_alt_text,
         "image": "http://testserver" + article.image.url,
+        "image_alt_text": article.image_alt_text,
         "album": None,
     }
 

@@ -99,9 +99,9 @@ class ArticleAdmin(SmartModelAdmin):
         (
             _("Content"), {
                 "fields": (
-                    "cover",
+                    ("cover", "cover_alt_text"),
                     "introduction",
-                    "image",
+                    ("image", "image_alt_text"),
                     "content",
                 )
             }

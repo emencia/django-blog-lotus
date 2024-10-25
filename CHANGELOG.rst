@@ -27,6 +27,11 @@ is no incompatible changes with v0.9.0.
   a translation;
 * Added ``translations`` field to Category and Article API detail endpoint;
 * Added ``children`` field to Category API detail endpoint;
+* Added a new text field for all image fields from Article and Category images:
+
+  * ``Article.cover_alt_text``;
+  * ``Article.image_alt_text``;
+  * ``Category.cover_alt_text``;
 
 
 Version 0.9.0 - 2024/10/15

@@ -2,7 +2,7 @@
 <a href="{{ article_object.get_absolute_url }}" class="article card text-decoration-none text-reset h-100 mb-3 {% article_states article_object prefix="article--" %}">
     {% if article_object.cover %}
         {% media_thumb article_object.cover "300x200" crop="center" as cover_thumb %}
-        <img src="{{ cover_thumb.url }}" class="cover card-img-top" alt="">
+        <img src="{{ cover_thumb.url }}" class="cover card-img-top" alt="{{ article_object.cover_alt_text }}">
     {% endif %}
 
     <div class="card-body pb-0">

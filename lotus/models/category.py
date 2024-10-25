@@ -87,9 +87,18 @@ class Category(SmartFormatMixin, MP_Node, Translated):
         blank=True,
         default="",
     )
-
     """
     Optional cover image file.
+    """
+
+    cover_alt_text = models.CharField(
+        _("cover alternative text"),
+        blank=True,
+        max_length=125,
+        default="",
+    )
+    """
+    Optional alternative text for cover image.
     """
 
     COMMON_ORDER_BY = ["title"]

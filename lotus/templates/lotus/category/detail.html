@@ -19,7 +19,7 @@
                         {% if category_object.cover %}
                             <a href="{{ category_object.cover.url }}" target="_blank">
                                 {% media_thumb category_object.cover "800x640" crop="center" as cover_thumb %}
-                                <img src="{{ cover_thumb.url }}" class="rounded img-fluid" alt="">
+                                <img src="{{ cover_thumb.url }}" class="rounded img-fluid" alt="{{ category_object.cover_alt_text }}">
                             </a>
                         {% endif %}
                     </div>

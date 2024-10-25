@@ -62,6 +62,7 @@ def test_category_categoryserializer(db, settings, api_client):
         "description": "",
         "cover": None,
         "depth": None,
+        "cover_alt_text": "",
     }
 
     # Timezone defined from project settings, used to format displayed date
@@ -195,6 +196,7 @@ def test_category_categoryserializer(db, settings, api_client):
         "lead": ping.lead,
         "modified": ping.modified.astimezone(site_tz).isoformat(),
         "cover": "http://testserver" + ping.cover.url,
+        "cover_alt_text": ping.cover_alt_text,
         "description": ping.description,
         "depth": ping.depth,
     }
@@ -265,6 +267,7 @@ def test_category_categoryserializer(db, settings, api_client):
         "lead": ping.lead,
         "modified": ping.modified.astimezone(site_tz).isoformat(),
         "cover": "http://testserver" + ping.cover.url,
+        "cover_alt_text": ping.cover_alt_text,
         "description": ping.description,
         "depth": ping.depth,
     }

@@ -2,7 +2,7 @@
 <a href="{{ category_object.get_absolute_url }}" class="category card h-100 text-decoration-none text-reset">
     {% if category_object.cover %}
         {% media_thumb category_object.cover "300x200" crop="center" as cover_thumb %}
-        <img src="{{ cover_thumb.url }}" class="cover card-img-top" alt="">
+        <img src="{{ cover_thumb.url }}" class="cover card-img-top" alt="{{ category_object.cover_alt_text }}">
     {% endif %}
 
     <div class="card-body">

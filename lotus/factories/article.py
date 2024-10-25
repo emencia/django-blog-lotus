@@ -33,6 +33,8 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     publish_end = None
     album = None
     seo_title = ""
+    cover_alt_text = factory.Faker("text", max_nb_chars=50)
+    image_alt_text = factory.Faker("text", max_nb_chars=50)
 
     class Meta:
         model = Article

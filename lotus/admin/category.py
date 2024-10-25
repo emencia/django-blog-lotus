@@ -70,7 +70,7 @@ class CategoryAdmin(SmartModelAdmin):
         (
             _("Content"), {
                 "fields": (
-                    "cover",
+                    ("cover", "cover_alt_text"),
                     "description",
                 )
             }
