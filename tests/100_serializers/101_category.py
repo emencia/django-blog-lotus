@@ -73,12 +73,14 @@ def test_category_categoryserializer(db, settings, api_client):
     pang = CategoryFactory(title="Pang", slug="pang")
     ping = CategoryFactory(title="Ping", slug="ping")
     pong = CategoryFactory(title="Pong", slug="pong")
+    bim = CategoryFactory(title="Bim", slug="bim", language="fr", original=ping)
     # Make a tree of categories such as Pang > Ping > Pong
+    # NOTE: Objects need to be reloaded in order since treebear may change the paths
+    # that would lead to improper subpaths
     ping.move_into(pang)
-    pong.move_into(ping)
-    # Object need to be reloaded since treebear has made path changes
     pang.refresh_from_db()
     ping.refresh_from_db()
+    pong.move_into(ping)
     pong.refresh_from_db()
 
     bingo = TagFactory(name="Bingo", slug="bingo")
@@ -171,6 +173,22 @@ def test_category_categoryserializer(db, settings, api_client):
                 "cover": "http://testserver" + private_article.cover.url,
             },
         ],
+        "translations": [{
+            "url": "http://testserver/api/category/{}/".format(bim.id),
+            "detail_url": bim.get_absolute_url(),
+            "language": bim.language,
+            "title": bim.title,
+            "lead": bim.lead,
+            "cover": "http://testserver" + bim.cover.url,
+        }],
+        "children": [{
+            "url": "http://testserver/api/category/{}/".format(pong.id),
+            "detail_url": pong.get_absolute_url(),
+            "language": pong.language,
+            "title": pong.title,
+            "lead": pong.lead,
+            "cover": "http://testserver" + pong.cover.url,
+        }],
         "language": ping.language,
         "title": ping.title,
         "slug": ping.slug,
@@ -225,6 +243,22 @@ def test_category_categoryserializer(db, settings, api_client):
                 "cover": "http://testserver" + now_article.cover.url,
             },
         ],
+        "translations": [{
+            "url": "http://testserver/api/category/{}/".format(bim.id),
+            "detail_url": bim.get_absolute_url(),
+            "language": bim.language,
+            "title": bim.title,
+            "lead": bim.lead,
+            "cover": "http://testserver" + bim.cover.url,
+        }],
+        "children": [{
+            "url": "http://testserver/api/category/{}/".format(pong.id),
+            "detail_url": pong.get_absolute_url(),
+            "language": pong.language,
+            "title": pong.title,
+            "lead": pong.lead,
+            "cover": "http://testserver" + pong.cover.url,
+        }],
         "language": ping.language,
         "title": ping.title,
         "slug": ping.slug,

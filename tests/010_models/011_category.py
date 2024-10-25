@@ -22,7 +22,7 @@ def test_category_basic(db):
         title="Foo",
         slug="foo",
         depth=1,
-        # Although valid it would probably not correct in practive since path is built
+        # Although valid it would probably not correct in practice since path is built
         # with a specific algorithm
         path="000C",
     )

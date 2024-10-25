@@ -164,6 +164,7 @@ def test_article_articleserializer(db, api_client):
             "available",
             "not-yet",
         ],
+        "translations": [],
         "language": article.language,
         "status": article.status,
         "featured": article.featured,
@@ -268,13 +269,13 @@ def test_article_articleresumeserializer(db, api_client):
     now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=ZoneInfo("UTC"))
     tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
 
-    article = ArticleFactory(
+    main = ArticleFactory(
         title="Lorem ipsum",
         publish_date=tomorrow.date(),
         publish_time=tomorrow.time(),
     )
 
-    serialized = ArticleResumeSerializer(article, context={
+    serialized = ArticleResumeSerializer(main, context={
         "request": request,
         "lotus_now": now,
     })
@@ -283,20 +284,20 @@ def test_article_articleresumeserializer(db, api_client):
     assert payload == {
         "authors": [],
         "categories": [],
-        "detail_url": article.get_absolute_url(),
-        "introduction": article.introduction,
-        "language": article.language,
+        "detail_url": main.get_absolute_url(),
+        "introduction": main.introduction,
+        "language": main.language,
         "publish_datetime": "2012-10-16T10:00:00+00:00",
         "seo_title": "",
-        "slug": article.slug,
+        "slug": main.slug,
         "states": [
             "available",
             "not-yet",
         ],
         "tags": [],
-        "title": article.title,
+        "title": main.title,
         "url": "http://testserver/api/article/1/",
-        "cover": "http://testserver" + article.cover.url,
+        "cover": "http://testserver" + main.cover.url,
     }
 
 
@@ -321,28 +322,28 @@ def test_article_articleminimalserializer(db, api_client):
     # Date references
     tomorrow = datetime.datetime(2012, 10, 16, 10, 0).replace(tzinfo=ZoneInfo("UTC"))
 
-    article = ArticleFactory(
+    main = ArticleFactory(
         title="Lorem ipsum",
         publish_date=tomorrow.date(),
         publish_time=tomorrow.time(),
         status=STATUS_DRAFT,
     )
 
-    serialized = ArticleMinimalSerializer(article, context={"request": request})
+    serialized = ArticleMinimalSerializer(main, context={"request": request})
 
     payload = serialized.data
 
     assert payload == {
-        "detail_url": article.get_absolute_url(),
-        "introduction": article.introduction,
-        "language": article.language,
+        "detail_url": main.get_absolute_url(),
+        "introduction": main.introduction,
+        "language": main.language,
         "publish_datetime": "2012-10-16T10:00:00+00:00",
         "states": [
             "draft"
         ],
-        "title": article.title,
+        "title": main.title,
         "url": "http://testserver/api/article/1/",
-        "cover": "http://testserver" + article.cover.url,
+        "cover": "http://testserver" + main.cover.url,
     }
 
 
@@ -384,7 +385,7 @@ def test_article_articleserializer_get_related(db, api_client):
         language="fr",
     )
 
-    article = ArticleFactory(
+    main = ArticleFactory(
         title="Lorem ipsum",
         publish_date=today.date(),
         publish_time=today.time(),
@@ -392,7 +393,7 @@ def test_article_articleserializer_get_related(db, api_client):
     )
 
     # Without filtering function, only language is filtered
-    serialized = ArticleSerializer(article, context={
+    serialized = ArticleSerializer(main, context={
         "request": request,
         "lotus_now": now,
     })
@@ -416,7 +417,7 @@ def test_article_articleserializer_get_related(db, api_client):
     filternator.request.user = AnonymousUser()
 
     # With a given filtering function
-    serialized = ArticleSerializer(article, context={
+    serialized = ArticleSerializer(main, context={
         "request": request,
         "lotus_now": now,
         "article_filter_func": filternator.apply_article_lookups,
@@ -429,3 +430,75 @@ def test_article_articleserializer_get_related(db, api_client):
         for item in json.loads(json.dumps(serialized.data["related"]))
     ])
     assert results == ["published yesterday"]
+
+
+@freeze_time("2012-10-15 10:00:00")
+def test_article_articleserializer_get_translations(db, api_client, settings):
+    """
+    Translation articles from payload should be properly filtered depending serializer
+    has a filtering function or not.
+    """
+    settings.LANGUAGE_CODE = "en"
+
+    request_factory = APIRequestFactory()
+    request = request_factory.get("/")
+
+    # Date references
+    now = datetime.datetime(2012, 10, 15, 10, 00).replace(tzinfo=ZoneInfo("UTC"))
+    today = datetime.datetime(2012, 10, 15, 1, 00).replace(tzinfo=ZoneInfo("UTC"))
+
+    main = ArticleFactory(
+        title="Lorem ipsum",
+        publish_date=today.date(),
+        publish_time=today.time(),
+    )
+    ArticleFactory(
+        title="french",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        language="fr",
+        original=main,
+    )
+    ArticleFactory(
+        title="draft",
+        publish_date=today.date(),
+        publish_time=today.time(),
+        language="de",
+        status=STATUS_DRAFT,
+        original=main,
+    )
+
+    # Without filtering function, only language is filtered
+    serialized = ArticleSerializer(main, context={
+        "request": request,
+        "lotus_now": now,
+    })
+
+    # Use JSON render that will flatten data (turn OrderedDict as simple dict) to
+    # ease assert and manipulation
+    results = sorted([
+        item["title"]
+        for item in json.loads(json.dumps(serialized.data["translations"]))
+    ])
+    assert results == ["draft", "french"]
+
+    # Craft a proper viewset class with a request and that can be used to give
+    # a working filtering function
+    filternator = ArticleFilterAbstractViewset()
+    filternator.request = request
+    filternator.request.user = AnonymousUser()
+
+    # With a given filtering function
+    serialized = ArticleSerializer(main, context={
+        "request": request,
+        "lotus_now": now,
+        "article_filter_func": filternator.apply_article_lookups,
+    })
+
+    # Use JSON render that will flatten data (turn OrderedDict as simple dict) to
+    # ease assert and manipulation
+    results = sorted([
+        item["title"]
+        for item in json.loads(json.dumps(serialized.data["translations"]))
+    ])
+    assert results == ["french"]

@@ -25,6 +25,7 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
     related = serializers.SerializerMethodField()
     states = serializers.SerializerMethodField()
     album = serializers.SerializerMethodField()
+    translations = serializers.SerializerMethodField()
 
     class Meta:
         model = Article
@@ -109,6 +110,21 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         #     context=self.context
         # ).data
         return None
+
+    def get_translations(self, obj):
+        """
+        Return list of possible translations.
+        """
+        queryset = self.Meta.model.objects.filter(original=obj.id)
+
+        if self.context.get("article_filter_func"):
+            queryset = self.context.get("article_filter_func")(queryset)
+
+        return ArticleMinimalSerializer(
+            queryset.order_by(*self.Meta.model.COMMON_ORDER_BY),
+            many=True,
+            context=self.context
+        ).data
 
 
 class ArticleResumeSerializer(ArticleSerializer):

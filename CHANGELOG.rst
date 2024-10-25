@@ -6,6 +6,9 @@ Changelog
 Development
 -----------
 
+A minor release with many things for *Category tree* and some API improvements, there
+is no incompatible changes with v0.9.0.
+
 * Updated french translations in PO;
 * Updated every Category queryset to use the right ordering for flat or tree listing,
   this should fix issue where some nodes could be missing in tree listing;
@@ -22,6 +25,8 @@ Development
 * Added a new validation on Article and Category forms to avoid to make an
   original object as a translation of another original object. An original can not be
   a translation;
+* Added ``translations`` field to Category and Article API detail endpoint;
+* Added ``children`` field to Category API detail endpoint;
 
 
 Version 0.9.0 - 2024/10/15

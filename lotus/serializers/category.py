@@ -8,7 +8,8 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
     Other used model serializer are imported into methods to avoid circular references.
 
     .. Todo::
-        Display possible category children.
+        - translations
+        - category children.
     """
     original = serializers.HyperlinkedRelatedField(
         many=False,
@@ -18,6 +19,8 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
     detail_url = serializers.SerializerMethodField()
     parent = serializers.SerializerMethodField()
     articles = serializers.SerializerMethodField()
+    translations = serializers.SerializerMethodField()
+    children = serializers.SerializerMethodField()
 
     class Meta:
         model = Category
@@ -70,6 +73,30 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
 
         return ArticleMinimalSerializer(
             queryset,
+            many=True,
+            context=self.context
+        ).data
+
+    def get_translations(self, obj):
+        """
+        Return list of possible translations.
+        """
+        return CategoryMinimalSerializer(
+            self.Meta.model.objects.filter(original=obj.id).order_by(
+                *self.Meta.model.COMMON_ORDER_BY
+            ),
+            many=True,
+            context=self.context
+        ).data
+
+    def get_children(self, obj):
+        """
+        Return list of children categories.
+        """
+        print()
+        print(obj)
+        return CategoryMinimalSerializer(
+            obj.get_subcategories(),
             many=True,
             context=self.context
         ).data

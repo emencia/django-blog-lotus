@@ -238,7 +238,6 @@ def test_category_admin_form_parent_descendants(db, settings, tests_settings):
 
     # Make 'Omelette' as a child of 'Oeuf'
     omelette_object.move_into(oeuf_object)
-    # Reload cached object instance since path has been changed
     omelette_object.refresh_from_db()
     # Make 'Victoria' as a child of 'Omelette'
     victoria_object.move_into(omelette_object)

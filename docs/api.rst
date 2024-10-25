@@ -15,9 +15,9 @@ below).
 It currently have some difference with the HTML frontend:
 
 * This is a read only API, you won't be able to use it to add, edit or delete contents;
-* Preview mode is not implemented, meaning you won't be able to use to preview
-  contents, you still need to continue to use the HTML frontend to do so;
-* Not any images are thumbnailed, all media URLs point to the original uploaded file;
+* Preview mode is implemented but is tied to User session and there is actually no
+  endpoint to enable it or disable it, you still have to use the front;
+* No images are thumbnailed, all media URLs point to the original uploaded file;
 
 
 .. _install_api:

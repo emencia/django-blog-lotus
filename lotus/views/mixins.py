@@ -114,7 +114,7 @@ class ArticleFilterMixin(LookupBuilder):
 
         return tuple(lookups)
 
-    def apply_article_lookups(self, queryset, language):
+    def apply_article_lookups(self, queryset, language=None):
         """
         Apply publication and language lookups to given queryset.
 
@@ -128,6 +128,8 @@ class ArticleFilterMixin(LookupBuilder):
 
         Arguments:
             queryset (django.db.models.QuerySet): Base queryset to start on.
+
+        Keyword Arguments:
             language (string): Language code to filter on.
 
         Returns:
@@ -138,11 +140,12 @@ class ArticleFilterMixin(LookupBuilder):
         if not hasattr(self, "target_date"):
             self.target_date = timezone.now()
 
-        # Check for enabled preview mode
+        # Check for enabled preview mode which allows to ignore publication rules, only
+        # care about language
         if (
             hasattr(self, "allowed_preview_mode") and
             self.allowed_preview_mode(self.request)
-        ):
+        ) and language:
             queryset = queryset.get_for_lang(language=language)
         # Default request instead
         else:

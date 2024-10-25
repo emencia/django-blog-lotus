@@ -133,6 +133,54 @@ class Category(SmartFormatMixin, MP_Node, Translated):
             ),
         ]
 
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        """
+        Return absolute URL to the category detail view.
+
+        Returns:
+            string: An URL.
+        """
+        return translate_url(
+            reverse("lotus:category-detail", kwargs={"slug": self.slug}),
+            self.language
+        )
+
+    def get_absolute_api_url(self):
+        """
+        Return absolute URL to the author detail viewset from API.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("lotus-api:category-detail", kwargs={"pk": self.id})
+
+    def get_edit_url(self):
+        """
+        Return absolute URL to edit category from admin.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("admin:lotus_category_change", args=(self.id,))
+
+    def get_subcategories(self):
+        """
+        Return category children, results are enforced on category language.
+
+        Returns:
+            queryset: List of children categories.
+        """
+        if not self.numchild:
+            return []
+
+        return self.get_children().filter(language=self.language).order_by("title")
+
+    def get_cover_format(self):
+        return self.media_format(self.cover)
+
     @classmethod
     def apply_tree_queryset_filter(cls, queryset, language=None, parent=None,
                                    current=None):
@@ -318,54 +366,6 @@ class Category(SmartFormatMixin, MP_Node, Translated):
             lnk[path] = newobj
 
         return ret
-
-    def __str__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        """
-        Return absolute URL to the category detail view.
-
-        Returns:
-            string: An URL.
-        """
-        return translate_url(
-            reverse("lotus:category-detail", kwargs={"slug": self.slug}),
-            self.language
-        )
-
-    def get_absolute_api_url(self):
-        """
-        Return absolute URL to the author detail viewset from API.
-
-        Returns:
-            string: An URL.
-        """
-        return reverse("lotus-api:category-detail", kwargs={"pk": self.id})
-
-    def get_edit_url(self):
-        """
-        Return absolute URL to edit category from admin.
-
-        Returns:
-            string: An URL.
-        """
-        return reverse("admin:lotus_category_change", args=(self.id,))
-
-    def get_subcategories(self):
-        """
-        Return category children, results are enforced on category language.
-
-        Returns:
-            queryset: List of children categories.
-        """
-        if not self.numchild:
-            return []
-
-        return self.get_children().filter(language=self.language).order_by("title")
-
-    def get_cover_format(self):
-        return self.media_format(self.cover)
 
     def move_into(self, parent):
         """
