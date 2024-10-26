@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from rest_framework import viewsets
 
 from ..models import Article
@@ -23,10 +25,15 @@ class ArticleViewSet(MultiSerializerViewSetMixin, ArticleFilterAbstractViewset,
         depending preview mode.
 
         Also apply lookup for "private" mode for non authenticated users.
-
-        .. Note::
-            Opposed to HTML views, this does not support (yet) the preview mode.
         """
-        q = self.apply_article_lookups(self.model.objects, self.get_language_code())
+        q = self.model.objects.all()
+
+        if (
+            not settings.LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE or
+            self.action != "retrieve"
+        ):
+            q = self.apply_article_lookups(q, self.get_language_code())
+        else:
+            q = self.apply_article_lookups(q)
 
         return q.order_by(*self.model.COMMON_ORDER_BY)

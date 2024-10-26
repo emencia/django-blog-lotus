@@ -1,5 +1,4 @@
 import datetime
-import json
 
 import pytest
 from freezegun import freeze_time
@@ -68,8 +67,8 @@ def test_article_viewset_list_payload(db, settings, api_client):
     assert response.status_code == 200
 
     json_data = response.json()
-    print()
-    print(json.dumps(json_data, indent=4))
+    # print()
+    # print(json.dumps(json_data, indent=4))
 
     assert json_data["count"] == 1
     payload_item = json_data["results"][0]
@@ -303,16 +302,16 @@ def test_article_viewset_list_publication(db, api_client, user_kind, with_previe
     ] == expected
 
 
-def test_article_viewset_language(db, settings, api_client):
+@pytest.mark.parametrize("allow", [True, False])
+def test_article_viewset_language(db, settings, api_client, allow):
     """
     Viewset should returns content for required language by client.
 
     This also demonstrate the way to ask for language in a request to Lotus API with
     the HTTP header 'Accept-Language'.
     """
-    # NOTE: A test playing with language and view requests must enforce default
-    # language since LANGUAGE_CODE may be altered between two tests.
     settings.LANGUAGE_CODE = "en"
+    settings.LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE = allow
 
     # Create a single category used everywhere to avoid create multiple random ones
     # from factory
@@ -422,9 +421,47 @@ def test_article_viewset_language(db, settings, api_client):
     assert json_data["language"] == created_cheese["translations"]["fr"].language
     assert json_data["title"] == created_cheese["translations"]["fr"].title
 
-    # Details result for a different language than targeted article returns a 404
-    detail_url = created_cheese["original"].get_absolute_api_url()
-    response = api_client.get(detail_url, HTTP_ACCEPT_LANGUAGE="fr")
-    assert response.status_code == 404
-    response = api_client.get(detail_url, HTTP_ACCEPT_LANGUAGE="de")
+
+def test_article_viewset_allow_language_safe_enabled(db, settings, api_client):
+    """
+    When setting 'LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE' is enabled the detail won't
+    filter on current client language, an object in different language can be reached.
+    """
+    settings.LANGUAGE_CODE = "en"
+    settings.LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE = True
+
+    category = CategoryFactory(slug="ping", language="en")
+    categorie = CategoryFactory(slug="pong", language="fr")
+
+    hello = ArticleFactory(title="Hello", language="en", fill_categories=[category])
+    salut = ArticleFactory(title="Salut", language="fr", fill_categories=[categorie])
+
+    # English article is reachable with english language
+    response = api_client.get(hello.get_absolute_api_url(), HTTP_ACCEPT_LANGUAGE="en")
+    assert response.status_code == 200
+
+    # French article is still reachable with english language
+    response = api_client.get(salut.get_absolute_api_url(), HTTP_ACCEPT_LANGUAGE="en")
+    assert response.status_code == 200
+
+
+def test_article_viewset_allow_language_safe_disabled(db, settings, api_client):
+    """
+    When setting 'LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE' is disabled the detail will
+    filter on current client language, an object in different language can not be
+    reached.
+    """
+    settings.LANGUAGE_CODE = "en"
+    settings.LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE = False
+
+    category = CategoryFactory(slug="ping", language="en")
+    categorie = CategoryFactory(slug="pong", language="fr")
+
+    hello = ArticleFactory(title="Hello", language="en", fill_categories=[category])
+    salut = ArticleFactory(title="Salut", language="fr", fill_categories=[categorie])
+
+    response = api_client.get(hello.get_absolute_api_url(), HTTP_ACCEPT_LANGUAGE="en")
+    assert response.status_code == 200
+
+    response = api_client.get(salut.get_absolute_api_url(), HTTP_ACCEPT_LANGUAGE="en")
     assert response.status_code == 404

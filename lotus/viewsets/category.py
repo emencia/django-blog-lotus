@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from rest_framework import viewsets
 
 from ..models import Category
@@ -22,6 +24,12 @@ class CategoryViewSet(MultiSerializerViewSetMixin, ArticleFilterAbstractViewset,
         """
         Build queryset base with language filtering to list categories.
         """
-        q = self.model.objects.get_for_lang(self.get_language_code())
+        q = self.model.objects.all()
+
+        if (
+            not settings.LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE or
+            self.action != "retrieve"
+        ):
+            q = q.get_for_lang(self.get_language_code())
 
         return q.order_by(*self.model.COMMON_ORDER_BY)

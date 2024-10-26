@@ -253,3 +253,19 @@ Supported `Django sitemap framework`_ options are:
 * ``priority``;
 * ``protocol``;
 """
+
+LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE = True
+"""
+Allow API detail endpoint to ignore the language constraint. If settings is true,
+detail endpoint won't add the language filter to the queryset to get an object. If
+setting is false, the detail endpoint will enforce language on queryset.
+
+Commonly you will let it set to true since in API don't use ``i18n_url`` pattern so the
+only way to set the language is from cookie or header that is not very handy when
+navigating in the API browser. However in some case you may find this useful to enforce.
+
+This behavior is applied for all translated models like Article and Category.
+
+In any way, all other endpoints still filter on language, especially for the lists that
+need to not return mixed languages.
+"""

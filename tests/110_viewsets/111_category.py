@@ -70,14 +70,19 @@ def test_category_viewset_list_order(db, settings, api_client):
     ]
 
 
-def test_category_viewset_language(db, settings, api_client):
+@pytest.mark.parametrize("allow", [True, False])
+def test_category_viewset_language(db, settings, api_client, allow):
     """
     Viewset should returns content for required language by client.
+
+    The setting 'LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE' does never change this
+    behavior.
 
     This also demonstrate the way to ask for language in a request to Lotus API with
     the HTTP header 'Accept-Language'.
     """
     settings.LANGUAGE_CODE = "en"
+    settings.LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE = allow
 
     CategoryFactory(title="beans", language="en")
     CategoryFactory(title="fish and chips", language="en")
@@ -131,3 +136,44 @@ def test_category_viewset_language(db, settings, api_client):
         for category in json_data["results"]
         if category["language"] == "de"
     ]) == 1
+
+
+def test_category_viewset_allow_language_safe_enabled(db, settings, api_client):
+    """
+    When setting 'LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE' is enabled the detail won't
+    filter on current client language, an object in different language can be reached.
+    """
+    settings.LANGUAGE_CODE = "en"
+    settings.LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE = True
+
+    egg = CategoryFactory(title="egg", language="en")
+    oeuf = CategoryFactory(title="oeuf", language="fr")
+
+    # English category is reachable with english language
+    response = api_client.get(egg.get_absolute_api_url(), HTTP_ACCEPT_LANGUAGE="en")
+    assert response.status_code == 200
+
+    # French category is still reachable with english language
+    response = api_client.get(oeuf.get_absolute_api_url(), HTTP_ACCEPT_LANGUAGE="en")
+    assert response.status_code == 200
+
+
+def test_category_viewset_allow_language_safe_disabled(db, settings, api_client):
+    """
+    When setting 'LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE' is disabled the detail will
+    filter on current client language, an object in different language can not be
+    reached.
+    """
+    settings.LANGUAGE_CODE = "en"
+    settings.LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE = False
+
+    egg = CategoryFactory(title="egg", language="en")
+    oeuf = CategoryFactory(title="oeuf", language="fr")
+
+    # English category is reachable with english language
+    response = api_client.get(egg.get_absolute_api_url(), HTTP_ACCEPT_LANGUAGE="en")
+    assert response.status_code == 200
+
+    # French category is still reachable with english language
+    response = api_client.get(oeuf.get_absolute_api_url(), HTTP_ACCEPT_LANGUAGE="en")
+    assert response.status_code == 404

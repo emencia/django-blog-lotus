@@ -33,6 +33,14 @@ is no incompatible changes with v0.9.0.
   * ``Article.image_alt_text``;
   * ``Category.cover_alt_text``;
 
+* Added new setting ``LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE`` with default value to
+  ``True``. Previously the detail endpoints filtered on current client language, meaning
+  with ``en`` language trying to get a french object leaded to a 404 response. This is
+  not the case anymore and now you can get detail from objects with different language
+  without to change your header ``Accept-Language``. The old behavior is still available
+  when you disable this setting. In any way, the listing endpoints still always filter
+  on language to return results;
+
 
 Version 0.9.0 - 2024/10/15
 --------------------------
