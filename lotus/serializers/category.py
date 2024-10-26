@@ -6,10 +6,6 @@ from ..models import Category
 class CategorySerializer(serializers.HyperlinkedModelSerializer):
     """
     Other used model serializer are imported into methods to avoid circular references.
-
-    .. Todo::
-        - translations
-        - category children.
     """
     original = serializers.HyperlinkedRelatedField(
         many=False,
@@ -93,8 +89,6 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
         """
         Return list of children categories.
         """
-        print()
-        print(obj)
         return CategoryMinimalSerializer(
             obj.get_subcategories(),
             many=True,

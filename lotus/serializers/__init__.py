@@ -1,3 +1,7 @@
+from .album import (
+    AlbumSerializer,
+    AlbumItemSerializer
+)
 from .article import (
     ArticleSerializer,
     ArticleMinimalSerializer,
@@ -12,6 +16,8 @@ from .category import (
 
 
 __all__ = [
+    "AlbumSerializer",
+    "AlbumItemSerializer",
     "ArticleSerializer",
     "ArticleMinimalSerializer",
     "ArticleResumeSerializer",

@@ -39,6 +39,9 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
     def get_detail_url(self, obj):
         """
         Return the HTML detail view URL.
+
+        TODO: Add a new settings to disallow for detail_url and return just None (so
+        payload format is still the same with just empty value).
         """
         return obj.get_absolute_url()
 
@@ -102,14 +105,16 @@ class ArticleSerializer(TaggitSerializer, serializers.HyperlinkedModelSerializer
         """
         Return album data with its items.
         """
-        # from .album import AlbumResumeSerializer
+        from .album import AlbumSerializer
 
-        # return AlbumResumeSerializer(
-        #     obj.album,
-        #     many=False,
-        #     context=self.context
-        # ).data
-        return None
+        if not obj.album:
+            return None
+
+        return AlbumSerializer(
+            obj.album,
+            many=False,
+            context=self.context
+        ).data
 
     def get_translations(self, obj):
         """

@@ -4,13 +4,6 @@ import json
 import pytest
 from freezegun import freeze_time
 
-# Try to use the builtin zoneinfo available since Python 3.9
-try:
-    from zoneinfo import ZoneInfo
-# Django 4.x install the backports for Python 3.8
-except ModuleNotFoundError:
-    from backports.zoneinfo import ZoneInfo
-
 from django.contrib.auth.models import AnonymousUser
 
 try:
@@ -24,6 +17,7 @@ except ModuleNotFoundError:
 else:
     API_AVAILABLE = True
 
+from lotus.compat.import_zoneinfo import ZoneInfo
 from lotus.factories import ArticleFactory, AuthorFactory
 
 

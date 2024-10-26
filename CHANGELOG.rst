@@ -33,6 +33,9 @@ is no incompatible changes with v0.9.0.
   * ``Article.image_alt_text``;
   * ``Category.cover_alt_text``;
 
+* Added serializers for Album and AlbumItem models and use them correctly in Article
+  serializer so the Article detail endpoint now provide the possible related album
+  and its items;
 * Added new setting ``LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE`` with default value to
   ``True``. Previously the detail endpoints filtered on current client language, meaning
   with ``en`` language trying to get a french object leaded to a 404 response. This is

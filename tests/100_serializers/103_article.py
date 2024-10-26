@@ -4,13 +4,6 @@ import json
 import pytest
 from freezegun import freeze_time
 
-# Try to use the builtin zoneinfo available since Python 3.9
-try:
-    from zoneinfo import ZoneInfo
-# Django 4.x install the backports for Python 3.8
-except ModuleNotFoundError:
-    from backports.zoneinfo import ZoneInfo
-
 from django.conf import settings
 from django.contrib.auth.models import AnonymousUser
 
@@ -28,8 +21,10 @@ else:
     API_AVAILABLE = True
 
 from lotus.choices import STATUS_DRAFT
+from lotus.compat.import_zoneinfo import ZoneInfo
 from lotus.factories import (
-    ArticleFactory, AuthorFactory, CategoryFactory, TagFactory,
+    AlbumFactory, AlbumItemFactory, ArticleFactory, AuthorFactory, CategoryFactory,
+    TagFactory,
 )
 
 
@@ -84,6 +79,8 @@ def test_article_articleserializer(db, api_client):
     ping = CategoryFactory(slug="ping")
     bingo = TagFactory(name="Bingo", slug="bingo")
     picsou = AuthorFactory(first_name="Picsou", last_name="McDuck")
+    album = AlbumFactory(title="foo")
+    albumitem_1 = AlbumItemFactory(album=album)
     # This is not expected in result since different language should be filtered out
     pang = CategoryFactory(slug="pang", language="fr")
 
@@ -107,6 +104,7 @@ def test_article_articleserializer(db, api_client):
         publish_date=tomorrow.date(),
         publish_time=tomorrow.time(),
         featured=True,
+        album=album,
         fill_categories=[ping, pang],
         fill_related=[related],
         fill_tags=[bingo],
@@ -186,7 +184,18 @@ def test_article_articleserializer(db, api_client):
         "cover_alt_text": article.cover_alt_text,
         "image": "http://testserver" + article.image.url,
         "image_alt_text": article.image_alt_text,
-        "album": None,
+        "album": {
+            "items": [
+                {
+                    "modified": "2012-10-15T12:00:00+02:00",
+                    "title": albumitem_1.title,
+                    "order": albumitem_1.order,
+                    "media": "http://testserver" + albumitem_1.media.url,
+                },
+            ],
+            "modified": "2012-10-15T12:00:00+02:00",
+            "title": album.title,
+        },
     }
 
 
