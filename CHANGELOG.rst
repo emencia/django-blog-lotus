@@ -3,8 +3,8 @@
 Changelog
 =========
 
-Development
------------
+Version 0.9.1 - 2024/10/27
+--------------------------
 
 A minor release with many things for *Category tree* and some API improvements, there
 is no incompatible changes with v0.9.0.

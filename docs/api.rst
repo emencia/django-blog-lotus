@@ -71,8 +71,9 @@ Lotus API stands on what is implemented from
 
 On default installation, the API is not mounted with
 ``django.conf.urls.i18n.i18n_patterns`` so the only way to switch language is
-through a cookie or HTTP headers. You can use ``i18n_patterns`` instead to allow for
-language prefix in URL.
+through a cookie or HTTP headers. You could use ``i18n_patterns`` to allow
+language prefix in URL but it is not recommended because clients should not have
+to change language prefix in each URL to navigate in contents.
 
 
 Authentication & Permissions

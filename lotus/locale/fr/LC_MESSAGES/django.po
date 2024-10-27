@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-24 12:47+0200\n"
+"POT-Creation-Date: 2024-10-27 02:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -152,7 +152,7 @@ msgstr ""
 msgid "You can't have a language different from the parent category one."
 msgstr "Vous ne pouvez avoir une langue différente de la catégorie parente."
 
-#: forms/category.py:236
+#: forms/category.py:235
 msgid ""
 "This category already have a translation so it can not be a translation "
 "itself."
@@ -160,7 +160,7 @@ msgstr ""
 "Cette catégorie a déjà une traduction donc elle ne peut être une traduction "
 "elle-même."
 
-#: forms/category.py:250
+#: forms/category.py:249
 msgid ""
 "Some articles in different language relate to this category, you can't "
 "change language until those articles are not related anymore."
@@ -168,7 +168,7 @@ msgstr ""
 "Certains articles dans une autre langue sont reliés à cette catégorie, vous "
 "ne pouvez changer la langue tant que ces articles n'y sont plus reliés."
 
-#: forms/category.py:265
+#: forms/category.py:264
 msgid ""
 "Some categories in different language are children of this category, you "
 "can't change language until those categories are not related anymore or "
@@ -325,35 +325,43 @@ msgstr "contenu"
 msgid "cover image"
 msgstr "image de couverture"
 
-#: models/article.py:206
+#: models/article.py:205
 msgid "Article cover image."
 msgstr "L'image de couverture de l'article."
 
-#: models/article.py:214
+#: models/article.py:212 models/category.py:95
+msgid "cover alternative text"
+msgstr "texte alternatif de la couverture"
+
+#: models/article.py:222
 msgid "main image"
 msgstr "image principale"
 
-#: models/article.py:220
+#: models/article.py:227
 msgid "Article large image."
 msgstr "Une image large pour l'article."
 
-#: models/article.py:229
+#: models/article.py:234
+msgid "main alternative text"
+msgstr "texte alternatif de l'image principale"
+
+#: models/article.py:245
 msgid "categories"
 msgstr "catégories"
 
-#: models/article.py:239
+#: models/article.py:255
 msgid "authors"
 msgstr "auteurs"
 
-#: models/article.py:249
+#: models/article.py:265
 msgid "related articles"
 msgstr "articles reliés"
 
-#: models/article.py:287
+#: models/article.py:303
 msgid "Article"
 msgstr "Article"
 
-#: models/article.py:288 settings.py:119 templates/lotus/article/list.html:4
+#: models/article.py:304 settings.py:119 templates/lotus/article/list.html:4
 #: templates/lotus/article/list.html:8 templates/lotus/author/detail.html:11
 #: templates/lotus/category/detail.html:32 templates/lotus/tag/detail.html:11
 msgid "Articles"
@@ -368,11 +376,11 @@ msgstr ""
 msgid "description"
 msgstr "description"
 
-#: models/category.py:119
+#: models/category.py:128
 msgid "Category"
 msgstr "Catégorie"
 
-#: models/category.py:120 settings.py:121
+#: models/category.py:129 settings.py:121
 #: templates/lotus/article/detail.html:127 templates/lotus/category/list.html:4
 #: templates/lotus/category/list.html:8
 msgid "Categories"
@@ -408,6 +416,11 @@ msgid ""
 "will change language to an available one and you may have to change some "
 "related fields."
 msgstr ""
+"<strong>La langue '%(object_lang)s' de l'article n'est pas une des langues "
+"disponibles pour ce projet: %(available_langs)s</strong>. Dans cet état cet "
+"article ne sera pas accessible sur le site.<br><br>Vous pouvez néanmoins continuer "
+"à l'éditer mais sa langue sera modifiée pour une des langues disponibles et vous "
+"aurez peut être certaines relations à corriger."
 
 #: templates/admin/lotus/article/change_form.html:40
 msgid "Existing language(s) for this article:"
@@ -455,6 +468,11 @@ msgid ""
 "it will change language to an available one and you may have to change some "
 "related fields."
 msgstr ""
+"<strong>La langue '%(object_lang)s' de la catégorie n'est pas une des langues "
+"disponibles pour ce projet: %(available_langs)s</strong>. Dans cet état cet "
+"catégorie ne sera pas accessible sur le site.<br><br>Vous pouvez néanmoins continuer "
+"à l'éditer mais sa langue sera modifiée pour une des langues disponibles et vous "
+"aurez peut être certaines relations à corriger."
 
 #: templates/admin/lotus/category/change_form.html:35
 msgid "Existing language(s) for this category:"

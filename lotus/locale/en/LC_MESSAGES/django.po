@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-24 12:47+0200\n"
+"POT-Creation-Date: 2024-10-27 02:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -149,19 +149,19 @@ msgstr ""
 msgid "You can't have a language different from the parent category one."
 msgstr ""
 
-#: forms/category.py:236
+#: forms/category.py:235
 msgid ""
 "This category already have a translation so it can not be a translation "
 "itself."
 msgstr ""
 
-#: forms/category.py:250
+#: forms/category.py:249
 msgid ""
 "Some articles in different language relate to this category, you can't "
 "change language until those articles are not related anymore."
 msgstr ""
 
-#: forms/category.py:265
+#: forms/category.py:264
 msgid ""
 "Some categories in different language are children of this category, you "
 "can't change language until those categories are not related anymore or "
@@ -310,35 +310,43 @@ msgstr ""
 msgid "cover image"
 msgstr ""
 
-#: models/article.py:206
+#: models/article.py:205
 msgid "Article cover image."
 msgstr ""
 
-#: models/article.py:214
+#: models/article.py:212 models/category.py:95
+msgid "cover alternative text"
+msgstr ""
+
+#: models/article.py:222
 msgid "main image"
 msgstr ""
 
-#: models/article.py:220
+#: models/article.py:227
 msgid "Article large image."
 msgstr ""
 
-#: models/article.py:229
+#: models/article.py:234
+msgid "main alternative text"
+msgstr ""
+
+#: models/article.py:245
 msgid "categories"
 msgstr ""
 
-#: models/article.py:239
+#: models/article.py:255
 msgid "authors"
 msgstr ""
 
-#: models/article.py:249
+#: models/article.py:265
 msgid "related articles"
 msgstr ""
 
-#: models/article.py:287
+#: models/article.py:303
 msgid "Article"
 msgstr ""
 
-#: models/article.py:288 settings.py:119 templates/lotus/article/list.html:4
+#: models/article.py:304 settings.py:119 templates/lotus/article/list.html:4
 #: templates/lotus/article/list.html:8 templates/lotus/author/detail.html:11
 #: templates/lotus/category/detail.html:32 templates/lotus/tag/detail.html:11
 msgid "Articles"
@@ -352,11 +360,11 @@ msgstr ""
 msgid "description"
 msgstr ""
 
-#: models/category.py:119
+#: models/category.py:128
 msgid "Category"
 msgstr ""
 
-#: models/category.py:120 settings.py:121
+#: models/category.py:129 settings.py:121
 #: templates/lotus/article/detail.html:127 templates/lotus/category/list.html:4
 #: templates/lotus/category/list.html:8
 msgid "Categories"

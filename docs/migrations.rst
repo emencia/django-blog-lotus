@@ -4,6 +4,15 @@
 Migrations
 ==========
 
+
+From 0.9.0 to 0.9.1
+*******************
+
+This is a minor maintenance release without incompatible changes, you may however look
+at setting ``LOTUS_API_ALLOW_DETAIL_LANGUAGE_SAFE`` documentation if you are using API
+and prefer to still on old detail endpoints behavior.
+
+
 From 0.8.1 to 0.9.0
 *******************
 
@@ -78,15 +87,14 @@ From 0.6.1 to 0.7.0
 *******************
 
 Improved related article in Article detail view
-    If you were using a custom template for Article details and keeped the part for
-    related article listing that was starting with
-    ``{% with relateds=article_object.get_related %}`` you must change it to use the
-    new template tag which apply the publication and language filtering.
+    If you were using a custom template for Article details and retained the part for
+    the related article listing that began with
+    ``{% with relateds=article_object.get_related %}``, you must modify it to utilize
+    the new template tag. This new tag applies both publication and language filtering.
 
-    See the
-    `current detail template <https://github.com/emencia/django-blog-lotus/blob/v0.7.0/lotus/templates/lotus/article/detail.html#L169>`_
-    to know what to copy. This is important since the old template only applied language
-    filtering and totally ignore publication criterias;
+    Refer to the `current detail template <https://github.com/emencia/django-blog-lotus/blob/2774ca69af7d9acfa6dc77ac0bf7549bcd62779e/lotus/templates/lotus/article/detail.html#L169>`_
+    to determine what to copy. This modification is vital since the old template applied
+    only language filtering and completely disregarded publication criteria.
 
 New feature 'API'
     You may now enable the API with installing package extra requirement ``api`` and
@@ -96,26 +104,26 @@ New feature 'API'
 From 0.6.0 to 0.6.1
 *******************
 
-Nothing to do, this is a minor maintenance release about documentation build on
-readthedocs.
+Nothing to do here, this is a minor maintenance release focused on documentation build
+for readthedocs.
 
 
 From 0.5.2.1 to 0.6.0
 *********************
 
 * Upgrade ``django-autocomplete-light``;
-* Use the new template block names if you override some of lotus list or details
-  templates;
+* Adjust to the new template block names if you have overridden any of Lotus list or
+  detail templates:
 
   * ``head_title`` to ``header-title``;
   * ``head_metas`` to ``metas``;
   * ``head_styles`` to ``header-resource``;
   * ``javascript`` to ``body-javascript``;
 
-* If you mounted Lotus on root url path and standing on removed ``articles/`` path to
-  not pollute root path, you need to mount Lotus on path like ``blog/`` or even
-  ``articles/``;
-* If you used Lotus for a single language site, now you may be able to disable
-  ``LocaleMiddleware``;
-* Now you are able to edit Lotus crumb titles for index views, see settings
-  documentation for ``LOTUS_CRUMBS_TITLES``;
+* If you had mounted Lotus on the root URL path and relied on the now-removed
+  ``articles/`` path to avoid cluttering the root, you should remount Lotus on paths
+  like ``blog/`` or ``articles/``;
+* If you used Lotus for a single language site, you might now have the option to
+  disable ``LocaleMiddleware`` middleware;
+* You can now edit Lotus breadcrumb titles for index views. Consult the settings
+  documentation for ``LOTUS_CRUMBS_TITLES``.
