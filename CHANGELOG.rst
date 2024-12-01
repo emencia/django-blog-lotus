@@ -3,8 +3,8 @@
 Changelog
 =========
 
-Development
------------
+Version 0.9.2 - 2024/12/01
+--------------------------
 
 A minor release to add new version supports. There is no incompatible change with
 v0.9.1, see

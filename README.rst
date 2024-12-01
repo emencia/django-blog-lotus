@@ -6,6 +6,7 @@
 .. _django-taggit: https://github.com/jazzband/django-taggit
 .. _djangorestframework: https://www.django-rest-framework.org/
 .. _django-treebeard: https://github.com/django-treebeard/django-treebeard
+.. _django-autocomplete-light: https://github.com/yourlabs/django-autocomplete-light/
 
 
 =================
@@ -39,9 +40,10 @@ Dependencies
 * `Python`_>=3.9;
 * `Django`_>=3.2;
 * `django-ckeditor`_>=6.0.0;
-* `django-smart-media`_;
-* `django-taggit`_>=3.1.0;
+* `django-smart-media`_>=0.2.2;
+* `django-taggit`_>=5.0.0;
 * `django-treebeard`_>=4.3,!=4.5;
+* `django-autocomplete-light`_>=3.9.7;
 * `django-view-breadcrumbs`_>=2.2.1 (optional);
 * `djangorestframework`_>=3.14.0 (optional);
 

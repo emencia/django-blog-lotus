@@ -11,9 +11,9 @@ From 0.9.1 to 0.9.2
 * You can upgrade to Django>=5.0 if you wish;
 * We relaxed **django-taggit** requirement to fit to **Django>=5.0** support. If your
   are still using **Django 3.2** you will need to force install of
-  ``django-taggit<5.0.0`` before Lotus because django-taggit>=5.0.0 is not compatible
-  with Django 3.2;
-* Know that Django>=5.0 requires Python>=3.10;
+  'django-taggit<5.0.0' before Lotus because 'django-taggit>=5.0.0' is not compatible
+  with 'Django 3.2';
+* Be advised that Django>=5.0 requires Python>=3.10;
 
 
 From 0.9.0 to 0.9.1
