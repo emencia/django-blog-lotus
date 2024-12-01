@@ -3,11 +3,25 @@
 Changelog
 =========
 
+Development
+-----------
+
+A minor release to add new version supports. There is no incompatible change with
+v0.9.1, see
+`Migration to 0.9.2 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-9-1-to-0-9-2>`_
+to know about migrating your project.
+
+* Added support for **Python 3.11**;
+* Added support for **Django 5.0** and **Django 5.1**;
+
+
 Version 0.9.1 - 2024/10/27
 --------------------------
 
 A minor release with many things for *Category tree* and some API improvements, there
-is no incompatible changes with v0.9.0.
+is no incompatible change with v0.9.0. See
+`Migration to 0.9.1 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-9-0-to-0-9-1>`_
+to know about migrating your project.
 
 * Updated french translations in PO;
 * Updated every Category queryset to use the right ordering for flat or tree listing,
@@ -51,8 +65,6 @@ Version 0.9.0 - 2024/10/15
 A major release with new feature *Category tree*, see
 `Migration to 0.9.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-8-1-to-0-9-0>`_
 to know about migrating your project.
-
-**This will be the last version to support Django<4.1.**
 
 * Dropped support for Python 3.8;
 * Added new feature 'Category tree':

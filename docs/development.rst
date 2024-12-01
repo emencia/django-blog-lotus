@@ -100,6 +100,78 @@ Note that you need to build the documentation at least once before using
 ``livedocs``.
 
 
+Repository workflow
+-------------------
+
+Branch ``master`` is always in the last version release state. You never develop
+directly on it and only merge release once validated and released.
+
+A new development (feature, fix, etc..) always starts from ``development``.
+
+Each release has its own history branch like ``v1.2.3``.
+
+It is important that ``master`` and ``development`` stay correctly aligned.
+
+
+Resume for a contributor
+........................
+
+#. Start working from a new branch started from the last version of branch
+   ``development``;
+#. Commit and push your work to your branch;
+#. Make a pull request for your branch with target on branch ``development``;
+#. You are done.
+
+
+Resume for a maintainer
+.......................
+
+#. Validate a pull request from a contributor;
+#. Merge validated branch into branch ``development``;
+#. Make a new release (version bump, add changelog, etc..) into branch ``development``
+   and push it;
+#. Merge branch ``development`` into a new branch named after release version prefixed
+   with character ``v`` like ``v1.2.3``;
+#. Merge branch ``v1.2.3`` into branch ``master``;
+#. Tag release commit with new version ``1.2.3``;
+#. Push ``master`` with tags;
+
+
+Examples
+........
+
+A contributor would start like this: ::
+
+    git clone REPOSITORY
+    git checkout development origin/development
+    git checkout -b my_new_feature
+    # ..Then implement your feature..
+    git commit -a -m "[NEW] Added new feature X"
+    git push origin my_new_feature
+
+At this point contributor need to open a pull request for its feature branch.
+
+Finally a project maintainer would pull the new branch and continue for releasing: ::
+
+    # Merge validated new feature branch into development
+    git checkout development
+    git merge my_new_feature
+    # ..Bump version and update Changelog
+    git commit -a -m "[NEW] (v1.2.3) Release"
+    git push origin development
+    # Finally merge new release into master
+    git checkout master
+    git merge development
+    git tag -a 1.2.3 COMMIT-HASH
+    git push --tags origin master
+    # Create the version branch
+    git checkout -b v1.2.3
+    git push origin v1.2.3
+
+
+Where ``1.2.3`` is dummy sample of a new version.
+
+
 Releasing
 ---------
 
