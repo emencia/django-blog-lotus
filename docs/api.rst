@@ -1,4 +1,7 @@
 .. _Django REST framework: https://www.django-rest-framework.org/
+.. _drf-redesign: https://github.com/youzarsiph/drf-redesign
+.. _drf-spectacular: https://github.com/tfranzel/drf-spectacular/
+.. _drf-spectacular-sidecar: https://github.com/tfranzel/drf-spectacular-sidecar
 
 .. _api_intro:
 
@@ -109,3 +112,15 @@ So commonly for each model there are three serializers:
   be used for a list viewset;
 * The minimal one which outputs only a few set of fields, it is means to be used when
   object is included into another object payload (like for Category into Article list);
+
+
+API browser
+***********
+
+You can replace default API browser with either:
+
+* `drf-redesign`_;
+* `drf-spectacular`_ (with its recommended addition `drf-spectacular-sidecar`_);
+
+'drf-redesign' is the simpliest to install but with more modest improvement compared
+to 'drf-spectacular'.

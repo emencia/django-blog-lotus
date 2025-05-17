@@ -380,7 +380,7 @@ freeze-dependencies:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Freezing backend dependencies versions <---$(FORMATRESET)\n"
 	@echo ""
-	$(PYTHON_BIN) freezer.py ${PACKAGE_NAME} --destination=frozen.txt
+	$(PYTHON_BIN) freezer.py ${PACKAGE_NAME} --destination=frozen.txt --ignore_pkg=drf-redesign
 .PHONY: freeze-dependencies
 
 tox:

@@ -7,7 +7,8 @@
 .. _djangorestframework: https://www.django-rest-framework.org/
 .. _django-treebeard: https://github.com/django-treebeard/django-treebeard
 .. _django-autocomplete-light: https://github.com/yourlabs/django-autocomplete-light/
-
+.. _django-treebeard: https://github.com/django-treebeard/django-treebeard
+.. _djangocms-lotus: https://github.com/emencia/djangocms-lotus
 
 =================
 Django Blog Lotus
@@ -30,6 +31,7 @@ Features
 * SVG soft support in image fields;
 * Optional API with `djangorestframework`_;
 * Optional Breadcrumbs with `django-view-breadcrumbs`_;
+* Optional DjangoCMS plugin with `djangocms-lotus`_;
 * Optional Django Sitemap classes for all models to build a ``sitemap.xml``;
 * Full test coverage;
 
@@ -41,7 +43,7 @@ Dependencies
 * `Django`_>=3.2;
 * `django-ckeditor`_>=6.0.0;
 * `django-smart-media`_>=0.2.2;
-* `django-taggit`_>=5.0.0;
+* `django-taggit`_>=3.1.0;
 * `django-treebeard`_>=4.3,!=4.5;
 * `django-autocomplete-light`_>=3.9.7;
 * `django-view-breadcrumbs`_>=2.2.1 (optional);

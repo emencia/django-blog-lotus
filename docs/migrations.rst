@@ -5,10 +5,23 @@ Migrations
 ==========
 
 
+From 0.9.2 to 0.9.3
+*******************
+
+This is a minor maintenance release without any changes on features or behaviors,
+you should be able to migrate safely.
+
+* You can upgrade your project to Django 5.2 if you want;
+* You can upgrade your project to Bootstrap 5.3.6 if you want;
+* You can upgrade your project to djangorestframework 3.16.0 if you want;
+* Be advised that Django 5.2 requires Python>=3.10;
+* Be advised that djangorestframework 3.16.0 requires Django>=4.2;
+
+
 From 0.9.1 to 0.9.2
 *******************
 
-* You can upgrade to Django>=5.0 if you wish;
+* You can upgrade your project to Django>=5.0 if you want;
 * We relaxed **django-taggit** requirement to fit to **Django>=5.0** support. If your
   are still using **Django 3.2** you will need to force install of
   'django-taggit<5.0.0' before Lotus because 'django-taggit>=5.0.0' is not compatible

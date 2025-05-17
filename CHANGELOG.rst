@@ -6,12 +6,23 @@ Changelog
 Development
 -----------
 
+A minor release to add new version supports. There is no incompatible change with
+v0.9.2, see
+`Migration to 0.9.3 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-9-2-to-0-9-3>`_
+to know about migrating your project.
+
 * Added 'pyproject.toml' file to fix PIP warnings about editable install but package
   config is still in 'setup.cfg' for now;
 * Moved 'manage.py' script at root of repository to fix issue with latest PIP and
   setuptools versions that changed how *editable* install works (the sandbox was
   missing from PYTHONPATH). This have no impact on package itself, it is just for
   development;
+* Added support for **Django 5.2**;
+* Added support for **djangorestframework 3.16.0**;
+* Relaxed requirement for 'django-taggit' to 3.1.0 so projects in Django 3.2 can
+  still install Lotus;
+* Updated Tox configuration;
+* Updated documentation for supported API browser additions;
 * Updated sandbox frontend:
 
   * Upgraded frontend to Bootstrap 5.3.6 and upgraded other frontend requirements to
