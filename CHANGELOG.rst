@@ -3,6 +3,17 @@
 Changelog
 =========
 
+Development
+-----------
+
+* Added 'pyproject.toml' file to fix PIP warnings about editable install but package
+  config is still in 'setup.cfg' for now;
+* Moved 'manage.py' script at root of repository to fix issue with latest PIP and
+  setuptools versions that changed how *editable* install works (the sandbox was
+  missing from PYTHONPATH). This have no impact on package itself, it is just for
+  development;
+
+
 Version 0.9.2 - 2024/12/01
 --------------------------
 

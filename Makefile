@@ -5,7 +5,7 @@ FRONTEND_DIR=frontend
 SANDBOX_DIR=sandbox
 STATICFILES_DIR=$(SANDBOX_DIR)/static-sources
 
-DJANGO_MANAGE_PATH=$(SANDBOX_DIR)/manage.py
+DJANGO_MANAGE_PATH=manage.py
 
 PYTHON_BIN=$(VENV_PATH)/bin/python
 PIP_BIN=$(VENV_PATH)/bin/pip
