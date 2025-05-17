@@ -5,12 +5,74 @@
 /// default value. However for sanity we use a variable.
 $rem-calc-base-font-size: 16px !default;
 
+@use "sass:list";
+@use "sass:math";
+@use "sass:map";
+
+///
+/// Strip unit from a number
+///
+@function strip-unit($num) {
+    @return math.div($num, ($num * 0 + 1));
+}
+
+///
+/// Convert a number without unit to a number with 'rem' unit
+///
+@function convert-to-rem($value, $base-value: null) {
+    @if not $base-value {
+        $base-value: $rem-calc-base-font-size;
+    }
+
+    $value: math.div(
+      strip-unit($value),
+      strip-unit($base-value)
+    ) * 1rem;
+
+    // Enforce zero as unitless value
+    @if $value == 0 {
+        $value: 0;
+    }
+
+    @return $value;
+}
+
 ///
 /// Helper to convert pixel value to rem value
 /// This is a great help to calculate rem size from fixed size from a mockup,
 /// but remember to finally used the calculated value when it's done.
 ///
-@function rem-calc($size) {
-  $remSize: $size / $rem-calc-base-font-size;
-  @return #{$remSize}rem;
+/// @arg {Number} $values [null]
+///     Number in pixel unit.
+///
+/// @arg {Number} $base-value [null]
+///     Default base document font size (in pixel).
+///
+/// @return {Number}
+///     Calculated number in 'rem'.
+///
+@function rem-calc($values, $base-value: null) {
+    @if $base-value == null {
+        $base-value: $rem-calc-base-font-size;
+    }
+
+    $max: list.length($values);
+
+    @if $max == 1 {
+      @return convert-to-rem(list.nth($values, 1), $base-value);
+    }
+
+    $rem-values: ();
+
+    @for $i from 1 through $max {
+        $rem-values: list.append(
+          $rem-values,
+          convert-to-rem(
+            list.nth($values, $i),
+            $base-value
+          )
+        );
+    }
+
+    @return $rem-values;
 }

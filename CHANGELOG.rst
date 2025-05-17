@@ -12,6 +12,13 @@ Development
   setuptools versions that changed how *editable* install works (the sandbox was
   missing from PYTHONPATH). This have no impact on package itself, it is just for
   development;
+* Updated sandbox frontend:
+
+  * Upgraded frontend to Bootstrap 5.3.6 and upgraded other frontend requirements to
+    fit with it;
+  * Removed deprecated 'node-sass' in profit of 'sass-embedded';
+  * Minimal Node.js version upgraded to 18.14.0 (currently test up to 22.15.1);
+  * Minimal NPM version upgraded to 10.0.0 (currently test up to 10.9.2);
 
 
 Version 0.9.2 - 2024/12/01

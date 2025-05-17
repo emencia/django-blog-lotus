@@ -86,19 +86,19 @@
                     }
 
                     a {
-                        @include sv-flex(1, 1, auto)
+                        @include sv-flex(1, 1, auto);
                         padding: var(--summary-y-padding) var(--summary-y-padding);
                     }
 
                     .language {
-                        @include sv-flex(0, 0, 5rem)
+                        @include sv-flex(0, 0, 5rem);
                         padding: var(--summary-y-padding) var(--summary-y-padding);
                         border-left: 1px solid var(--border-color);
                         text-align: center;
                     }
 
                     .original {
-                        @include sv-flex(0, 0, 5rem)
+                        @include sv-flex(0, 0, 5rem);
                         padding: var(--summary-y-padding) var(--summary-y-padding);
                         border-left: 1px solid var(--border-color);
                         text-align: left;

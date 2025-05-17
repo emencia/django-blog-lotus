@@ -1,14 +1,15 @@
 /*
- *
- * Some useful basic functions and mixins
- *
+ * Additional site specific settings
  */
 /*
- * Additional site specific settings
+ * TODO:
+ * We could add additional selector item for '.djangocms-admin-style.app-lotus #content ...'
+ * to ensure compatibility with django-admin-style
  */
 .app-lotus .django-ckeditor-widget {
   flex: auto 1;
-  width: 100%; }
+  width: 100%;
+}
 
 .lotus-category-tree .tree {
   --spacing: 1.5rem;
@@ -19,81 +20,100 @@
   --inactive-bullet-bg-color: #dddddd;
   --structure-line-color: #dddddd;
   margin: 0;
-  padding: 0; }
-  .lotus-category-tree .tree .item {
-    margin: -1px 0 0 0;
-    padding: 0;
-    list-style-type: none;
-    display: block;
-    position: relative;
-    padding-left: calc(2 * var(--spacing) - var(--radius) - 2px); }
-    .lotus-category-tree .tree .item::after,
-    .lotus-category-tree .tree .item .summary::before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: calc( calc( var(--spacing) / 2 - var(--radius) ) + var(--summary-y-padding));
-      left: calc(var(--spacing) - var(--radius) - 1px);
-      width: calc(2 * var(--radius));
-      height: calc(2 * var(--radius));
-      border-radius: 50%;
-      background: var(--inactive-bullet-bg-color); }
-    .lotus-category-tree .tree .item .details {
-      margin: -1px 0 0 0;
-      padding: 0;
-      list-style-type: none; }
-      .lotus-category-tree .tree .item .details .summary {
-        display: flex;
-        margin: 0;
-        border: 1px solid var(--border-color);
-        background-color: var(--darkened-bg); }
-        .lotus-category-tree .tree .item .details .summary::before {
-          z-index: 1;
-          background: var(--active-bullet-bg-color) url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAAZUlEQVRIS+2TOwoAMAhD9f6H7mfoItJaAqKiqzSmT8MUvDi4P2qD6IZqEByrNglehRL5fW8a2AYvWHMSPCt93Yv1JhE9lSAiqH0K0cu5YkmhU1wuxa/0evZNIfE0JGe1QZR+eIIT3zIwFfN1vWYAAAAASUVORK5CYII=) 0 0; }
-        .lotus-category-tree .tree .item .details .summary a {
-          flex-grow: 1;
-          flex-shrink: 1;
-          flex-basis: auto;
-          padding: var(--summary-y-padding) var(--summary-y-padding); }
-        .lotus-category-tree .tree .item .details .summary .language {
-          flex-grow: 0;
-          flex-shrink: 0;
-          flex-basis: 5rem;
-          max-width: 5rem;
-          padding: var(--summary-y-padding) var(--summary-y-padding);
-          border-left: 1px solid var(--border-color);
-          text-align: center; }
-        .lotus-category-tree .tree .item .details .summary .original {
-          flex-grow: 0;
-          flex-shrink: 0;
-          flex-basis: 5rem;
-          max-width: 5rem;
-          padding: var(--summary-y-padding) var(--summary-y-padding);
-          border-left: 1px solid var(--border-color);
-          text-align: left; }
-      .lotus-category-tree .tree .item .details .nodes {
-        display: none;
-        margin: 0;
-        padding: 0;
-        margin-left: calc(var(--radius) - var(--spacing));
-        padding-left: 0; }
-        .lotus-category-tree .tree .item .details .nodes .item {
-          border-left: 2px solid var(--structure-line-color); }
-          .lotus-category-tree .tree .item .details .nodes .item:last-child {
-            border-color: transparent; }
-          .lotus-category-tree .tree .item .details .nodes .item:before {
-            content: "";
-            display: block;
-            position: absolute;
-            top: calc( calc( var(--spacing) / -2 ) + 6px);
-            left: -2px;
-            width: calc(var(--spacing) + 2px);
-            height: calc(var(--spacing) + 1px);
-            border: solid var(--structure-line-color);
-            border-width: 0 0 2px 2px; }
-      .lotus-category-tree .tree .item .details[open] > .summary::before {
-        background-position: calc(-2 * var(--radius)) 0; }
-      .lotus-category-tree .tree .item .details[open] > .nodes {
-        display: block; }
-    .lotus-category-tree .tree .item.no-children .summary::before {
-      display: none; }
+  padding: 0;
+}
+.lotus-category-tree .tree .item {
+  margin: -1px 0 0 0;
+  padding: 0;
+  list-style-type: none;
+  display: block;
+  position: relative;
+  padding-left: calc(2 * var(--spacing) - var(--radius) - 2px);
+  border: 0;
+}
+.lotus-category-tree .tree .item::after,
+.lotus-category-tree .tree .item .summary::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: calc(var(--spacing) / 2 - var(--radius) + var(--summary-y-padding));
+  left: calc(var(--spacing) - var(--radius) - 1px);
+  width: calc(2 * var(--radius));
+  height: calc(2 * var(--radius));
+  border-radius: 50%;
+  background: var(--inactive-bullet-bg-color);
+}
+.lotus-category-tree .tree .item .details {
+  margin: -1px 0 0 0;
+  padding: 0;
+  list-style-type: none;
+}
+.lotus-category-tree .tree .item .details .summary {
+  display: flex;
+  margin: 0;
+  border: 1px solid var(--border-color);
+  background-color: var(--darkened-bg);
+}
+.lotus-category-tree .tree .item .details .summary::before {
+  z-index: 1;
+  background: var(--active-bullet-bg-color) url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAUCAYAAAD/Rn+7AAAAZUlEQVRIS+2TOwoAMAhD9f6H7mfoItJaAqKiqzSmT8MUvDi4P2qD6IZqEByrNglehRL5fW8a2AYvWHMSPCt93Yv1JhE9lSAiqH0K0cu5YkmhU1wuxa/0evZNIfE0JGe1QZR+eIIT3zIwFfN1vWYAAAAASUVORK5CYII=) 0 0;
+}
+.lotus-category-tree .tree .item .details .summary a {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  padding: var(--summary-y-padding) var(--summary-y-padding);
+}
+.lotus-category-tree .tree .item .details .summary .language {
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 5rem;
+  max-width: 5rem;
+  padding: var(--summary-y-padding) var(--summary-y-padding);
+  border-left: 1px solid var(--border-color);
+  text-align: center;
+}
+.lotus-category-tree .tree .item .details .summary .original {
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: 5rem;
+  max-width: 5rem;
+  padding: var(--summary-y-padding) var(--summary-y-padding);
+  border-left: 1px solid var(--border-color);
+  text-align: left;
+}
+.lotus-category-tree .tree .item .details .nodes {
+  display: none;
+  margin: 0;
+  padding: 0;
+  margin-left: calc(var(--radius) - var(--spacing));
+  padding-left: 0;
+}
+.lotus-category-tree .tree .item .details .nodes .item {
+  border-left: 2px solid var(--structure-line-color);
+}
+.lotus-category-tree .tree .item .details .nodes .item:last-child {
+  border-color: transparent;
+}
+.lotus-category-tree .tree .item .details .nodes .item:before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: calc(var(--spacing) / -2 + 6px);
+  left: -2px;
+  width: calc(var(--spacing) + 2px);
+  height: calc(var(--spacing) + 1px);
+  border: solid var(--structure-line-color);
+  border-width: 0 0 2px 2px;
+}
+.lotus-category-tree .tree .item .details[open] > .summary::before {
+  background-position: calc(-2 * var(--radius)) 0;
+}
+.lotus-category-tree .tree .item .details[open] > .nodes {
+  display: block;
+}
+.lotus-category-tree .tree .item.no-children .summary::before {
+  display: none;
+}
+
+/*# sourceMappingURL=lotus-admin.css.map */
