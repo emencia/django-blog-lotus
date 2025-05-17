@@ -3,11 +3,16 @@
 // Basic functions must be loaded before settings to be able to use them from
 // settings and objects
 @import "./tools/rem";
-@import "./tools/content_urls";
 @import "./tools/flexbox";
 
 // Load project settings
 @import "./settings/site";
+
+/*
+ * TODO:
+ * We could add additional selector item for '.djangocms-admin-style.app-lotus #content ...'
+ * to ensure compatibility with django-admin-style
+ */
 
 .app-lotus {
     // django-ckeditor widget improvement
@@ -42,6 +47,7 @@
             display: block;
             position: relative;
             padding-left: calc(2 * var(--spacing) - var(--radius) - 2px);
+            border: 0;
 
             // Draw the base of the bullet icon
             &::after,

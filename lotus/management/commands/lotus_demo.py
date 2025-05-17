@@ -429,8 +429,6 @@ class Command(BaseCommand):
             if originals:
                 context["original"] = reserved_originals[i - 1]
 
-            # NOTE: Using factory is making a broken tree because factory always define
-            # a dummy path
             obj = CategoryFactory(**context)
 
             self.stdout.write("  {index}) Category: {title}".format(
@@ -439,8 +437,22 @@ class Command(BaseCommand):
             ))
             created.append(obj)
 
-        # WARNING: A quick fix resolution for factory that only produce a dummy path.
-        Category.fix_tree(fix_paths=True)
+        """
+        WARNING:
+            This was used as a quick fix resolution for factory that produced a
+            dummy path. Disabled for now because it leaded to error on usage of
+            Postgresql. (Need to be rechecked with sqlite3).
+
+            This was because from batch for english language, the factory sequence
+            finished on something like '5' so the last path was "0005". But then
+            'fix_tree' operation incremented all path, so the last one was finally
+            "0006".
+
+            But then for the next batch for french language, the sequence is at '6' so
+            it try to create an object with path "0006" and this lead to SQL error
+            about uniquenes constraint for path.
+        """
+        # Category.fix_tree(fix_paths=True)
 
         return created
 

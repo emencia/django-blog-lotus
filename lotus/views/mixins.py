@@ -179,10 +179,10 @@ class LotusContextStage:
     """
     Mixin to inject Lotus stage into view context.
 
-    Lotus stage is commonly used for Lotus navigation, it just indicated where a view
+    Lotus stage is commonly used for Lotus navigation, it just indicates where a view
     is located from main Lotus content type views (Article, Author, Category, ..).
 
-    View which inherits from this mixin should set view attribute ``lotus_stage`` to
+    Views which inherits from this mixin should set view attribute ``lotus_stage`` to
     a main content type in lowercase like ``articles``, ``authors``, ``category``.
 
     The default stage value is ``None``.

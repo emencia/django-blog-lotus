@@ -322,6 +322,9 @@ Lotus part
 """
 from lotus.settings import *  # noqa: E402,F401,F403
 
+# App local directory has higher priority over sandbox
+LOCALE_PATHS = [BASE_DIR / "lotus/locale"] + LOCALE_PATHS
+
 INSTALLED_APPS.append(
     "lotus",
 )

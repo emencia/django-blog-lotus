@@ -16,7 +16,6 @@ TWINE_BIN=$(VENV_PATH)/bin/twine
 TOX_BIN=$(VENV_PATH)/bin/tox
 SPHINX_RELOAD_BIN=$(PYTHON_BIN) docs/sphinx_reload.py
 
-DEMO_DJANGO_SECRET_KEY=samplesecretfordev
 PACKAGE_NAME=django-blog-lotus
 PACKAGE_SLUG=`echo $(PACKAGE_NAME) | tr '-' '_'`
 APPLICATION_NAME=lotus
@@ -50,10 +49,10 @@ help:
 	@echo "  Django commands"
 	@echo "  ==============="
 	@echo
-	@echo "  demo                          -- to fill database with demo datas (this removes every existing Author, Article and Category objects)"
+	@echo "  demo                          -- to fill database with demo datas (this will flush all Lotus data)"
 	@echo "  migrate                       -- to apply demo database migrations"
 	@echo "  migrations                    -- to create new migrations for application after changes"
-	@echo "  minimal-demo                  -- to fill database with minimal demo datas (this removes every existing Author, Article and Category objects)"
+	@echo "  demo-minimal                  -- to fill database with minimal demo datas (this will flush all Lotus data)"
 	@echo "  mo                            -- to build MO files from app and sandbox PO files"
 	@echo "  po                            -- to update every PO files from app and sandbox sources for enabled languages"
 	@echo "  run                           -- to run Django development server"
@@ -273,15 +272,13 @@ demo:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Filling with demo datas <---$(FORMATRESET)\n"
 	@echo ""
-	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
- 	$(DJANGO_MANAGE_BIN) lotus_demo --flush-all --translation=fr --translation=de --font ./tests/data_fixtures/font/VeraMono.ttf
+	$(DJANGO_MANAGE_BIN) lotus_demo --flush-all --translation=fr --translation=de --font ./tests/data_fixtures/font/VeraMono.ttf
 .PHONY: demo
 
 demo-minimal:
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Filling with minimal demo datas <---$(FORMATRESET)\n"
 	@echo ""
-	@DJANGO_SECRET_KEY=$(DEMO_DJANGO_SECRET_KEY) \
 	$(DJANGO_MANAGE_BIN) lotus_demo --flush-all --albums=4 --item-per-album=3 --authors=2 --categories=2 --tags=2 --tag-per-article=1 --articles=8 --font ./tests/data_fixtures/font/VeraMono.ttf
 .PHONY: demo-minimal
 
