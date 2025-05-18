@@ -3,8 +3,14 @@
 Changelog
 =========
 
-Development
------------
+Version 0.9.3.1 - 2025/05/18
+----------------------------
+
+A minor version only to fix changelog for v0.9.3 that was badly titled.
+
+
+Version 0.9.3 - 2025/05/18
+--------------------------
 
 A minor release to add new version supports. There is no incompatible change with
 v0.9.2, see

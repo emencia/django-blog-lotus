@@ -1,4 +1,4 @@
-# Frozen requirement versions for 'django-blog-lotus==0.9.3' installation
+# Frozen requirement versions for 'django-blog-lotus==0.9.3.1' installation
 django==5.2.1
 django-ckeditor==6.7.2
 django-taggit==6.1.0
