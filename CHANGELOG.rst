@@ -3,8 +3,8 @@
 Changelog
 =========
 
-Development
-***********
+Version 0.9.4 - 2025/06/24
+**************************
 
 A minor version for the new feature of custom templates for Article and Category detail
 views. There is no incompatible change with v0.9.3.1, see
