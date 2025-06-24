@@ -13,7 +13,10 @@ from smart_media.mixins import SmartFormatMixin
 from smart_media.modelfields import SmartMediaField
 from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
 
-from ..choices import get_status_choices, get_status_default, STATUS_PUBLISHED
+from ..choices import (
+    STATUS_PUBLISHED, get_status_choices, get_status_default,
+    get_article_template_choices, get_article_template_default,
+)
 from ..managers import ArticleManager
 
 from .translated import Translated
@@ -151,6 +154,17 @@ class Article(SmartFormatMixin, Translated):
     )
     """
     Required unique slug string.
+    """
+
+    template = models.CharField(
+        _("template"),
+        blank=False,
+        max_length=150,
+        choices=get_article_template_choices(),
+        default=get_article_template_default(),
+    )
+    """
+    Optional custom template path string.
     """
 
     seo_title = models.CharField(

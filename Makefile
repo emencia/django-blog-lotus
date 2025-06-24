@@ -72,19 +72,23 @@ help:
 	@echo "  watch-css                     -- to watch for Sass changes to rebuild CSS"
 	@echo "  watch-js                      -- to watch for Javascript sources changes to rebuild assets"
 	@echo
-	@echo
 	@echo "  Documentation"
 	@echo "  ============="
 	@echo
 	@echo "  docs                          -- to build documentation"
 	@echo "  livedocs                      -- to run livereload server to rebuild documentation on source changes"
 	@echo
-	@echo "  Quality"
-	@echo "  ======="
+	@echo "  Project checks"
+	@echo "  =============="
 	@echo
+	@echo "  check                         -- to run all check tasks"
 	@echo "  check-django                  -- to run Django System check framework"
 	@echo "  check-migrations              -- to check for pending migrations (do not write anything)"
 	@echo "  check-release                 -- to check package release before uploading it to PyPi"
+	@echo
+	@echo "  Quality"
+	@echo "  ======="
+	@echo
 	@echo "  flake                         -- to launch Flake8 checking"
 	@echo "  freeze-dependencies           -- to write a frozen.txt file with installed dependencies versions"
 	@echo "  quality                       -- to launch every quality tasks"
@@ -164,9 +168,6 @@ venv:
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Installing virtual environment <---$(FORMATRESET)\n"
 	@echo ""
 	virtualenv -p $(PYTHON_INTERPRETER) $(VENV_PATH)
-	# This is required for those ones using old distribution
-	$(PIP_BIN) install --upgrade pip
-	$(PIP_BIN) install --upgrade setuptools
 .PHONY: venv
 
 create-var-dirs:
@@ -203,12 +204,12 @@ install-frontend:
 install: venv create-var-dirs install-backend migrate install-frontend frontend
 .PHONY: install
 
-check-django:
+migrate:
 	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Django System check framework <---$(FORMATRESET)\n"
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Applying pending migrations <---$(FORMATRESET)\n"
 	@echo ""
-	$(DJANGO_MANAGE_BIN) check
-.PHONY: check-django
+	$(DJANGO_MANAGE_BIN) migrate
+.PHONY: migrate
 
 migrations:
 	@echo ""
@@ -216,21 +217,6 @@ migrations:
 	@echo ""
 	$(DJANGO_MANAGE_BIN) makemigrations $(APPLICATION_NAME)
 .PHONY: migrations
-
-check-migrations:
-	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Checking for pending project applications models migrations <---$(FORMATRESET)\n"
-	@echo ""
-	$(DJANGO_MANAGE_BIN) makemigrations --dry-run -v 3 $(APPLICATION_NAME)
-	$(DJANGO_MANAGE_BIN) makemigrations --check -v 3 $(APPLICATION_NAME)
-.PHONY: check-migrations
-
-migrate:
-	@echo ""
-	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Applying pending migrations <---$(FORMATRESET)\n"
-	@echo ""
-	$(DJANGO_MANAGE_BIN) migrate
-.PHONY: migrate
 
 shell:
 	@echo ""
@@ -405,12 +391,29 @@ release: build-package
 	$(TWINE_BIN) upload dist/*
 .PHONY: release
 
+check-django:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Running Django System check framework <---$(FORMATRESET)\n"
+	@echo ""
+	$(DJANGO_MANAGE_BIN) check
+.PHONY: check-django
+
+check-migrations:
+	@echo ""
+	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Checking for pending project applications models migrations <---$(FORMATRESET)\n"
+	@echo ""
+	$(DJANGO_MANAGE_BIN) makemigrations --check --dry-run -v 3 $(APPLICATION_NAME)
+.PHONY: check-migrations
+
 check-release: build-package
 	@echo ""
 	@printf "$(FORMATBLUE)$(FORMATBOLD)---> Checking package <---$(FORMATRESET)\n"
 	@echo ""
 	$(TWINE_BIN) check dist/*
 .PHONY: check-release
+
+check: check-django check-migrations check-release
+.PHONY: check
 
 quality: check-django check-migrations test-initial flake docs check-release freeze-dependencies
 	@echo ""

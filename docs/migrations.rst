@@ -5,6 +5,18 @@ Migrations
 ==========
 
 
+From 0.9.3.1 to 0.9.4
+*********************
+
+This is a minor release for the new feature of custom templates for Article and Category
+detail views.
+
+If you were using the default Lotus settings, you are safe to migrate without any
+change. Else your project explicitely defines all Lotus settings you will jsut have to
+include the new ones: ``LOTUS_ARTICLE_DETAIL_TEMPLATES`` and
+``LOTUS_CATEGORY_DETAIL_TEMPLATES``.
+
+
 From 0.9.2 to 0.9.3
 *******************
 

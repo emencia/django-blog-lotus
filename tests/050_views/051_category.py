@@ -9,7 +9,7 @@ from sorl.thumbnail.conf import settings as sorl_settings
 
 from lotus.choices import STATUS_DRAFT
 from lotus.factories import ArticleFactory, AuthorFactory, CategoryFactory
-from lotus.utils.tests import html_pyquery
+from lotus.utils.tests import html_pyquery, decode_response_or_string
 
 
 # Shortcuts for shorter variable names
@@ -476,3 +476,15 @@ def test_category_view_detail_breadcrumb(client, db, settings):
     assert response.status_code == 200
     items = html_pyquery(response).find(".breadcrumb .breadcrumb-item")
     assert crumb_titles(items) == ["Accueil", "Catégories", "Flairsou"]
+
+
+def test_category_view_detail_template(db, client):
+    """
+    Article object can use another template than the default one
+    """
+    instance = CategoryFactory(template="tests/category/dummy_detail.html")
+
+    response = client.get(instance.get_absolute_url())
+    assert response.status_code == 200
+
+    assert decode_response_or_string(response) == "<p>Dummy Category template</p>"

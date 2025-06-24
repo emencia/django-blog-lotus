@@ -20,7 +20,7 @@ except ModuleNotFoundError:
 else:
     API_AVAILABLE = True
 
-from lotus.choices import STATUS_DRAFT
+from lotus.choices import STATUS_DRAFT, get_article_template_default
 from lotus.compat.import_zoneinfo import ZoneInfo
 from lotus.factories import (
     AlbumFactory, AlbumItemFactory, ArticleFactory, AuthorFactory, CategoryFactory,
@@ -70,6 +70,7 @@ def test_article_articleserializer(db, api_client):
         "cover_alt_text": "",
         "image": None,
         "image_alt_text": "",
+        "template": None,
     }
 
     # Date references
@@ -196,6 +197,7 @@ def test_article_articleserializer(db, api_client):
             "modified": "2012-10-15T12:00:00+02:00",
             "title": album.title,
         },
+        "template": get_article_template_default(),
     }
 
 

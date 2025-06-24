@@ -10,6 +10,7 @@ from .mixins import (
     LanguageMixin,
     LotusContextStage,
     PreviewModeMixin,
+    TemplateFromObjectMixin,
 )
 
 try:
@@ -47,13 +48,13 @@ class CategoryIndexView(BaseBreadcrumbMixin, LotusContextStage, PreviewModeMixin
 
 
 class CategoryDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView,
-                         SingleObjectMixin, ListView):
+                         TemplateFromObjectMixin, SingleObjectMixin, ListView):
     """
     Category detail and its related article list.
     """
     model = Category
     listed_model = Article
-    template_name = "lotus/category/detail.html"
+    template_name = None
     paginate_by = settings.LOTUS_ARTICLE_PAGINATION
     context_object_name = "category_object"
     slug_url_kwarg = "slug"

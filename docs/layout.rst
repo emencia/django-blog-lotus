@@ -33,3 +33,18 @@ include you very specific layout design with or without Bootstrap.
 
 For more details on template integration you could see references on
 :ref:`references_templatetags_intro` and :ref:`references_views_intro`.
+
+Details templates
+-----------------
+
+Article and Category objects can select a template to render their detail view.
+
+The list of available template choices is defined from settings
+``LOTUS_ARTICLE_DETAIL_TEMPLATES`` and ``LOTUS_CATEGORY_DETAIL_TEMPLATES`` that you
+can alter from your project settings. The first item of these choices are assumed
+to be the default one.
+
+.. Warning::
+    These choices list are not validated against existing objects or migrations, if
+    you remove a template path that is already used from objects you will have an error
+    from detail view rendering, be careful about it.

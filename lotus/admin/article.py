@@ -82,6 +82,7 @@ class ArticleAdmin(SmartModelAdmin):
             _("Parameters"), {
                 "fields": (
                     "status",
+                    "template",
                     "featured",
                     "pinned",
                     "private",

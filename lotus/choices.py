@@ -47,3 +47,31 @@ def get_language_default():
     Callable to get default language value.
     """
     return settings.LANGUAGE_CODE
+
+
+def get_article_template_choices():
+    """
+    Callable to get Article template choice list.
+    """
+    return settings.LOTUS_ARTICLE_DETAIL_TEMPLATES
+
+
+def get_article_template_default():
+    """
+    Callable to get default Article template.
+    """
+    return settings.LOTUS_ARTICLE_DETAIL_TEMPLATES[0][0]
+
+
+def get_category_template_choices():
+    """
+    Callable to get Category template choice list.
+    """
+    return settings.LOTUS_CATEGORY_DETAIL_TEMPLATES
+
+
+def get_category_template_default():
+    """
+    Callable to get default Category template.
+    """
+    return settings.LOTUS_CATEGORY_DETAIL_TEMPLATES[0][0]

@@ -11,6 +11,7 @@ from smart_media.mixins import SmartFormatMixin
 from smart_media.modelfields import SmartMediaField
 from smart_media.signals import auto_purge_files_on_change, auto_purge_files_on_delete
 
+from ..choices import get_category_template_choices, get_category_template_default
 from ..managers import CategoryManager
 from ..exceptions import LanguageMismatchError
 from .translated import Translated
@@ -59,6 +60,17 @@ class Category(SmartFormatMixin, MP_Node, Translated):
     )
     """
     Required unique slug string.
+    """
+
+    template = models.CharField(
+        _("template"),
+        blank=False,
+        max_length=150,
+        choices=get_category_template_choices(),
+        default=get_category_template_default(),
+    )
+    """
+    Optional custom template path string.
     """
 
     lead = models.TextField(

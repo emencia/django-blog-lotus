@@ -3,14 +3,32 @@
 Changelog
 =========
 
+Development
+***********
+
+A minor version for the new feature of custom templates for Article and Category detail
+views. There is no incompatible change with v0.9.3.1, see
+`Migration to 0.9.4 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-9-3-1-to-0-9-4>`_
+to know about migrating your project.
+
+* Added new choice fields ``template`` onto Article and Category models;
+* Added new settings ``LOTUS_ARTICLE_DETAIL_TEMPLATES`` and
+  ``LOTUS_CATEGORY_DETAIL_TEMPLATES`` to define the list of available choices for
+  the field ``template`` respectively for Article and Category objects;
+* Changed Article and Category detail views to use the value of field ``template`` to
+  render template;
+* Changed Article and Category factory, admin and API serializer to include usage of
+  field ``template``;
+
+
 Version 0.9.3.1 - 2025/05/18
-----------------------------
+****************************
 
 A minor version only to fix changelog for v0.9.3 that was badly titled.
 
 
 Version 0.9.3 - 2025/05/18
---------------------------
+**************************
 
 A minor release to add new version supports. There is no incompatible change with
 v0.9.2, see
@@ -39,7 +57,7 @@ to know about migrating your project.
 
 
 Version 0.9.2 - 2024/12/01
---------------------------
+**************************
 
 A minor release to add new version supports. There is no incompatible change with
 v0.9.1, see
@@ -51,7 +69,7 @@ to know about migrating your project.
 
 
 Version 0.9.1 - 2024/10/27
---------------------------
+**************************
 
 A minor release with many things for *Category tree* and some API improvements, there
 is no incompatible change with v0.9.0. See
@@ -95,7 +113,7 @@ to know about migrating your project.
 
 
 Version 0.9.0 - 2024/10/15
---------------------------
+**************************
 
 A major release with new feature *Category tree*, see
 `Migration to 0.9.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-8-1-to-0-9-0>`_
@@ -136,7 +154,7 @@ to know about migrating your project.
 
 
 Version 0.8.1 - 2023/12/01
---------------------------
+**************************
 
 A minor release with new feature *Sitemaps*, see
 `Migration to 0.8.1 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-8-0-to-0-8-1>`_
@@ -149,7 +167,7 @@ to know about migrating your project.
 
 
 Version 0.8.0 - 2023/11/22
---------------------------
+**************************
 
 A major release with new feature *Article album*, see
 `Migration to 0.8.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-7-0-to-0-8-0>`_
@@ -182,7 +200,7 @@ to know about migrating your project.
 
 
 Version 0.7.0 - 2023/10/11
---------------------------
+**************************
 
 A major release without almost no breaking changes, see
 `Migration to 0.7.0 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-6-1-to-0-7-0>`_
@@ -214,14 +232,14 @@ to know about migrating your project.
 
 
 Version 0.6.1 - 2023/08/18
---------------------------
+**************************
 
 A minor version only to update ``.readthedocs.yml`` file to follow service deprecations
 changes.
 
 
 Version 0.6.0 - 2023/06/12
---------------------------
+**************************
 
 * **Added Django 4.2 support**;
 * Removed path prefix ``articles/`` from detail view URL since it is useless;
@@ -268,7 +286,7 @@ Migrating from previous version
 
 
 Version 0.5.2.1 - 2023/06/03
-----------------------------
+****************************
 
 A fix release for migration missing callables for choices value and default
 which leaded Django to require a new Lotus migration when changing language or status
@@ -284,13 +302,13 @@ migration.
 
 
 Version 0.5.2 - 2023/04/04
---------------------------
+**************************
 
 A fix release to solve issue with ReadTheDocs building.
 
 
 Version 0.5.1 - 2023/04/04
---------------------------
+**************************
 
 * Added Article tags feature with ``django-taggit``;
 * Added ``django-autocomplete-light`` for a nice widget on Article 'tags' field in
@@ -313,7 +331,7 @@ Version 0.5.1 - 2023/04/04
 
 
 Version 0.5.0 - 2023/01/16
---------------------------
+**************************
 
 **Enter in beta stage**
 
@@ -353,7 +371,7 @@ Version 0.5.0 - 2023/01/16
 
 
 Version 0.4.4 - 2022/01/03
---------------------------
+**************************
 
 This is the last Alpha branch version, it has everything working still needs some
 improvements and minor features to come with Beta branch versions.
@@ -376,7 +394,7 @@ improvements and minor features to come with Beta branch versions.
 
 
 Version 0.4.3 - 2021/12/27
---------------------------
+**************************
 
 * Article, Category and Author models;
 * Article and Category translations;
@@ -386,6 +404,6 @@ Version 0.4.3 - 2021/12/27
 
 
 Version 0.1.0 - Unreleased
---------------------------
+**************************
 
 First commit to start repository.

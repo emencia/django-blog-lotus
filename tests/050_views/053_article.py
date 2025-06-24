@@ -22,7 +22,9 @@ from lotus.factories import (
     AlbumFactory, ArticleFactory, AuthorFactory, CategoryFactory, TagFactory,
     multilingual_article,
 )
-from lotus.utils.tests import get_admin_change_url, html_pyquery
+from lotus.utils.tests import (
+    get_admin_change_url, html_pyquery, decode_response_or_string
+)
 from lotus.views.mixins import ArticleFilterAbstractView
 
 
@@ -935,3 +937,15 @@ def test_article_with_album(db, client):
     ]
 
     assert rendered_items == expected_items
+
+
+def test_article_view_detail_template(db, client):
+    """
+    Article object can use another template than the default one
+    """
+    instance = ArticleFactory(template="tests/article/dummy_detail.html")
+
+    response = client.get(instance.get_absolute_url())
+    assert response.status_code == 200
+
+    assert decode_response_or_string(response) == "<p>Dummy Article template</p>"

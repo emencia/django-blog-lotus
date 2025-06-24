@@ -3,6 +3,7 @@ import json
 
 from freezegun import freeze_time
 
+from lotus.choices import get_category_template_default
 from lotus.models import Category
 from lotus.utils.trees import compress_nested_tree
 
@@ -278,6 +279,7 @@ def test_category_get_nested_tree_basic(tests_settings, db, django_assert_num_qu
                 "description": "",
                 "cover": "",
                 "cover_alt_text": "",
+                "template": get_category_template_default(),
             },
             "id": 1,
             "depth": 1,
@@ -295,6 +297,7 @@ def test_category_get_nested_tree_basic(tests_settings, db, django_assert_num_qu
                 "description": "",
                 "cover": "",
                 "cover_alt_text": "",
+                "template": get_category_template_default(),
             },
             "id": 2,
             "depth": 1,
@@ -312,6 +315,7 @@ def test_category_get_nested_tree_basic(tests_settings, db, django_assert_num_qu
                         "description": "",
                         "cover": "",
                         "cover_alt_text": "",
+                        "template": get_category_template_default(),
                     },
                     "id": 3,
                     "depth": 2,
@@ -329,6 +333,7 @@ def test_category_get_nested_tree_basic(tests_settings, db, django_assert_num_qu
                                 "description": "",
                                 "cover": "",
                                 "cover_alt_text": "",
+                                "template": get_category_template_default(),
                             },
                             "id": 4,
                             "depth": 3,

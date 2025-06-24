@@ -5,9 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..models import Article
-from .mixins import (
-    ArticleFilterAbstractView,
-)
+from .mixins import ArticleFilterAbstractView, TemplateFromObjectMixin
 
 try:
     from view_breadcrumbs import BaseBreadcrumbMixin
@@ -39,13 +37,14 @@ class ArticleIndexView(BaseBreadcrumbMixin, ArticleFilterAbstractView, ListView)
         return q.order_by(*self.model.COMMON_ORDER_BY)
 
 
-class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView, DetailView):
+class ArticleDetailView(BaseBreadcrumbMixin, ArticleFilterAbstractView,
+                        TemplateFromObjectMixin, DetailView):
     """
     Article detail.
     """
     model = Article
     pk_url_kwarg = "article_pk"
-    template_name = "lotus/article/detail.html"
+    template_name = None
     context_object_name = "article_object"
     crumb_title = None  # No usage since title depends from object
     crumb_urlname = "lotus:article-detail"

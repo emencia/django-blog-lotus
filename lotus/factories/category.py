@@ -4,6 +4,7 @@ import factory
 
 from treebeard.mp_tree import MP_Node
 
+from ..choices import get_category_template_default
 from ..models import Category
 from ..utils.factory import fake_html_paragraphs
 from ..utils.imaging import DjangoSampleImageCrafter
@@ -30,6 +31,7 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     depth = 1
     path = factory.Sequence(lambda n: MP_Node._get_path(None, 1, n))
     cover_alt_text = factory.Faker("text", max_nb_chars=50)
+    template = get_category_template_default()
 
     class Meta:
         model = Category

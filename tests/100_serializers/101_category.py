@@ -19,6 +19,7 @@ except ModuleNotFoundError:
 else:
     API_AVAILABLE = True
 
+from lotus.choices import get_category_template_default
 from lotus.compat.import_zoneinfo import ZoneInfo
 from lotus.factories import (
     ArticleFactory, AuthorFactory, CategoryFactory, TagFactory,
@@ -57,6 +58,7 @@ def test_category_categoryserializer(db, settings, api_client):
         "cover": None,
         "depth": None,
         "cover_alt_text": "",
+        "template": None,
     }
 
     # Timezone defined from project settings, used to format displayed date
@@ -193,6 +195,7 @@ def test_category_categoryserializer(db, settings, api_client):
         "cover_alt_text": ping.cover_alt_text,
         "description": ping.description,
         "depth": ping.depth,
+        "template": get_category_template_default(),
     }
 
     # Craft a proper viewset class with a request and that can be used to give
@@ -264,6 +267,7 @@ def test_category_categoryserializer(db, settings, api_client):
         "cover_alt_text": ping.cover_alt_text,
         "description": ping.description,
         "depth": ping.depth,
+        "template": get_category_template_default(),
     }
 
 

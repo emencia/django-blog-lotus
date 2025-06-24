@@ -4,6 +4,9 @@
 Views
 =====
 
+.. automodule:: lotus.views.mixins
+   :members:
+
 .. automodule:: lotus.views
    :members:
 

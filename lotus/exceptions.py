@@ -20,3 +20,11 @@ class LanguageMismatchError(LotusException):
     Raised when expected object language does not match.
     """
     pass
+
+
+class Http500(Exception):
+    """
+    Raised from a view when a non blocking error (from bad configuration or else, not
+    due to an exception) and we want to be explicit.
+    """
+    pass

@@ -6,7 +6,7 @@ from django.utils import timezone
 import factory
 
 from ..models import Article
-from ..choices import STATUS_PUBLISHED
+from ..choices import STATUS_PUBLISHED, get_article_template_default
 from ..utils.factory import fake_html_paragraphs
 from ..utils.imaging import DjangoSampleImageCrafter
 
@@ -35,6 +35,7 @@ class ArticleFactory(factory.django.DjangoModelFactory):
     seo_title = ""
     cover_alt_text = factory.Faker("text", max_nb_chars=50)
     image_alt_text = factory.Faker("text", max_nb_chars=50)
+    template = get_article_template_default()
 
     class Meta:
         model = Article

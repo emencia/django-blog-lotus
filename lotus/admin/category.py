@@ -4,7 +4,6 @@ from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
 from smart_media.admin import SmartModelAdmin
-# from treebeard.admin import TreeAdmin
 
 from ..forms import CategoryAdminForm
 from ..models import Category
@@ -64,6 +63,13 @@ class CategoryAdmin(SmartModelAdmin):
                 "fields": (
                     "language",
                     "original",
+                )
+            }
+        ),
+        (
+            _("Parameters"), {
+                "fields": (
+                    "template",
                 )
             }
         ),

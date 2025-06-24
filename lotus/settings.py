@@ -73,6 +73,20 @@ You may change state value since they are mostly label however it can break some
 default lotus templates which may use them so you will have to override these templates.
 """
 
+LOTUS_ARTICLE_DETAIL_TEMPLATES = (
+    ("lotus/article/detail.html", _("Default")),
+)
+"""
+List of available template choices to render an Article object detail.
+"""
+
+LOTUS_CATEGORY_DETAIL_TEMPLATES = (
+    ("lotus/category/detail.html", _("Default")),
+)
+"""
+List of available template choices to render a Category object detail.
+"""
+
 LOTUS_ARTICLE_SIBLING_TEMPLATE = "lotus/article/partials/siblings.html"
 """
 Default template used for template tag ``get_translation_siblings`` with an Article
@@ -83,16 +97,6 @@ LOTUS_CATEGORY_SIBLING_TEMPLATE = "lotus/category/partials/siblings.html"
 """
 Default template used for template tag ``get_translation_siblings`` with an Category
 object.
-"""
-
-LOTUS_PREVIEW_KEYWORD = "preview"
-"""
-Keyword name for preview mode in session
-"""
-
-LOTUS_PREVIEW_VARNAME = "preview_mode"
-"""
-Template context variable name to set the preview mode in views.
 """
 
 LOTUS_PREVIEW_SWITCH_TEMPLATE = "lotus/preview_switch.html"
@@ -113,6 +117,16 @@ Template path used to render template tag ``get_category_tree_html``.
 LOTUS_ALBUM_TAG_TEMPLATE = "lotus/album/partials/tag_get_album_html.html"
 """
 Template path used to render template tag ``get_album_html``.
+"""
+
+LOTUS_PREVIEW_KEYWORD = "preview"
+"""
+Keyword name for preview mode in session
+"""
+
+LOTUS_PREVIEW_VARNAME = "preview_mode"
+"""
+Template context variable name to set the preview mode in views.
 """
 
 LOTUS_CRUMBS_TITLES = {

@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
+from ..exceptions import Http500
 from ..lookups import LookupBuilder
 from ..utils.language import get_language_code
 
@@ -51,8 +53,9 @@ class ArticleFilterMixin(LookupBuilder):
     """
     A mixin to share Article filtering.
 
-    TODO: Rewrite docstrings since allowed_preview_mode deps is not required
-    anymore, only optional.
+    .. TODO::
+        Rewrite docstrings since allowed_preview_mode deps is not required
+        anymore, only optional.
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -167,7 +170,7 @@ class LanguageMixin:
         Shortand to ``get_language_code`` function that already give the request object.
 
         .. Warning::
-            This should not be used in view code before request attribute have been set.
+            This should not be used in view code before request attribute has been set.
 
         Returns:
             string: Language code retrieved either from request object or settings.
@@ -220,3 +223,27 @@ class ArticleFilterAbstractView(LotusContextStage, ArticleFilterMixin,
         context["article_filter_func"] = getattr(self, "apply_article_lookups")
         context["lotus_now"] = getattr(self, "target_date")
         return context
+
+
+class TemplateFromObjectMixin:
+    """
+    A mixin to get the template to render from the object attribute ``template``.
+
+    It is intended to override the template mechanism from ``TemplateResponseMixin`` and
+    for a view which have an attribute ``object`` where to find the attribute
+    ``template``.
+    """
+    def get_template_names(self):
+        """
+        Overrides the original method to get the template name from the object.
+
+        Returns:
+            list: List of template name as expected by the Django mechanism but the
+            list will always have an unique item.
+        """
+        if not hasattr(self, "object"):
+            raise Http500(
+                _("TemplateFromObjectMixin usage requires an attribute 'object'.")
+            )
+
+        return [self.object.template]

@@ -259,6 +259,8 @@ def preview_switch(context):
     """
     Display a button to enable or disable preview mode.
 
+    Render templates is defined from setting ``LOTUS_PREVIEW_SWITCH_TEMPLATE``.
+
     Exemple:
         This tag does not expect any argument: ::
 

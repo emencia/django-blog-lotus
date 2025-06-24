@@ -1,6 +1,6 @@
-# Frozen requirement versions for 'django-blog-lotus==0.9.3.1' installation
-django==5.2.1
-django-ckeditor==6.7.2
+# Frozen requirement versions for 'django-blog-lotus==0.9.4rc1' installation
+django==5.2.3
+django-ckeditor==6.7.3
 django-taggit==6.1.0
 django-autocomplete-light==3.12.1
 django-smart-media==0.5.0
@@ -11,11 +11,11 @@ djangorestframework==3.16.0
 django-view-breadcrumbs==2.5.1
 # From extra requirements 'dev'
 pillow==11.2.1
-pytest==8.3.5
+pytest==8.4.0
 pytest-django==4.11.1
 factory-boy==3.3.3
 pyquery==2.0.1
-freezegun==1.5.1
+freezegun==1.5.2
 diskette==0.5.0
 # From extra requirements 'quality'
 flake8==7.2.0

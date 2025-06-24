@@ -18,3 +18,11 @@ MEDIA_ROOT = VAR_PATH / "media-tests"  # noqa: F405
 # No ending slash. This is reserved to test only and has no purpose for other
 # environments
 LOTUS_API_TEST_BASEURL = "http://testserver"
+
+LOTUS_ARTICLE_DETAIL_TEMPLATES = LOTUS_ARTICLE_DETAIL_TEMPLATES + (  # noqa: F405
+    ("tests/article/dummy_detail.html", "Dummy"),
+)
+
+LOTUS_CATEGORY_DETAIL_TEMPLATES = LOTUS_CATEGORY_DETAIL_TEMPLATES + (  # noqa: F405
+    ("tests/category/dummy_detail.html", "Dummy"),
+)
