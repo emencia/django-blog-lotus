@@ -10,7 +10,7 @@ Models
     :exclude-members: DoesNotExist, MultipleObjectsReturned
 
 .. automodule:: lotus.models.author
-    :members: safe_get_user_model, AuthorManagerEnabled, Author
+    :members: AuthorManagerEnabled, Author
     :exclude-members: DoesNotExist, MultipleObjectsReturned
 .. automodule:: lotus.models.category
     :members: Category

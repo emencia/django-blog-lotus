@@ -1,5 +1,6 @@
 import pytest
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 from lotus.factories import AuthorFactory
@@ -42,3 +43,42 @@ def test_author_creation(db):
     """
     author = AuthorFactory(username="foobar")
     assert author.username == "foobar"
+
+
+@pytest.mark.django_db
+def test_author_is_proxy_of_user_model():
+    """
+    Author should be a proxy for AUTH_USER_MODEL,
+    regardless of whether it is the default User or a custom model.
+    """
+    UserModel = get_user_model()
+
+    # Ensure that Author inherits directly from AUTH_USER_MODEL
+    assert issubclass(Author, UserModel)
+    assert Author._meta.proxy is True
+    assert Author._meta.concrete_model is UserModel
+
+
+@pytest.mark.django_db
+def test_author_instance_behaves_like_user():
+    """
+    Author instances should behave like the user model instances
+    (e.g., authentication and field access).
+    """
+    UserModel = get_user_model()
+
+    # Create a user instance
+    user = UserModel.objects.create_user(
+        username="john", password="secret123", email="john@example.com"
+    )
+
+    # Retrieve the proxy Author instance for that user
+    author = Author.objects.get(pk=user.pk)
+
+    assert isinstance(author, Author)
+    assert isinstance(author, UserModel)
+
+    # Inherited fields and methods should work correctly
+    assert author.username == "john"
+    assert author.check_password("secret123")
+    assert author.email == "john@example.com"
