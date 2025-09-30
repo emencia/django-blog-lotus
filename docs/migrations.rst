@@ -5,6 +5,16 @@ Migrations
 ==========
 
 
+From 0.9.4 to 0.9.5
+*******************
+
+This is a minor release for a fix with
+`custom User model <https://docs.djangoproject.com/en/stable/topics/auth/customizing/>`_.
+
+It includes an update of the initial Lotus migration but is totally safe for both
+existing and new projects.
+
+
 From 0.9.3.1 to 0.9.4
 *********************
 

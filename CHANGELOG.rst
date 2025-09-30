@@ -3,6 +3,19 @@
 Changelog
 =========
 
+Version 0.9.5 - 2025/09/30
+**************************
+
+A minor version to fix behavior with custom User model. There is no incompatible change
+with v0.9.4, see `Migration to 0.9.5 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-9-4-to-0-9-5>`_
+to know about migrating your project.
+
+* Fixed model ``Author`` to use function ``django.contrib.auth.get_user_model`` to
+  declare the User model so it is safe with custom User model. This is safe for
+  existing or new projects. Thanks to the contribution of
+  `gswietko <https://github.com/gswietko>`_ for this fix;
+
+
 Version 0.9.4 - 2025/06/24
 **************************
 
