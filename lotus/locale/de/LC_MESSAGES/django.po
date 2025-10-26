@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-27 02:06+0200\n"
+"POT-Creation-Date: 2025-10-26 22:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,52 +26,52 @@ msgstr ""
 msgid "Album"
 msgstr ""
 
-#: admin/article.py:74 admin/category.py:63
+#: admin/article.py:74 admin/category.py:62
 msgid "Language"
 msgstr ""
 
-#: admin/article.py:82
+#: admin/article.py:82 admin/category.py:70
 msgid "Parameters"
 msgstr ""
 
-#: admin/article.py:92
+#: admin/article.py:93
 msgid "Dates"
 msgstr ""
 
-#: admin/article.py:100 admin/category.py:71
+#: admin/article.py:101 admin/category.py:77
 msgid "Content"
 msgstr ""
 
-#: admin/article.py:110 admin/category.py:79
+#: admin/article.py:111 admin/category.py:85
 msgid "SEO"
 msgstr ""
 
-#: admin/article.py:118
+#: admin/article.py:119
 msgid "Relations"
 msgstr ""
 
-#: admin/article.py:141 admin/category.py:95 admin_filters.py:11
+#: admin/article.py:142 admin/category.py:101 admin_filters.py:11
 #: models/translated.py:12
 msgid "language"
 msgstr ""
 
-#: admin/article.py:149
+#: admin/article.py:150
 msgid "publish date"
 msgstr ""
 
-#: admin/article.py:157
+#: admin/article.py:158
 msgid "published"
 msgstr ""
 
-#: admin/article.py:165 admin/category.py:103
+#: admin/article.py:166 admin/category.py:109
 msgid "original"
 msgstr ""
 
-#: admin/category.py:108
+#: admin/category.py:114
 msgid "articles"
 msgstr ""
 
-#: admin/category.py:112
+#: admin/category.py:118
 msgid "parent"
 msgstr ""
 
@@ -176,7 +176,7 @@ msgstr ""
 msgid "Title"
 msgstr ""
 
-#: models/album.py:26 models/album.py:59 models/category.py:38
+#: models/album.py:26 models/album.py:59 models/category.py:39
 msgid "modification date"
 msgstr ""
 
@@ -184,7 +184,7 @@ msgstr ""
 msgid "Albums"
 msgstr ""
 
-#: models/album.py:68 models/article.py:136 models/category.py:47
+#: models/album.py:68 models/article.py:139 models/category.py:48
 msgid "title"
 msgstr ""
 
@@ -204,178 +204,186 @@ msgstr ""
 msgid "Articles albums"
 msgstr ""
 
-#: models/article.py:28
+#: models/article.py:31
 msgid "original article"
 msgstr ""
 
-#: models/article.py:34
+#: models/article.py:37
 msgid "Mark this article as a translation of an original article."
 msgstr ""
 
-#: models/article.py:42
+#: models/article.py:45
 msgid "status"
 msgstr ""
 
-#: models/article.py:47
+#: models/article.py:50
 msgid "Publication status."
 msgstr ""
 
-#: models/article.py:55
+#: models/article.py:58
 msgid "featured"
 msgstr ""
 
-#: models/article.py:59
+#: models/article.py:62
 msgid "Mark this article as featured."
 msgstr ""
 
-#: models/article.py:67
+#: models/article.py:70
 msgid "pinned"
 msgstr ""
 
-#: models/article.py:71
+#: models/article.py:74
 msgid "A pinned article is enforced at top of order results."
 msgstr ""
 
-#: models/article.py:79
+#: models/article.py:82
 msgid "private"
 msgstr ""
 
-#: models/article.py:83
+#: models/article.py:86
 msgid "Private article is only available for authenticated users."
 msgstr ""
 
-#: models/article.py:91
+#: models/article.py:94
 msgid "publication date"
 msgstr ""
 
-#: models/article.py:95
+#: models/article.py:98
 msgid "Start date of publication."
 msgstr ""
 
-#: models/article.py:103
+#: models/article.py:106
 msgid "publication time"
 msgstr ""
 
-#: models/article.py:106
+#: models/article.py:109
 msgid "Start time of publication."
 msgstr ""
 
-#: models/article.py:114
+#: models/article.py:117
 msgid "publication end"
 msgstr ""
 
-#: models/article.py:120
+#: models/article.py:123
 msgid "End date of publication."
 msgstr ""
 
-#: models/article.py:128
+#: models/article.py:131
 msgid "last update"
 msgstr ""
 
-#: models/article.py:146 models/category.py:57
+#: models/article.py:149 models/category.py:58
 msgid "slug"
 msgstr ""
 
-#: models/article.py:149
+#: models/article.py:152
 msgid "Used to build the article URL."
 msgstr ""
 
-#: models/article.py:157
+#: models/article.py:160 models/category.py:66
+msgid "template"
+msgstr ""
+
+#: models/article.py:171
 msgid "SEO title"
 msgstr ""
 
-#: models/article.py:162
+#: models/article.py:176
 msgid ""
 "This value will be used as page meta title if not blank, else the article "
 "title is used."
 msgstr ""
 
-#: models/article.py:172 models/category.py:65
+#: models/article.py:186 models/category.py:77
 msgid "lead"
 msgstr ""
 
-#: models/article.py:175 models/category.py:68
+#: models/article.py:189 models/category.py:80
 msgid "Lead paragraph, commonly used for SEO purposes in page meta tags."
 msgstr ""
 
-#: models/article.py:183
+#: models/article.py:197
 msgid "introduction"
 msgstr ""
 
-#: models/article.py:191
+#: models/article.py:205
 msgid "content"
 msgstr ""
 
-#: models/article.py:200 models/category.py:84
+#: models/article.py:214 models/category.py:96
 msgid "cover image"
 msgstr ""
 
-#: models/article.py:205
+#: models/article.py:219
 msgid "Article cover image."
 msgstr ""
 
-#: models/article.py:212 models/category.py:95
+#: models/article.py:226 models/category.py:107
 msgid "cover alternative text"
 msgstr ""
 
-#: models/article.py:222
+#: models/article.py:236
 msgid "main image"
 msgstr ""
 
-#: models/article.py:227
+#: models/article.py:241
 msgid "Article large image."
 msgstr ""
 
-#: models/article.py:234
+#: models/article.py:248
 msgid "main alternative text"
 msgstr ""
 
-#: models/article.py:245
+#: models/article.py:259
 msgid "categories"
 msgstr ""
 
-#: models/article.py:255
+#: models/article.py:269
 msgid "authors"
 msgstr ""
 
-#: models/article.py:265
+#: models/article.py:279
 msgid "related articles"
 msgstr ""
 
-#: models/article.py:303
+#: models/article.py:317
 msgid "Article"
 msgstr ""
 
-#: models/article.py:304 settings.py:119 templates/lotus/article/list.html:4
+#: models/article.py:318 settings.py:133 templates/lotus/article/list.html:4
 #: templates/lotus/article/list.html:8 templates/lotus/author/detail.html:11
 #: templates/lotus/category/detail.html:32 templates/lotus/tag/detail.html:11
 msgid "Articles"
 msgstr ""
 
-#: models/category.py:30
+#: models/category.py:31
 msgid "Mark this category as a translation of an original category."
 msgstr ""
 
-#: models/category.py:76
+#: models/category.py:88
 msgid "description"
 msgstr ""
 
-#: models/category.py:128
+#: models/category.py:140
 msgid "Category"
 msgstr ""
 
-#: models/category.py:129 settings.py:121
+#: models/category.py:141 settings.py:135
 #: templates/lotus/article/detail.html:127 templates/lotus/category/list.html:4
 #: templates/lotus/category/list.html:8
 msgid "Categories"
 msgstr ""
 
-#: settings.py:120 templates/lotus/article/detail.html:162
+#: settings.py:77 settings.py:84
+msgid "Default"
+msgstr ""
+
+#: settings.py:134 templates/lotus/article/detail.html:162
 #: templates/lotus/author/list.html:4 templates/lotus/author/list.html:8
 msgid "Authors"
 msgstr ""
 
-#: settings.py:122 templates/lotus/article/detail.html:144
+#: settings.py:136 templates/lotus/article/detail.html:144
 #: templates/lotus/tag/list.html:4 templates/lotus/tag/list.html:8
 msgid "Tags"
 msgstr ""
@@ -596,7 +604,11 @@ msgstr ""
 msgid "Translate '%(title)s'"
 msgstr ""
 
-#: views/article.py:105
+#: views/article.py:104
 #, python-format
 msgid "No %(verbose_name)s found matching the query"
+msgstr ""
+
+#: views/mixins.py:246
+msgid "TemplateFromObjectMixin usage requires an attribute 'object'."
 msgstr ""

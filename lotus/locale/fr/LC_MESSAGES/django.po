@@ -184,7 +184,7 @@ msgstr "Langues disponibles"
 
 #: models/album.py:16
 msgid "Title"
-msgstr "TTitre"
+msgstr "Titre"
 
 #: models/album.py:26 models/album.py:59 models/category.py:38
 msgid "modification date"
