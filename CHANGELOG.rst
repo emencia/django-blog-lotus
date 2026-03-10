@@ -3,8 +3,8 @@
 Changelog
 =========
 
-Development
-***********
+Version 0.9.6 - 2025/05/18
+**************************
 
 A minor version to fix broken install because of 'Django Treebeard v5.0'. There is no incompatible change
 with v0.9.5, see `Migration to 0.9.6 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-9-5-to-0-9-6>`_

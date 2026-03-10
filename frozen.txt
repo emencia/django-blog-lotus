@@ -1,30 +1,30 @@
-# Frozen requirement versions for 'django-blog-lotus==0.9.5' installation
-django==5.2.3
+# Frozen requirement versions for 'django-blog-lotus==0.9.6' installation
+django==5.2.12
 django-ckeditor==6.7.3
 django-taggit==6.1.0
 django-autocomplete-light==3.12.1
 django-smart-media==0.5.0
-django-treebeard==4.7.1
+django-treebeard==4.8.0
 # From extra requirements 'api'
-djangorestframework==3.16.0
+djangorestframework==3.16.1
 # From extra requirements 'breadcrumbs'
 django-view-breadcrumbs==2.5.1
 # From extra requirements 'dev'
-pillow==11.2.1
-pytest==8.4.0
-pytest-django==4.11.1
+pillow==12.1.1
+pytest==9.0.2
+pytest-django==4.12.0
 factory-boy==3.3.3
 pyquery==2.0.1
-freezegun==1.5.2
+freezegun==1.5.5
 diskette==0.5.0
 # From extra requirements 'quality'
-flake8==7.2.0
-tox==4.26.0
+flake8==7.3.0
+tox==4.49.1
 # From extra requirements 'doc'
 sphinx==8.1.3
-furo==2024.8.6
+furo==2025.12.19
 sphinx-copybutton==0.5.2
 # From extra requirements 'doc-live'
 livereload==2.7.1
 # From extra requirements 'release'
-twine==6.1.0
+twine==6.2.0
