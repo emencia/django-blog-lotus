@@ -6,7 +6,16 @@ Changelog
 Development
 ***********
 
-TODO
+A minor version to fix broken install because of 'Django Treebeard v5.0'. There is no incompatible change
+with v0.9.5, see `Migration to 0.9.6 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-9-5-to-0-9-6>`_
+to know about migrating your project.
+
+* Fixed french PO that was translating ``Title`` to ``TTitre``;
+* Pinned django-treebeard to ``<5.0``;
+
+.. Note::
+    We plan to upgrade to Django Treebeard v5.0 in a next major release that will drop
+    support for ``Django<5.2``.
 
 
 Version 0.9.5 - 2025/09/30

@@ -5,6 +5,17 @@ Migrations
 ==========
 
 
+From 0.9.5 to 0.9.6
+*******************
+
+This is a minor release for a fix with
+`broken install because of Django Treebeard v5.0 <https://github.com/emencia/django-blog-lotus/issues/88>`_.
+
+This is only about pinning a requirement that would have broken a new install. Also an
+update on the french PO file is involved but this should not have any impact except if
+you were building custom PO files which would may need to be rebuild to MO files.
+
+
 From 0.9.4 to 0.9.5
 *******************
 
