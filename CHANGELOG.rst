@@ -3,6 +3,18 @@
 Changelog
 =========
 
+Development
+***********
+
+A new version to upgrade official Python and Django support. See `Migration to 0.9.7 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-9-6-to-0-9-7>`_ to know about migrating your project.
+
+* Dropped support for Python<3.10;
+* Dropped support for Django<4.2;
+* Added support for **Python 3.12** and **Python 3.13**;
+* Added support for **Django 6.0**;
+* Added support for **djangorestframework 3.17.0**;
+
+
 Version 0.9.6 - 2025/05/18
 **************************
 

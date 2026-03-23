@@ -5,6 +5,18 @@ Migrations
 ==========
 
 
+From 0.9.6 to 0.9.7
+*******************
+
+This is an upgrade release. Technically nothing has changed except we updated our test
+matrix to fit to our supported Python and Django versions. But the package has been
+updated also to upgrade minimal requirement versions.
+
+So finally to be able to upgrade to this version you will need to upgrade your project
+at least to Python 3.10 and Django 4.2. Lotus settings, urls, templates and views did
+not changed.
+
+
 From 0.9.5 to 0.9.6
 *******************
 
