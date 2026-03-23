@@ -39,12 +39,12 @@ Features
 Dependencies
 ************
 
-* `Python`_>=3.9;
-* `Django`_>=3.2;
+* `Python`_>=3.10;
+* `Django`_>=4.2;
 * `django-ckeditor`_>=6.0.0;
 * `django-smart-media`_>=0.2.2;
 * `django-taggit`_>=3.1.0;
-* `django-treebeard`_>=4.3,!=4.5;
+* `django-treebeard`_>=4.3,!=4.5,<5.0;
 * `django-autocomplete-light`_>=3.9.7;
 * `django-view-breadcrumbs`_>=2.2.1 (optional);
 * `djangorestframework`_>=3.14.0 (optional);

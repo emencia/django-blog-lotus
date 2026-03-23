@@ -3,8 +3,8 @@
 Changelog
 =========
 
-Development
-***********
+Version 0.9.7 - 2026/03/23
+**************************
 
 A new version to upgrade official Python and Django support. See `Migration to 0.9.7 <https://django-blog-lotus.readthedocs.io/en/latest/migrations.html#from-0-9-6-to-0-9-7>`_ to know about migrating your project.
 
@@ -15,7 +15,7 @@ A new version to upgrade official Python and Django support. See `Migration to 0
 * Added support for **djangorestframework 3.17.0**;
 
 
-Version 0.9.6 - 2025/05/18
+Version 0.9.6 - 2026/03/10
 **************************
 
 A minor version to fix broken install because of 'Django Treebeard v5.0'. There is no incompatible change
